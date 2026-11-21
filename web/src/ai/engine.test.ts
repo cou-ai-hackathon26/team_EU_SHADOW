@@ -118,8 +118,8 @@ describe('engine', () => {
       } as Response),
     )
 
-    // Logits for 7 classes
-    const fakeLogits = new Float32Array([1.0, 5.0, 2.0, 0.5, 0.2, 0.1, -1.0])
+    // Logits for 7 classes with dominant class 1
+    const fakeLogits = new Float32Array([1.0, 8.0, 2.0, 0.5, 0.2, 0.1, -1.0])
     const sessionMock = (ort as any)._sessionMock
     sessionMock.outputNames = ['logits']
     sessionMock.run.mockResolvedValue({

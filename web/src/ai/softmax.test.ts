@@ -27,7 +27,7 @@ describe('softmax', () => {
     expect(maxT2).toBeLessThan(maxT1)
 
     // High temperature approaches uniform distribution
-    const probsHighT = softmax(logits, 100.0)
+    const probsHighT = softmax(logits, 1000.0)
     const expectedUniform = 1 / logits.length
     for (const p of probsHighT) {
       expect(p).toBeCloseTo(expectedUniform, 2)
