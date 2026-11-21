@@ -1,0 +1,17 @@
+{
+  "name": "AgroLeaf AI — ধানপাতার রোগ নির্ণয়",
+  "short_name": "AgroLeaf AI",
+  "description": "ধানপাতার রোগের প্রাথমিক স্ক্রিনিং ও শনাক্তকরণ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#166534",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
