@@ -40,6 +40,31 @@ export interface QualityReport {
   tooBlurry: boolean
 }
 
+/** Contents of public/model/report.json (written by ml/evaluate.py, M5). Read by the Accuracy page (F12). */
+export interface ModelReport {
+  modelVersion: string            // must equal ModelMeta.version
+  createdAt: string               // ISO date
+  dataset: {
+    name: string                  // "RiceLeafDiseaseBD v3"
+    url: string
+    license: string               // "CC BY 4.0"
+    images: { train: number; val: number; test: number }
+  }
+  test: {
+    n: number
+    accuracy: number              // 0..1
+    macroF1: number               // 0..1
+    perClass: { classId: ClassId; precision: number; recall: number; f1: number; support: number }[]
+    /** rows = true class, cols = predicted class, both in `classes` order */
+    confusionMatrix: number[][]
+    classes: ClassId[]
+  }
+  calibration: { temperature: number; eceBefore: number; eceAfter: number }
+  /** share of test photos that land in each tier, and how often the top-1 answer was right there */
+  tiers: { tier: ConfidenceTier; coverage: number; accuracy: number }[]
+  limitations: { bn: string; en: string }[]
+}
+
 /** What analyze() returns. The UI renders ONLY from this object. */
 export interface Prediction {
   tier: ConfidenceTier
