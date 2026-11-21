@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { buildSpokenText, pickVoice, stopSpeaking } from './speak'
+import { buildSpokenText, pickVoice } from './speak'
 import { ListenButton } from './ListenButton'
 import type { DiseaseCard } from '../../content/types'
 import { getCard } from '../../content/getCard'
