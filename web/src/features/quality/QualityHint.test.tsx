@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import QualityHint from './QualityHint'
 import type { QualityReport } from '../../ai/types'
 
 describe('QualityHint (F3)', () => {
-  it('displays warnings for dark images without disabling analyze button', () => {
+  it('displays warnings for dark images without disabling analyze button when onAnalyze is provided', () => {
     const darkReport: QualityReport = {
       brightness: 20,
       sharpness: 30,
@@ -13,7 +13,8 @@ describe('QualityHint (F3)', () => {
       tooBlurry: false,
     }
 
-    render(<QualityHint report={darkReport} />)
+    const onAnalyze = vi.fn()
+    render(<QualityHint report={darkReport} onAnalyze={onAnalyze} />)
 
     // Warning message in Bangla
     expect(screen.getByText(/আলো/i)).toBeInTheDocument()
@@ -24,7 +25,7 @@ describe('QualityHint (F3)', () => {
     expect(analyzeBtn).not.toBeDisabled()
   })
 
-  it('displays warning when image is tooBlurry without blocking analyze button', () => {
+  it('displays warning when image is tooBlurry without blocking analyze button when onAnalyze is provided', () => {
     const blurryReport: QualityReport = {
       brightness: 120,
       sharpness: 2,
@@ -33,11 +34,27 @@ describe('QualityHint (F3)', () => {
       tooBlurry: true,
     }
 
-    render(<QualityHint report={blurryReport} />)
+    const onAnalyze = vi.fn()
+    render(<QualityHint report={blurryReport} onAnalyze={onAnalyze} />)
 
     expect(screen.getByText(/ঝাপসা/i)).toBeInTheDocument()
     const analyzeBtn = screen.getByRole('button', { name: /Analyze|শনাক্ত|বিশ্লেষণ/i })
+    expect(analyzeBtn).toBeInTheDocument()
     expect(analyzeBtn).not.toBeDisabled()
+  })
+
+  it('renders no button when onAnalyze is not given', () => {
+    const report: QualityReport = {
+      brightness: 120,
+      sharpness: 25,
+      tooDark: false,
+      tooBright: false,
+      tooBlurry: false,
+    }
+
+    render(<QualityHint report={report} />)
+    const button = screen.queryByRole('button', { name: /Analyze|শনাক্ত|বিশ্লেষণ/i })
+    expect(button).not.toBeInTheDocument()
   })
 
   it('displays a positive hint or clean state when quality is good', () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { assessQuality, QUALITY_THRESHOLDS } from './quality'
 import type { QualityReport } from '../../ai/types'
 
@@ -40,9 +40,14 @@ function createCheckerboardImageData(width: number, height: number): ImageData {
 }
 
 describe('assessQuality (F3)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('conforms to QualityReport contract type', () => {
     const normal = createSolidImageData(32, 32, 128, 128, 128)
-    const report: QualityReport = assessQuality(normal)
+    const report: QualityReport | null = assessQuality(normal)
+    expect(report).not.toBeNull()
     expect(report).toHaveProperty('brightness')
     expect(report).toHaveProperty('sharpness')
     expect(report).toHaveProperty('tooDark')
@@ -54,30 +59,45 @@ describe('assessQuality (F3)', () => {
     // All black
     const blackImage = createSolidImageData(32, 32, 0, 0, 0)
     const blackReport = assessQuality(blackImage)
-    expect(blackReport.tooDark).toBe(true)
-    expect(blackReport.tooBright).toBe(false)
-    expect(blackReport.brightness).toBeLessThan(QUALITY_THRESHOLDS.TOO_DARK)
+    expect(blackReport).not.toBeNull()
+    expect(blackReport!.tooDark).toBe(true)
+    expect(blackReport!.tooBright).toBe(false)
+    expect(blackReport!.brightness).toBeLessThan(QUALITY_THRESHOLDS.TOO_DARK)
 
     // All white
     const whiteImage = createSolidImageData(32, 32, 255, 255, 255)
     const whiteReport = assessQuality(whiteImage)
-    expect(whiteReport.tooBright).toBe(true)
-    expect(whiteReport.tooDark).toBe(false)
-    expect(whiteReport.brightness).toBeGreaterThan(QUALITY_THRESHOLDS.TOO_BRIGHT)
+    expect(whiteReport).not.toBeNull()
+    expect(whiteReport!.tooBright).toBe(true)
+    expect(whiteReport!.tooDark).toBe(false)
+    expect(whiteReport!.brightness).toBeGreaterThan(QUALITY_THRESHOLDS.TOO_BRIGHT)
   })
 
   it('identifies solid color image as tooBlurry and checkerboard as sharp', () => {
     // Solid gray image (Laplacian variance is 0)
     const solidImage = createSolidImageData(32, 32, 120, 120, 120)
     const solidReport = assessQuality(solidImage)
-    expect(solidReport.sharpness).toBe(0)
-    expect(solidReport.tooBlurry).toBe(true)
+    expect(solidReport).not.toBeNull()
+    expect(solidReport!.sharpness).toBe(0)
+    expect(solidReport!.tooBlurry).toBe(true)
 
     // Checkerboard pattern (high variance, sharp edges)
     const checkerboard = createCheckerboardImageData(32, 32)
     const sharpReport = assessQuality(checkerboard)
-    expect(sharpReport.sharpness).toBeGreaterThan(QUALITY_THRESHOLDS.TOO_BLURRY)
-    expect(sharpReport.tooBlurry).toBe(false)
+    expect(sharpReport).not.toBeNull()
+    expect(sharpReport!.sharpness).toBeGreaterThan(QUALITY_THRESHOLDS.TOO_BLURRY)
+    expect(sharpReport!.tooBlurry).toBe(false)
+  })
+
+  it('returns null when canvas.getContext("2d") returns null', () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+
+    const fakeImg = new Image()
+    Object.defineProperty(fakeImg, 'width', { value: 100 })
+    Object.defineProperty(fakeImg, 'height', { value: 100 })
+
+    const result = assessQuality(fakeImg)
+    expect(result).toBeNull()
   })
 
   it('keeps thresholds defined in a single constant object', () => {
