@@ -1,0 +1,24 @@
+{
+  "version": "SAMPLE-FOR-TESTS",
+  "architecture": "MobileNetV3-Small (random init)",
+  "trainedFromScratch": true,
+  "classes": [
+    "healthy",
+    "blast",
+    "brown_spot",
+    "leaf_smut",
+    "tungro",
+    "sheath_blight"
+  ],
+  "inputSize": 224,
+  "mean": [0.485, 0.456, 0.406],
+  "std": [0.229, 0.224, 0.225],
+  "temperature": 1.25,
+  "thresholds": {
+    "high": 0.85,
+    "medium": 0.55,
+    "healthyHigh": 0.9,
+    "notRice": 0.5
+  },
+  "camOutput": true
+}
