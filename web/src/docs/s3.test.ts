@@ -46,8 +46,8 @@ describe('S3 Pitch and Final Submission Documentation', () => {
     expect(fs.existsSync(pitchPath)).toBe(true)
     const content = fs.readFileSync(pitchPath, 'utf8')
 
-    // Check for 10 Q&A pairs
-    const qMatches = content.match(/(?:প্রশ্ন|Q)\s*\d+[\s\.:]/gi) || []
+    // Check for 10 Q&A pairs (supporting both Bangla and English digits)
+    const qMatches = content.match(/(?:প্রশ্ন|Q)\s*[০-৯0-9]+[\s.:]/gi) || []
     expect(qMatches.length).toBeGreaterThanOrEqual(10)
 
     // Verify key topics: scratch training, dataset limitations, safety/pesticides
