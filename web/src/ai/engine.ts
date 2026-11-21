@@ -1,8 +1,10 @@
-import * as ort from 'onnxruntime-web'
+import * as ort from 'onnxruntime-web/wasm'
 import { decideTier } from './decideTier'
 import { preprocess, type PreprocessImageInput } from './preprocess'
 import { softmax } from './softmax'
 import type { ClassProb, ModelMeta, Prediction } from './types'
+
+const LOAD_TIMEOUT_MS = 60_000
 
 let loadingPromise: Promise<ModelMeta> | null = null
 let cachedMeta: ModelMeta | null = null
@@ -18,6 +20,7 @@ export function resetEngineState(): void {
 /**
  * Loads the model metadata and initializes the ONNX InferenceSession.
  * Cached via loadingPromise so concurrent calls create exactly one session.
+ * Rejects with a timeout error if loading exceeds 60s.
  */
 export function loadModel(): Promise<ModelMeta> {
   if (cachedMeta && cachedSession) {
@@ -28,7 +31,17 @@ export function loadModel(): Promise<ModelMeta> {
   }
 
   loadingPromise = (async () => {
-    try {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let isTimedOut = false
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        isTimedOut = true
+        reject(new Error('মডেল লোড করা যায়নি: সময় শেষ'))
+      }, LOAD_TIMEOUT_MS)
+    })
+
+    const doLoad = async (): Promise<ModelMeta> => {
       const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
       const metaUrl = `${baseUrl}/model/model_meta.json`
       const modelUrl = `${baseUrl}/model/agroleaf.onnx`
@@ -47,15 +60,13 @@ export function loadModel(): Promise<ModelMeta> {
       }
 
       try {
-        const wasmUrl = `${baseUrl}/ort/ort-wasm-simd-threaded.wasm`
         ort.env.wasm.numThreads = 1
-        ort.env.wasm.wasmPaths = {
-          wasm: wasmUrl,
-          'ort-wasm-simd-threaded.wasm': wasmUrl,
-        } as any
         const session = await ort.InferenceSession.create(modelUrl, {
           executionProviders: ['wasm'],
         })
+        if (isTimedOut) {
+          return meta
+        }
         cachedSession = session
         cachedMeta = meta
         return meta
@@ -64,12 +75,20 @@ export function loadModel(): Promise<ModelMeta> {
           `মডেল লোড করা যায়নি: অনিক্স সেশন প্রস্তুত ব্যর্থ (${err instanceof Error ? err.message : String(err)})`,
         )
       }
+    }
+
+    try {
+      return await Promise.race([doLoad(), timeoutPromise])
     } catch (err) {
       // Clear cache on failure so next call retries
       loadingPromise = null
       cachedMeta = null
       cachedSession = null
       throw err
+    } finally {
+      if (timer !== undefined) {
+        clearTimeout(timer)
+      }
     }
   })()
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import * as ort from 'onnxruntime-web'
+import * as ort from 'onnxruntime-web/wasm'
 import { loadModel, analyze, resetEngineState } from './engine'
 import type { ModelMeta } from './types'
 
@@ -29,8 +29,8 @@ const sampleMeta: ModelMeta = {
   camOutput: false,
 }
 
-// Mock onnxruntime-web
-vi.mock('onnxruntime-web', () => {
+// Mock onnxruntime-web/wasm
+vi.mock('onnxruntime-web/wasm', () => {
   const runMock = vi.fn()
   const sessionMock = {
     inputNames: ['input'],
@@ -65,6 +65,7 @@ describe('engine', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.unstubAllGlobals()
   })
 
@@ -83,13 +84,22 @@ describe('engine', () => {
     expect(ort.InferenceSession.create).toHaveBeenCalled()
   })
 
-  it('sets ort.env.wasm.wasmPaths before InferenceSession.create is called', async () => {
-    let wasmPathsWhenCreating: any = undefined
-    vi.mocked(ort.InferenceSession.create).mockImplementationOnce(async () => {
-      wasmPathsWhenCreating = (ort as any).env.wasm.wasmPaths
-      return (ort as any)._sessionMock
-    })
+  it('rejects with "মডেল লোড করা যায়নি: সময় শেষ" when loading exceeds 60s and clears cache so next call retries', async () => {
+    vi.useFakeTimers()
 
+    // Mock fetch that hangs
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(() => new Promise(() => {})),
+    )
+
+    const loadPromise = loadModel()
+
+    vi.advanceTimersByTime(60_001)
+
+    await expect(loadPromise).rejects.toThrow('মডেল লোড করা যায়নি: সময় শেষ')
+
+    vi.useRealTimers()
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -99,8 +109,8 @@ describe('engine', () => {
       } as Response),
     )
 
-    await loadModel()
-    expect(wasmPathsWhenCreating).toBeDefined()
+    const meta = await loadModel()
+    expect(meta.version).toBe(sampleMeta.version)
   })
 
   it('concurrent loadModel() calls create exactly one session (Promise caching)', async () => {
