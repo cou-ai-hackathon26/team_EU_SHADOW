@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ShareButton } from './ShareButton'
@@ -38,13 +38,18 @@ describe('F15 ShareButton Component', () => {
     const user = userEvent.setup()
     await user.click(btn)
 
-    expect(shareMock).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(shareMock).toHaveBeenCalled()
+    })
   })
 
   it('3b. Triggers direct download when navigator.share is absent', async () => {
     vi.stubGlobal('navigator', {}) // no share method
+    vi.stubGlobal('URL', {
+      createObjectURL: vi.fn().mockReturnValue('blob:mock-url'),
+      revokeObjectURL: vi.fn(),
+    })
 
-    const clickMock = vi.fn()
     const createElementSpy = vi.spyOn(document, 'createElement')
 
     render(<ShareButton input={sampleInput} />)
@@ -53,12 +58,13 @@ describe('F15 ShareButton Component', () => {
     const user = userEvent.setup()
     await user.click(btn)
 
-    // Should create an anchor element with download attribute
-    const anchorCalls = createElementSpy.mock.results.filter(
-      (r) => r.value instanceof HTMLAnchorElement,
-    )
-    expect(anchorCalls.length).toBeGreaterThan(0)
-    const anchor = anchorCalls[0].value as HTMLAnchorElement
-    expect(anchor.download).toMatch(/agroleaf|case-summary|\.png/)
+    await waitFor(() => {
+      const anchorCalls = createElementSpy.mock.results.filter(
+        (r) => r.value instanceof HTMLAnchorElement,
+      )
+      expect(anchorCalls.length).toBeGreaterThan(0)
+      const anchor = anchorCalls[0].value as HTMLAnchorElement
+      expect(anchor.download).toMatch(/agroleaf|case-summary|\.png/)
+    })
   })
 })
