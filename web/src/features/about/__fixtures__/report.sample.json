@@ -1,0 +1,60 @@
+{
+  "modelVersion": "SAMPLE-FOR-TESTS",
+  "createdAt": "2026-11-22T00:00:00Z",
+  "dataset": {
+    "name": "RiceLeafDiseaseBD v3",
+    "url": "https://doi.org/10.17632/86s4jzj2m4.3",
+    "license": "CC BY 4.0",
+    "images": { "train": 3600, "val": 600, "test": 600 }
+  },
+  "test": {
+    "n": 600,
+    "accuracy": 0.8423,
+    "macroF1": 0.8351,
+    "classes": [
+      "healthy",
+      "blast",
+      "brown_spot",
+      "leaf_smut",
+      "tungro",
+      "sheath_blight"
+    ],
+    "perClass": [
+      { "classId": "healthy", "precision": 0.88, "recall": 0.90, "f1": 0.89, "support": 100 },
+      { "classId": "blast", "precision": 0.82, "recall": 0.80, "f1": 0.81, "support": 100 },
+      { "classId": "brown_spot", "precision": 0.79, "recall": 0.81, "f1": 0.80, "support": 100 },
+      { "classId": "leaf_smut", "precision": 0.85, "recall": 0.83, "f1": 0.84, "support": 100 },
+      { "classId": "tungro", "precision": 0.86, "recall": 0.88, "f1": 0.87, "support": 100 },
+      { "classId": "sheath_blight", "precision": 0.81, "recall": 0.79, "f1": 0.80, "support": 100 }
+    ],
+    "confusionMatrix": [
+      [90, 2, 3, 1, 2, 2],
+      [3, 80, 8, 4, 2, 3],
+      [2, 7, 81, 5, 2, 3],
+      [1, 4, 6, 83, 3, 3],
+      [2, 2, 3, 2, 88, 3],
+      [3, 5, 5, 4, 4, 79]
+    ]
+  },
+  "calibration": {
+    "temperature": 1.25,
+    "eceBefore": 0.125,
+    "eceAfter": 0.032
+  },
+  "tiers": [
+    { "tier": "high", "coverage": 0.725, "accuracy": 0.941 },
+    { "tier": "medium", "coverage": 0.185, "accuracy": 0.723 },
+    { "tier": "low", "coverage": 0.075, "accuracy": 0.385 },
+    { "tier": "not_rice", "coverage": 0.015, "accuracy": 0.985 }
+  ],
+  "limitations": [
+    {
+      "bn": "অতিরিক্ত আলো বা গভীর ছায়ায় তোলা ছবিতে ফলাফলের নির্ভুলতা কমতে পারে।",
+      "en": "Accuracy may degrade under severe direct sunlight or deep shadows."
+    },
+    {
+      "bn": "প্রাথমিক চারা অবস্থায় বা একাধিক রোগ একসাথে থাকলে মডেলের দ্বিধা হতে পারে।",
+      "en": "Seedling stage or multiple co-occurring diseases may cause ambiguity."
+    }
+  ]
+}

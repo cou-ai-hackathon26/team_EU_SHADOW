@@ -1,0 +1,446 @@
+[
+  {
+    "id": "healthy",
+    "name": {
+      "bn": "সুস্থ ধানগাছ",
+      "en": "Healthy Rice Leaf"
+    },
+    "summary": {
+      "bn": "পাতায় কোনো রোগ বা ক্ষতিকর দাগের লক্ষণ নেই।",
+      "en": "No visible signs of disease or harmful lesions on the leaf."
+    },
+    "symptoms": [
+      {
+        "bn": "পাতা স্বাভাবিক উজ্জ্বল সবুজ এবং সতেজ",
+        "en": "Leaves are uniformly vibrant green and fresh"
+      },
+      {
+        "bn": "পাতায় কোনো অস্বাভাবিক বাদামি, কালো বা হলুদ দাগ অনুপস্থিত",
+        "en": "Free of abnormal brown, black, or yellow lesions"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "পরিমিত সার এবং নিয়মিত যত্নশীল মাঠ পরিচর্যা",
+        "en": "Adequate nutrition and attentive field management"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "নিয়মিত জমি পরিদর্শন করুন এবং সুষম জৈব ও অজৈব সার বজায় রাখুন",
+        "en": "Monitor fields regularly and maintain balanced organic and inorganic fertilization"
+      },
+      {
+        "bn": "সঠিক সেচ ব্যবস্থাপনা বজায় রাখুন যাতে জমি অতিরিক্ত খরায় না পড়ে",
+        "en": "Ensure proper irrigation schedule without letting soil suffer water stress"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "ভবিষ্যতে কোনো অস্বাভাবিক পরিবর্তন বা নতুন ধরনের দাগ দেখলে ১৬১২৩ নম্বরে যোগাযোগ করুন।",
+      "en": "If you observe any suspicious spots or sudden changes later, call 16123 for guidance."
+    },
+    "severity": "none",
+    "sources": [
+      {
+        "title": "ধানের আধুনিক চাষাবাদ - বাংলাদেশ ধান গবেষণা ইনস্টিটিউট (BRRI)",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      },
+      {
+        "title": "Rice Knowledge Bank - International Rice Research Institute",
+        "url": "https://www.knowledgebank.irri.org",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "blast",
+    "name": {
+      "bn": "ব্লাস্ট রোগ",
+      "en": "Rice Blast"
+    },
+    "summary": {
+      "bn": "একটি অতি পরিচিত ছত্রাকজনিত রোগ যা ধানের পাতা ও শীষে ছড়িয়ে পড়তে পারে।",
+      "en": "A widespread fungal disease that attacks leaves, nodes, and panicles of rice."
+    },
+    "symptoms": [
+      {
+        "bn": "পাতায় ডিম্বাকৃতি বা মাকুর মতো দাগ যার কেন্দ্র ধূসর এবং কিনারা বাদামি",
+        "en": "Spindle-shaped diamond lesions with greyish center and reddish-brown margin"
+      },
+      {
+        "bn": "তীব্র সংক্রমণে একাধিক দাগ মিলে পুরো পাতা শুকিয়ে যেতে পারে",
+        "en": "Severe cases cause lesions to coalesce, leading to entire leaf blighting"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "অতিরিক্ত নাইট্রোজেন সার ব্যবহার এবং দীর্ঘ সময় পাতায় শিশির বা আর্দ্রতা জমা থাকা",
+        "en": "High nitrogen application, prolonged leaf wetness, and cool dewy nights"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "ইউরিয়া সার কিস্তিতে সুষমভাবে প্রয়োগ করুন এবং জমিতে পরিমিত পানি ধরে রাখুন",
+        "en": "Apply nitrogen in split applications and maintain shallow standing water"
+      },
+      {
+        "bn": "রোগ প্রতিরোধী অনুমোদিত জাতের সুস্থ ও প্রত্যয়িত বীজ ব্যবহার করুন",
+        "en": "Plant certified disease-free seeds of resistant rice varieties"
+      },
+      {
+        "bn": "চারা রোপণের সময় যথাযথ দূরত্ব রাখুন যাতে পর্যাপ্ত আলো-বাতাস চলাচল করে",
+        "en": "Maintain optimal seedling spacing to promote air circulation and sunlight exposure"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "পাতা বা শীষের গোড়ায় দাগ দ্রুত ছড়াতে দেখলে দেরি না করে স্থানীয় কৃষি কর্মকর্তা বা ১৬১২৩ নম্বরে কল করুন।",
+      "en": "If lesions rapidly expand to collars or panicles, promptly consult your local extension worker or dial 16123."
+    },
+    "severity": "act",
+    "sources": [
+      {
+        "title": "ধানের ব্লাস্ট রোগ ব্যবস্থাপনা - ব্রি (BRRI)",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      },
+      {
+        "title": "Rice Blast Factsheet - International Rice Research Institute",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/rice-blast",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "brown_spot",
+    "name": {
+      "bn": "বাদামি দাগ রোগ",
+      "en": "Brown Spot"
+    },
+    "summary": {
+      "bn": "ধানের পাতায় ছোট ছোট গোলাকার বাদামি দাগ সৃষ্টিকারী রোগ।",
+      "en": "A common foliar disease characterized by small round to oval brown spots on leaves."
+    },
+    "symptoms": [
+      {
+        "bn": "পাতার ওপর তিলের মতো গাঢ় বাদামি ছোট ছোট দাগ",
+        "en": "Small dark brown spots resembling sesame seeds on the leaf surface"
+      },
+      {
+        "bn": "পুরনো দাগের চারদিকে অনেক সময় হালকা হলুদ রঙের বলয় দেখা যায়",
+        "en": "Older lesions often exhibit a distinct yellowish halo surrounding the brown core"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "মাটিতে পুষ্টি উপাদানের অভাব (বিশেষ করে পটাশের ঘাটতি) এবং পানির সংকট",
+        "en": "Soil nutrient deficiency (especially potassium) and moisture stress"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "মাটি পরীক্ষা করে সুষম হারে পটাশ ও জৈব সার প্রয়োগ করুন",
+        "en": "Apply balanced potassium and well-decomposed organic manure based on soil needs"
+      },
+      {
+        "bn": "জমিতে সেচের সংকট হতে দেবেন না এবং শুকনা খরা প্রতিরোধ করুন",
+        "en": "Prevent dry soil stress by ensuring timely irrigation during tillering"
+      },
+      {
+        "bn": "ভালো মানের রোগমুক্ত বীজ নির্বাচন করুন",
+        "en": "Select clean, healthy seeds from verified certified producers"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "ক্ষেতের অধিকাংশ গাছে এই বাদামি দাগ দেখা দিলে মাটির স্বাস্থ্য ও পুষ্টি ব্যবস্থাপনার জন্য ১৬১২৩ নম্বরে পরামর্শ নিন।",
+      "en": "If multiple leaves exhibit brown spotting, contact the agricultural helpline at 16123 for soil nutrient advice."
+    },
+    "severity": "watch",
+    "sources": [
+      {
+        "title": "ফসলের রোগ ও প্রতিকার - কৃষি সম্প্রসারণ অধিদপ্তর (DAE)",
+        "url": "https://dae.gov.bd",
+        "publisher": "DAE"
+      },
+      {
+        "title": "Brown Spot Management - IRRI Knowledge Bank",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/brown-spot",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "leaf_smut",
+    "name": {
+      "bn": "পাতার স্মাট",
+      "en": "Leaf Smut"
+    },
+    "summary": {
+      "bn": "ধানের পুরনো পাতায় ছোট ছোট কালো উঁচু ফুসকুড়ির মতো দাগের লক্ষণ।",
+      "en": "A fungal disease creating slightly raised angular black spots on mature rice foliage."
+    },
+    "symptoms": [
+      {
+        "bn": "পাতার উপরিভাগে ছোট, সামান্য উঁচু কালো বা বাদামি ছোপ",
+        "en": "Small, slightly elevated angular black spots on both leaf surfaces"
+      },
+      {
+        "bn": "দাগগুলো সাধারণত বয়োবৃদ্ধ পাতায় বেশি দেখা যায়",
+        "en": "Spots predominantly develop on older and lower canopy leaves"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "অতিরিক্ত আর্দ্রতা ও উষ্ণ আবহাওয়ায় ছত্রাকের বিস্তার",
+        "en": "Elevated atmospheric humidity combined with warm seasonal conditions"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "ধান কাটার পর জমির ফসলের অবশিষ্টাংশ পুড়িয়ে বা গভীর চাষ দিয়ে পরিষ্কার রাখুন",
+        "en": "Deep plow the field post-harvest to incorporate and clean stubble residues"
+      },
+      {
+        "bn": "অনুমোদিত মাত্রায় সুষম সার ব্যবহার করুন এবং জমি আগাছামুক্ত রাখুন",
+        "en": "Apply balanced fertilizer and practice thorough weed sanitation"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "নতুন পাতাগুলোতেও দাগ ছড়ালে নিকটস্থ কৃষি পরামর্শকেন্দ্রে অথবা ১৬১২৩ নম্বরে যোগাযোগ করুন।",
+      "en": "If upper young leaves begin developing black spots, seek advice via 16123 or your local agriculture office."
+    },
+    "severity": "watch",
+    "sources": [
+      {
+        "title": "ধানের বালাই ব্যবস্থাপনা - বাংলাদেশ ধান গবেষণা ইনস্টিটিউট",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      },
+      {
+        "title": "Rice Knowledge Bank - Diseases",
+        "url": "https://www.knowledgebank.irri.org",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "tungro",
+    "name": {
+      "bn": "টুংরো রোগ",
+      "en": "Rice Tungro Disease"
+    },
+    "summary": {
+      "bn": "সবুজ পাতাফড়িং বাহিত ভাইরাসজনিত মারাত্মক ব্যাধি যাতে ধানগাছের বৃদ্ধি থমকে যায়।",
+      "en": "A viral disease spread by green leafhopper vectors causing stunted growth and yellowing."
+    },
+    "symptoms": [
+      {
+        "bn": "গাছের স্বাভাবিক বাড়তি থেমে গিয়ে খর্বাকৃতি রূপ নেয়",
+        "en": "Noticeable stunting of infected rice hills"
+      },
+      {
+        "bn": "পাতা ডগা থেকে শুরু করে ক্রমশ হলুদ বা উজ্জ্বল কমলা বর্ণ ধারণ করে",
+        "en": "Foliage turns vivid yellow to orange starting from the tips downward"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "সবুজ পাতাফড়িং পোকা এক গাছ থেকে অন্য গাছে ভাইরাস ছড়িয়ে দেয়",
+        "en": "Feeding activity of green leafhoppers (Nephotettix virescens) transmitting virus particles"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "আলোর ফাঁদ ব্যবহার করে ক্ষেতে পাতাফড়িং পোকার উপস্থিতি পর্যবেক্ষণ ও নিয়ন্ত্রণ করুন",
+        "en": "Install light traps across the perimeter to monitor and reduce leafhopper vectors"
+      },
+      {
+        "bn": "আক্রান্ত ধানগাছ গোড়াসহ উপড়ে ফেলে মাটিতে পুঁতে দিন",
+        "en": "Rogue out and bury severely infected stunted hills to halt vector transmission"
+      },
+      {
+        "bn": "এলাকাভিত্তিক সমকালীন চারা রোপণ পদ্ধতি অনুসরণ করুন",
+        "en": "Practice synchronized planting across the neighborhood farming block"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "গাছ হলুদ হয়ে খর্বাকৃতি হলে এটি দ্রুত ছড়িয়ে পড়তে পারে; তাৎক্ষণিকভাবে কৃষি সম্প্রসারণ কর্মকর্তা বা ১৬১২৩ নম্বরে অবহিত করুন।",
+      "en": "Because tungro spreads rapidly, contact extension officers or dial 16123 immediately upon noticing orange stunting."
+    },
+    "severity": "act",
+    "sources": [
+      {
+        "title": "ধানের টুংরো রোগ দমন গাইডলাইন - ডিএই (DAE)",
+        "url": "https://dae.gov.bd",
+        "publisher": "DAE"
+      },
+      {
+        "title": "Tungro Disease - International Rice Research Institute",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/tungro",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "sheath_blight",
+    "name": {
+      "bn": "খোলপোড়া রোগ",
+      "en": "Sheath Blight"
+    },
+    "summary": {
+      "bn": "ধানের গোড়ার খোলে পানির কাছাকাছি সাপের চামড়ার মতো দাগ সৃষ্টিকারী ছত্রাক রোগ।",
+      "en": "A fungal disease causing irregular snake-skin lesions on leaf sheaths near the water level."
+    },
+    "symptoms": [
+      {
+        "bn": "গাছের গোড়ার খোলে ডিম্বাকার জলছাপ বা ধূসর-সবুজ সর্পিলাকার দাগ",
+        "en": "Oval, water-soaked or greenish-grey lesions with dark irregular borders on lower sheaths"
+      },
+      {
+        "bn": "অনুকূল পরিবেশে দাগ দ্রুত ওপরের পাতার দিকে বেয়ে ওঠে",
+        "en": "Under favorable conditions, lesions migrate upward reaching the upper leaf canopy"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "অতিরিক্ত ঘন করে চারা লাগানো, অতিরিক্ত নাইট্রোজেন এবং বদ্ধ স্যাঁতসেঁতে পরিবেশ",
+        "en": "Dense planting, excess nitrogenous nutrition, and high relative humidity within canopy"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "চারা রোপণের সময় লাইন ও গুছির মাঝে পরিমিত দূরত্ব রাখুন",
+        "en": "Maintain recommended hill and row spacing to ensure adequate light and air penetration"
+      },
+      {
+        "bn": "মাটিতে পটাশ সারের সুষম প্রয়োগ নিশ্চিত করুন এবং নাইট্রোজেন অতিরিক্ত দেবেন না",
+        "en": "Ensure balanced potash application and avoid surplus nitrogen fertilizer"
+      },
+      {
+        "bn": "জমি থেকে পানি কয়েকদিনের জন্য নিষ্কাশন করে শুকিয়ে নেওয়া",
+        "en": "Drain standing field water intermittently to dry out lower canopy humidity"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "দাগ গোড়া পেরিয়ে উপরের পাতায় ছড়াতে শুরু করলে সময় নষ্ট না করে ১৬১২৩ নম্বরে পরামর্শ নিন।",
+      "en": "If lesions ascend toward the flag leaf, promptly dial 16123 or meet your sub-assistant agriculture officer."
+    },
+    "severity": "act",
+    "sources": [
+      {
+        "title": "ধানের খোলপোড়া রোগ দমন - ব্রি (BRRI)",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      },
+      {
+        "title": "Sheath Blight - IRRI Knowledge Bank",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/sheath-blight",
+        "publisher": "IRRI"
+      }
+    ]
+  },
+  {
+    "id": "not_rice",
+    "name": {
+      "bn": "ধানপাতা নয়",
+      "en": "Not a Rice Leaf"
+    },
+    "summary": {
+      "bn": "ছবিতে ধানের পাতার স্পষ্ট অবয়ব শনাক্ত করা যায়নি।",
+      "en": "The captured photograph does not appear to feature a recognizable rice leaf."
+    },
+    "symptoms": [
+      {
+        "bn": "ধানের সাধারণ পাতার শিরবিন্যাস বা গঠন অনুপস্থিত",
+        "en": "Typical parallel rice leaf venation or blade shape is missing"
+      },
+      {
+        "bn": "অন্য কোনো ফসলের পাতা, মাটি, হাত বা ভিন্ন কোনো পটভূমি দৃশ্যমান",
+        "en": "Other background elements, unrelated plants, soil, or hands are detected"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "ভুলবশত অন্য কোনো বস্তুর ছবি তোলা বা ক্যামেরার ফোকাস সরে যাওয়া",
+        "en": "Accidental capture of a foreign object or camera target misalignment"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "ক্যামেরা শুধুমাত্র একটি নির্দিষ্ট ধানপাতার উপর ধরে পরিষ্কার ছবি তুলুন",
+        "en": "Frame the camera specifically around an individual rice leaf blade"
+      },
+      {
+        "bn": "অতিরিক্ত নড়াচড়া এড়িয়ে দিনের পর্যাপ্ত আলোয় ছবি তুলুন",
+        "en": "Capture still images in good natural daytime lighting without hand shake"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "ফসল চিনতে বা যেকোনো কৃষি তথ্যের জন্য সরাসরি কৃষি কল সেন্টার ১৬১২৩ নম্বরে ফোন করুন।",
+      "en": "For any crop queries or agricultural assistance, reach the Krishi Call Center directly at 16123."
+    },
+    "severity": "watch",
+    "sources": [
+      {
+        "title": "কৃষি তথ্য ও প্রযুক্তি বাতায়ন - ডিএই",
+        "url": "https://dae.gov.bd",
+        "publisher": "DAE"
+      },
+      {
+        "title": "বাংলাদেশ ধান গবেষণা ইনস্টিটিউট (BRRI)",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      }
+    ]
+  },
+  {
+    "id": "not_sure",
+    "name": {
+      "bn": "অনিশ্চিত ফলাফল",
+      "en": "Inconclusive Result"
+    },
+    "summary": {
+      "bn": "ছবি থেকে রোগটি নিশ্চিতভাবে শনাক্ত করা সম্ভব হয়নি।",
+      "en": "The image quality or lesion pattern is not clear enough for definitive diagnosis."
+    },
+    "symptoms": [
+      {
+        "bn": "ছবিতে অস্পষ্টতা, অন্ধকার বা মিশ্র একাধিক ধরনের দাগের উপস্থিতি",
+        "en": "Blurriness, low contrast, shadows, or atypical overlapping symptoms"
+      }
+    ],
+    "causes": [
+      {
+        "bn": "ক্যামেরার অস্পষ্ট ফোকাস, তীব্র ছায়া বা জটিল মিশ্র লক্ষণ",
+        "en": "Camera blur, adverse lighting conditions, or ambiguous complex symptoms"
+      }
+    ],
+    "prevention": [
+      {
+        "bn": "পাতাটি সমতলভাবে ধরে ভালো আলোয় পরিষ্কার করে পুনরায় ছবি তুলুন",
+        "en": "Hold the leaf flat and retake a sharp, well-lit photo focusing directly on the spot"
+      },
+      {
+        "bn": "লেন্স পরিষ্কার রাখুন এবং খুব বেশি দূর বা খুব কাছ থেকে ছবি তুলবেন না",
+        "en": "Keep the camera lens clean and shoot from an optimal distance of 15 to 30 cm"
+      }
+    ],
+    "whenToCallExpert": {
+      "bn": "সঠিক রোগ শনাক্ত ও পরামর্শ পেতে সরাসরি স্থানীয় কৃষি কর্মকর্তার কাছে পাতা দেখান অথবা ১৬১২৩ নম্বরে কথা বলুন।",
+      "en": "Show the fresh leaf sample directly to your local sub-assistant agriculture officer or dial 16123."
+    },
+    "severity": "watch",
+    "sources": [
+      {
+        "title": "কৃষি কল সেন্টার ১৬১২৩ সেবা তথ্য - ডিএই",
+        "url": "https://dae.gov.bd",
+        "publisher": "DAE"
+      },
+      {
+        "title": "BRRI ধান চাষ সহায়িকা",
+        "url": "https://brri.portal.gov.bd",
+        "publisher": "BRRI"
+      }
+    ]
+  }
+]

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { routes, matchRoute, type RouteDef } from './router'
+import AccuracyScreen from '../features/about/AccuracyScreen'
 
 describe('router registry (F1)', () => {
   it('defines the route list in one single place with 4 primary routes', () => {
@@ -22,5 +23,14 @@ describe('router registry (F1)', () => {
     expect(matchRoute('#/about').hash).toBe('#/about')
     // fallback to home on unknown hash
     expect(matchRoute('#/unknown-route').hash).toBe('')
+  })
+
+  it('matches alias #/accuracy to how-it-works route and uses AccuracyScreen component', () => {
+    const routeByAlias = matchRoute('#/accuracy')
+    expect(routeByAlias.id).toBe('how-it-works')
+
+    const howItWorksRoute = routes.find((r) => r.id === 'how-it-works')
+    expect(howItWorksRoute).toBeDefined()
+    expect(howItWorksRoute?.component).toBe(AccuracyScreen)
   })
 })
