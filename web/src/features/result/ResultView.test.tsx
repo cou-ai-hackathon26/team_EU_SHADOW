@@ -31,7 +31,7 @@ describe('ResultView (F4)', () => {
     // Disease card details rendered by DiseaseCardView
     expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
     // Screening disclaimer with 16123
-    expect(screen.getByText(/১৬১২৩/)).toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
   })
 
@@ -49,13 +49,13 @@ describe('ResultView (F4)', () => {
     render(<ResultView prediction={mediumPred} />)
 
     // Shows 2 options
-    expect(screen.getByText(/ব্লাস্ট/i)).toBeInTheDocument()
-    expect(screen.getByText(/বাদামি দাগ|ব্রাউন স্পট/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/ব্লাস্ট/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/বাদামি দাগ|ব্রাউন স্পট/i).length).toBeGreaterThanOrEqual(1)
 
     // Clearer photo request in Bangla
-    expect(screen.getByText(/পরিষ্কার ছবির অনুরোধ|আরও স্পষ্ট/i)).toBeInTheDocument()
+    expect(screen.getByText(/পরিষ্কার ছবির অনুরোধ/i)).toBeInTheDocument()
     // Disclaimer is present
-    expect(screen.getByText(/১৬১২৩/)).toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders low tier with "আমি নিশ্চিত নই" and Disclaimer', () => {
@@ -71,7 +71,7 @@ describe('ResultView (F4)', () => {
     render(<ResultView prediction={lowPred} />)
 
     expect(screen.getByText(/আমি নিশ্চিত নই/i)).toBeInTheDocument()
-    expect(screen.getByText(/১৬১২৩/)).toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders not_rice tier with "এটি ধানপাতা মনে হচ্ছে না" and Disclaimer', () => {
@@ -87,7 +87,7 @@ describe('ResultView (F4)', () => {
     render(<ResultView prediction={notRicePred} />)
 
     expect(screen.getByText(/এটি ধানপাতা মনে হচ্ছে না/i)).toBeInTheDocument()
-    expect(screen.getByText(/১৬১২৩/)).toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows "Temporary Prototype — Pretrained Model" when trainedFromScratch is false', () => {
@@ -113,7 +113,7 @@ describe('ResultView (F4)', () => {
   it('renders a friendly Bengali error state on engine error without crashing', () => {
     render(<ResultView error={new Error('Engine failed to infer')} />)
 
-    expect(screen.getByText(/মডেল চালাতে সমস্যা হয়েছে|ত্রুটি/i)).toBeInTheDocument()
-    expect(screen.getByText(/১৬১২৩/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: /মডেল চালাতে সমস্যা হয়েছে/i })).toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 })
