@@ -45,7 +45,7 @@ const BANNED_PATTERNS = [
   /কীটনাশক/,
   /ছত্রাকনাশক/,
   /বালাইনাশক/,
-  /\b\d+\s*(?:ml|milli|gm|g|gram|kg|লিটার|মিলি|গ্রাম)\b/i,
+  /[0-9০-৯]+\s*(?:ml|mL|milli|l|g|gm|gram|kg|লিটার|মিলি|গ্রাম|কেজি)(?![a-zA-Z])/i,
   /ডোজ/i,
   /\bdose\b/i,
 ]
