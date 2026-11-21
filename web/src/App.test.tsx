@@ -73,4 +73,12 @@ describe('App shell and navigation (F1)', () => {
     })
     expect(screen.getByRole('heading', { level: 1, name: /সম্পর্কে/ })).toBeInTheDocument()
   })
+
+  it('applies mobile-first max-w-xl container constraints without horizontal overflow', () => {
+    const { container } = render(<App />)
+    const rootDiv = container.firstChild as HTMLElement
+    expect(rootDiv).toHaveClass('min-h-screen', 'w-full', 'flex-col')
+    const main = container.querySelector('main')
+    expect(main).toHaveClass('max-w-xl', 'w-full')
+  })
 })
