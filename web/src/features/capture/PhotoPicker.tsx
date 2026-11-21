@@ -3,14 +3,22 @@ import { validateFile } from './validateFile'
 import { loadImage } from './loadImage'
 import { assessQuality } from '../quality/quality'
 import QualityHint from '../quality/QualityHint'
+import AnalyzeButton from '../result/AnalyzeButton'
 import type { QualityReport } from '../../ai/types'
 
 export interface PhotoPickerProps {
   onImageReady?: (image: HTMLImageElement, file: File, report?: QualityReport) => void
   onClear?: () => void
+  onAnalyze?: () => void
+  isAnalyzing?: boolean
 }
 
-export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps) {
+export default function PhotoPicker({
+  onImageReady,
+  onClear,
+  onAnalyze,
+  isAnalyzing = false,
+}: PhotoPickerProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -238,8 +246,18 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
             </button>
           </div>
 
-          {/* Quality Assessment Hint */}
-          <QualityHint report={qualityReport} />
+          {/* Quality Assessment Hint and Analyze Button */}
+          <QualityHint
+            report={qualityReport}
+            onAnalyze={onAnalyze}
+            isAnalyzing={isAnalyzing}
+          />
+          {!qualityReport && onAnalyze && (
+            <AnalyzeButton
+              onAnalyze={onAnalyze}
+              loading={isAnalyzing}
+            />
+          )}
         </div>
       )}
     </div>
