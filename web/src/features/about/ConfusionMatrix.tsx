@@ -13,7 +13,7 @@ export default function ConfusionMatrix({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
       <div className="mb-3">
-        <h3 className="font-bold text-slate-900">কনফিউশন ম্যাট্রিক্স (Confusion Matrix)</h3>
+        <h2 className="font-bold text-slate-900">কনফিউশন ম্যাট্রিক্স (Confusion Matrix)</h2>
         <p className="text-xs text-slate-600">
           সারি নির্দেশ করে আসল রোগ এবং কলাম নির্দেশ করে মডেলের উত্তর। ডায়াগনাল ঘরগুলো সঠিক শনাক্তকরণ নির্দেশ করে।
         </p>
