@@ -1,4 +1,3 @@
-import React from 'react'
 import type { DiseaseCard } from './types'
 
 export interface DiseaseCardViewProps {
@@ -7,11 +6,11 @@ export interface DiseaseCardViewProps {
   className?: string
 }
 
-export const DiseaseCardView: React.FC<DiseaseCardViewProps> = ({
+export function DiseaseCardView({
   card,
   lang = 'bn',
   className = '',
-}) => {
+}: DiseaseCardViewProps) {
   const isBn = lang === 'bn'
 
   const labels = {
