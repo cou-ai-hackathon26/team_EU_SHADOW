@@ -61,6 +61,7 @@ describe('engine', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     resetEngineState?.()
+    ;(ort as any).env.wasm = {}
   })
 
   afterEach(() => {
@@ -82,13 +83,76 @@ describe('engine', () => {
     expect(ort.InferenceSession.create).toHaveBeenCalled()
   })
 
-  it('loadModel() throws an Error with a Bangla message when fetch fails', async () => {
+  it('sets ort.env.wasm.wasmPaths before InferenceSession.create is called', async () => {
+    let wasmPathsWhenCreating: any = undefined
+    vi.mocked(ort.InferenceSession.create).mockImplementationOnce(async () => {
+      wasmPathsWhenCreating = (ort as any).env.wasm.wasmPaths
+      return (ort as any)._sessionMock
+    })
+
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 404 } as Response),
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => sampleMeta,
+      } as Response),
+    )
+
+    await loadModel()
+    expect(wasmPathsWhenCreating).toBeDefined()
+  })
+
+  it('concurrent loadModel() calls create exactly one session (Promise caching)', async () => {
+    let resolveSession: any
+    const sessionPromise = new Promise((resolve) => {
+      resolveSession = resolve
+    })
+
+    vi.mocked(ort.InferenceSession.create).mockImplementationOnce(
+      () => sessionPromise as any,
+    )
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => sampleMeta,
+      } as Response),
+    )
+
+    // Call loadModel concurrently twice
+    const call1 = loadModel()
+    const call2 = loadModel()
+
+    resolveSession((ort as any)._sessionMock)
+    const [meta1, meta2] = await Promise.all([call1, call2])
+
+    expect(meta1).toBe(meta2)
+    expect(ort.InferenceSession.create).toHaveBeenCalledTimes(1)
+  })
+
+  it('clears cache if loading fails so next call retries', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({ ok: false, status: 500 } as Response),
     )
 
     await expect(loadModel()).rejects.toThrow(/মডেল লোড করা যায়নি/)
+
+    // Next call succeeds when fetch succeeds
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => sampleMeta,
+      } as Response),
+    )
+
+    const meta = await loadModel()
+    expect(meta.version).toBe(sampleMeta.version)
   })
 
   it('loadModel() throws an Error with a Bangla message when session creation fails', async () => {
@@ -118,7 +182,7 @@ describe('engine', () => {
       } as Response),
     )
 
-    // Logits for 7 classes with dominant class 1
+    // Logits for 7 classes with dominant class 1 ('blast')
     const fakeLogits = new Float32Array([1.0, 8.0, 2.0, 0.5, 0.2, 0.1, -1.0])
     const sessionMock = (ort as any)._sessionMock
     sessionMock.outputNames = ['logits']
@@ -126,7 +190,6 @@ describe('engine', () => {
       logits: { data: fakeLogits },
     })
 
-    // Create a dummy image
     const data = new Uint8ClampedArray(224 * 224 * 4)
     const dummyImage = { data, width: 224, height: 224 } as any
 
@@ -144,7 +207,7 @@ describe('engine', () => {
       )
     }
 
-    // Top-1 must be 'blast' (index 1 had highest logit 5.0)
+    // Top-1 must be 'blast' (index 1 had highest logit 8.0)
     expect(prediction.top[0].classId).toBe('blast')
     expect(prediction.tier).toBe('high')
 
@@ -153,7 +216,7 @@ describe('engine', () => {
     expect(prediction.heatmapSize).toBeUndefined()
   })
 
-  it('analyze() returns heatmap and heatmapSize when meta.camOutput is true', async () => {
+  it('analyze() returns top-1 class normalized heatmap (shape [1, C, h, w]) when meta.camOutput is true', async () => {
     const metaWithCam: ModelMeta = {
       ...sampleMeta,
       camOutput: true,
@@ -168,14 +231,22 @@ describe('engine', () => {
       } as Response),
     )
 
-    const fakeLogits = new Float32Array([1.0, 5.0, 2.0, 0.5, 0.2, 0.1, -1.0])
-    const fakeCam = new Float32Array(7 * 7).fill(0.75)
+    // Top-1 is class at index 1 ('blast')
+    const fakeLogits = new Float32Array([1.0, 8.0, 2.0, 0.5, 0.2, 0.1, -1.0])
+
+    // CAM output has shape [1, 7, 7, 7] = 7 classes, each 7x7 = 49 values
+    // Create distinct values for class index 1 (10 to 58)
+    const camData = new Float32Array(7 * 7 * 7)
+    const class1Offset = 1 * 49
+    for (let i = 0; i < 49; i++) {
+      camData[class1Offset + i] = 10 + i
+    }
 
     const sessionMock = (ort as any)._sessionMock
     sessionMock.outputNames = ['logits', 'cam']
     sessionMock.run.mockResolvedValue({
       logits: { data: fakeLogits },
-      cam: { data: fakeCam, dims: [1, 7, 7] },
+      cam: { data: camData, dims: [1, 7, 7, 7] },
     })
 
     const data = new Uint8ClampedArray(224 * 224 * 4)
@@ -184,7 +255,47 @@ describe('engine', () => {
     const prediction = await analyze(dummyImage)
 
     expect(prediction.heatmap).toBeDefined()
-    expect(prediction.heatmap).toBeInstanceOf(Float32Array)
+    expect(prediction.heatmap).toHaveLength(49)
     expect(prediction.heatmapSize).toBe(7)
+
+    // Check min-max normalisation: min was 10 -> 0, max was 58 -> 1
+    expect(prediction.heatmap![0]).toBeCloseTo(0.0, 4)
+    expect(prediction.heatmap![48]).toBeCloseTo(1.0, 4)
+  })
+
+  it('analyze() sets all-equal heatmap values to zeros', async () => {
+    const metaWithCam: ModelMeta = {
+      ...sampleMeta,
+      camOutput: true,
+    }
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => metaWithCam,
+      } as Response),
+    )
+
+    const fakeLogits = new Float32Array([1.0, 8.0, 2.0, 0.5, 0.2, 0.1, -1.0])
+    const camData = new Float32Array(7 * 7 * 7).fill(5.0) // all equal
+
+    const sessionMock = (ort as any)._sessionMock
+    sessionMock.outputNames = ['logits', 'cam']
+    sessionMock.run.mockResolvedValue({
+      logits: { data: fakeLogits },
+      cam: { data: camData, dims: [1, 7, 7, 7] },
+    })
+
+    const data = new Uint8ClampedArray(224 * 224 * 4)
+    const dummyImage = { data, width: 224, height: 224 } as any
+
+    const prediction = await analyze(dummyImage)
+
+    expect(prediction.heatmap).toBeDefined()
+    for (const val of prediction.heatmap!) {
+      expect(val).toBe(0)
+    }
   })
 })

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { preprocess } from './preprocess'
 import samplePreprocess from './__fixtures__/preprocess.sample.json'
+import pythonPreprocess from './__fixtures__/preprocess.python.json'
 
 describe('preprocess', () => {
   it('returns an NCHW Float32Array of length 3×inputSize×inputSize', () => {
@@ -84,5 +85,27 @@ describe('preprocess', () => {
     })
 
     expect(tensor).toHaveLength(3 * inputSize * inputSize)
+  })
+
+  it('matches Python Pillow reference preprocess within 0.02 max abs diff on non-uniform image', () => {
+    const { width, height, pixels, samples } = pythonPreprocess
+    const binaryStr = atob(pixels)
+    const data = new Uint8ClampedArray(binaryStr.length)
+    for (let i = 0; i < binaryStr.length; i++) {
+      data[i] = binaryStr.charCodeAt(i)
+    }
+
+    const image = { data, width, height }
+    const tensor = preprocess(image)
+
+    let maxDiff = 0
+    for (const sample of samples) {
+      const actual = tensor[sample.index]
+      const diff = Math.abs(actual - sample.expected)
+      if (diff > maxDiff) {
+        maxDiff = diff
+      }
+      expect(diff).toBeLessThan(0.02)
+    }
   })
 })
