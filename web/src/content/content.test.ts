@@ -109,6 +109,14 @@ describe('F6: Disease Cards Content & Logic', () => {
     }
   })
 
+  it('flags dose units with English and Bangla numbers', () => {
+    const doseSamples = ['10 লিটার', '১০ গ্রাম', '৫ মিলি', '2 kg', '20ml']
+    for (const sample of doseSamples) {
+      const matched = BANNED_PATTERNS.some((pattern) => pattern.test(sample))
+      expect(matched, `Expected dose sample "${sample}" to be flagged by banned patterns`).toBe(true)
+    }
+  })
+
   it('strictly adheres to banned-words policy (no chemical names, pesticide brands, or dosage metrics)', () => {
     const jsonString = JSON.stringify(cards)
     for (const pattern of BANNED_PATTERNS) {
