@@ -57,8 +57,8 @@ describe('AccuracyScreen & HowItWorks', () => {
     // How-it-works explanation must still be present with an h2
     const h2 = screen.getByRole('heading', { level: 2, name: /কীভাবে কাজ করে/i })
     expect(h2).toBeInTheDocument()
-    expect(screen.getByText(/২২৪×২২৪/)).toBeInTheDocument()
-    expect(screen.getByText(/ফোন থেকে/)).toBeInTheDocument()
+    expect(screen.getAllByText(/২২৪×২২৪/).length).toBeGreaterThan(0)
+    expect(screen.getByText(/ফোন থেকে বাইরে যায় না/)).toBeInTheDocument()
   })
 
   it('shows accuracy and macro-F1 as Bangla-digit percentages with one decimal, and test count n', async () => {
@@ -69,8 +69,8 @@ describe('AccuracyScreen & HowItWorks', () => {
     expect(await screen.findByText(/৮৪\.২%/)).toBeInTheDocument()
     // 0.8351 -> "৮৩.৫%"
     expect(screen.getByText(/৮৩\.৫%/)).toBeInTheDocument()
-    // n = 600 -> "৬০০"
-    expect(screen.getByText(/৬০০/)).toBeInTheDocument()
+    // n = 600 -> "৬০০" in stat cards
+    expect(screen.getAllByText('৬০০').length).toBeGreaterThan(0)
   })
 
   it('shows "শূন্য থেকে প্রশিক্ষিত মডেল" when trainedFromScratch is true', async () => {
@@ -94,11 +94,15 @@ describe('AccuracyScreen & HowItWorks', () => {
 
   it('renders confusion matrix as an accessible table with Bangla class names as row and column headers and highlighted diagonal', async () => {
     mockSuccessfulFetch()
-    render(<AccuracyScreen />)
+    const { container } = render(<AccuracyScreen />)
 
-    // Table should have "আসল রোগ" (row) and "মডেলের উত্তর" (column)
-    expect(await screen.findByText(/আসল রোগ/)).toBeInTheDocument()
-    expect(screen.getByText(/মডেলের উত্তর/)).toBeInTheDocument()
+    // Tables present
+    const tables = await screen.findAllByRole('table')
+    expect(tables.length).toBeGreaterThanOrEqual(1)
+
+    // Row & Column guidance
+    expect(screen.getAllByText(/আসল রোগ/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/মডেলের উত্তর/).length).toBeGreaterThan(0)
 
     // Bangla class headers in matrix
     expect(screen.getAllByText('সুস্থ').length).toBeGreaterThan(0)
@@ -110,16 +114,10 @@ describe('AccuracyScreen & HowItWorks', () => {
       screen.getAllByText('খোল পোড়া (শীথ ব্লাইট)').length,
     ).toBeGreaterThan(0)
 
-    // Cell values (e.g. 90 -> ৯০)
-    expect(screen.getByText('৯০')).toBeInTheDocument()
-
-    // Table element check
-    const tables = screen.getAllByRole('table')
-    expect(tables.length).toBeGreaterThanOrEqual(1)
-
     // Diagonal elements highlighted
-    const diagonalCell = screen.getByText('৯০')
-    expect(diagonalCell).toHaveAttribute('data-diagonal', 'true')
+    const diagonalCells = container.querySelectorAll('td[data-diagonal="true"]')
+    expect(diagonalCells.length).toBe(6)
+    expect(diagonalCells[0]).toHaveTextContent('৯০')
   })
 
   it('renders per-class table with precision, recall, F1, support', async () => {
@@ -127,10 +125,10 @@ describe('AccuracyScreen & HowItWorks', () => {
     render(<AccuracyScreen />)
 
     expect(await screen.findByText(/শ্রেণীভিত্তিক ফলাফল/)).toBeInTheDocument()
-    expect(screen.getByText(/প্রিসিশন/)).toBeInTheDocument()
-    expect(screen.getByText(/রিকল/)).toBeInTheDocument()
-    expect(screen.getByText(/এফ১/)).toBeInTheDocument()
-    expect(screen.getByText(/নমুনার সংখ্যা/)).toBeInTheDocument()
+    expect(screen.getByText('প্রিসিশন')).toBeInTheDocument()
+    expect(screen.getByText('রিকল')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'এফ১' })).toBeInTheDocument()
+    expect(screen.getByText('নমুনার সংখ্যা')).toBeInTheDocument()
   })
 
   it('renders tier table with coverage and accuracy for high / medium / low / not_rice with Bangla labels', async () => {
@@ -177,10 +175,10 @@ describe('AccuracyScreen & HowItWorks', () => {
 
     // Explains photo -> preprocessing (224x224) -> browser -> calibrated confidence -> 4 tiers -> photo never leaves phone
     expect(screen.getByText(/ছবি তোলা/)).toBeInTheDocument()
-    expect(screen.getByText(/২২৪×২২৪/)).toBeInTheDocument()
-    expect(screen.getByText(/ব্রাউজারে/)).toBeInTheDocument()
+    expect(screen.getAllByText(/২২৪×২২৪/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/ব্রাউজারে/).length).toBeGreaterThan(0)
     expect(screen.getByText(/ক্যালিব্রেটেড/)).toBeInTheDocument()
-    expect(screen.getByText(/৪টি/)).toBeInTheDocument()
+    expect(screen.getAllByText(/৪টি/).length).toBeGreaterThan(0)
     expect(screen.getByText(/ফোন থেকে বাইরে যায় না/)).toBeInTheDocument()
   })
 })
