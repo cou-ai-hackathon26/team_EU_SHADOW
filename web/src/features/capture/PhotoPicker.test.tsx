@@ -28,7 +28,7 @@ describe('PhotoPicker (F2)', () => {
       revokedUrls.push(url)
     })
 
-    mockLoadImage.mockImplementation(async (_file: File) => {
+    mockLoadImage.mockImplementation(async (_file: File | Blob) => {
       const img = new Image()
       return img
     })

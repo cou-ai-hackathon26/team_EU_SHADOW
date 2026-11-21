@@ -15,6 +15,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const currentUrlRef = useRef<string | null>(null)
+  const requestIdRef = useRef(0)
 
   // Clean up object URL when component unmounts to prevent memory leaks
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
   }, [])
 
   const handleFile = async (file: File) => {
+    const id = ++requestIdRef.current
     setErrorMessage(null)
 
     const validation = validateFile(file)
@@ -47,8 +49,20 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
 
     try {
       const img = await loadImage(file)
+      if (id !== requestIdRef.current) {
+        return
+      }
       onImageReady?.(img, file)
     } catch {
+      if (id !== requestIdRef.current) {
+        return
+      }
+      if (currentUrlRef.current) {
+        URL.revokeObjectURL(currentUrlRef.current)
+        currentUrlRef.current = null
+      }
+      setPreviewUrl(null)
+      setFileName(null)
       setErrorMessage('ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।')
     }
   }
@@ -63,6 +77,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
   }
 
   const handleReset = () => {
+    requestIdRef.current++
     if (currentUrlRef.current) {
       URL.revokeObjectURL(currentUrlRef.current)
       currentUrlRef.current = null

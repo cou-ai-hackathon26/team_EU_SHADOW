@@ -8,6 +8,7 @@ export function loadImage(file: File | Blob): Promise<HTMLImageElement> {
     const img = new Image()
 
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl)
       resolve(img)
     }
 
@@ -17,14 +18,5 @@ export function loadImage(file: File | Blob): Promise<HTMLImageElement> {
     }
 
     img.src = objectUrl
-
-    // Support for environments (e.g. jsdom) where Image does not load blob URLs
-    if (import.meta.env?.MODE === 'test') {
-      setTimeout(() => {
-        if (!img.complete && img.onload) {
-          img.onload(new Event('load'))
-        }
-      }, 0)
-    }
   })
 }
