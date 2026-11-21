@@ -79,28 +79,30 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
         </div>
       )}
 
-      {/* Analyze button: NEVER disabled by quality warnings */}
-      <button
-        type="button"
-        onClick={onAnalyze}
-        disabled={isAnalyzing}
-        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-leaf-800 px-4 py-3 text-sm font-bold text-white shadow-xs transition-colors hover:bg-leaf-700 active:scale-98 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <svg
-          className="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
+      {/* Render the Analyze button only when the onAnalyze prop is given */}
+      {onAnalyze && (
+        <button
+          type="button"
+          onClick={onAnalyze}
+          disabled={isAnalyzing}
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-leaf-800 px-4 py-3 text-sm font-bold text-white shadow-xs transition-colors hover:bg-leaf-700 active:scale-98 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <span>{isAnalyzing ? 'বিশ্লেষণ চলছে...' : 'রোগ শনাক্ত করুন (Analyze)'}</span>
-      </button>
+          <svg
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <span>{isAnalyzing ? 'বিশ্লেষণ চলছে...' : 'রোগ শনাক্ত করুন (Analyze)'}</span>
+        </button>
+      )}
     </div>
   )
 }

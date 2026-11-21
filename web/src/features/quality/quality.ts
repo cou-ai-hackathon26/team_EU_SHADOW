@@ -10,7 +10,7 @@ export const QUALITY_THRESHOLDS = {
   MAX_EVAL_DIM: 256,
 } as const
 
-function getImageData(source: ImageData | HTMLImageElement | HTMLCanvasElement): ImageData {
+function getImageData(source: ImageData | HTMLImageElement | HTMLCanvasElement): ImageData | null {
   if ('data' in source && 'width' in source && 'height' in source) {
     return source
   }
@@ -37,13 +37,7 @@ function getImageData(source: ImageData | HTMLImageElement | HTMLCanvasElement):
   canvas.height = Math.max(1, height)
   const ctx = canvas.getContext('2d')
   if (!ctx) {
-    // Fallback for headless environments without canvas rendering support
-    return {
-      width: Math.max(1, width),
-      height: Math.max(1, height),
-      data: new Uint8ClampedArray(Math.max(1, width) * Math.max(1, height) * 4),
-      colorSpace: 'srgb',
-    } as ImageData
+    return null
   }
 
   ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
@@ -56,8 +50,11 @@ function getImageData(source: ImageData | HTMLImageElement | HTMLCanvasElement):
  */
 export function assessQuality(
   source: ImageData | HTMLImageElement | HTMLCanvasElement
-): QualityReport {
+): QualityReport | null {
   const imageData = getImageData(source)
+  if (!imageData) {
+    return null
+  }
   const { width, height, data } = imageData
   const numPixels = width * height
 
