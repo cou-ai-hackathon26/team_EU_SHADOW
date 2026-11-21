@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import { buildSpokenText, pickVoice } from './speak'
 import { ListenButton } from './ListenButton'
 import type { DiseaseCard } from '../../content/types'
@@ -84,8 +85,8 @@ describe('F8: ListenButton component', () => {
 
     render(<ListenButton card={blastCard} tier="high" />)
 
-    const button = screen.getByRole('button')
-    expect(button).toBeDisabled()
+    const button = screen.getByRole('button') as HTMLButtonElement
+    expect(button.disabled).toBe(true)
     expect(screen.getByText(/ভয়েস সুবিধা নেই|ভয়েস সাপোর্ট নেই/)).toBeDefined()
   })
 
@@ -115,8 +116,8 @@ describe('F8: ListenButton component', () => {
 
     const { unmount } = render(<ListenButton card={blastCard} tier="high" />)
 
-    const button = screen.getByRole('button', { name: /শুনুন/i })
-    expect(button).not.toBeDisabled()
+    const button = screen.getByRole('button', { name: /শুনুন/i }) as HTMLButtonElement
+    expect(button.disabled).toBe(false)
 
     fireEvent.click(button)
     expect(speakMock).toHaveBeenCalledTimes(1)
