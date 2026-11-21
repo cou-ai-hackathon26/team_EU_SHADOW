@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Design tokens. Owner: Tanjil (T1). Change colours here, not inline. */
+@theme {
+  --font-sans: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+  --color-leaf-50: #f0fdf4;
+  --color-leaf-600: #16a34a;
+  --color-leaf-800: #166534;
+  --color-warn-500: #f59e0b;
+  --color-danger-600: #dc2626;
+}
+
+html, body, #root { min-height: 100%; }
+body { @apply bg-leaf-50 text-slate-900 antialiased; }

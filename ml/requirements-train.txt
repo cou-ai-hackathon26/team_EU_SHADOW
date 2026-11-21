@@ -1,0 +1,9 @@
+# Kaggle GPU training only (Kaggle images already ship torch)
+-r requirements.txt
+torch
+torchvision
+timm
+scikit-learn
+imagehash
+onnx
+onnxruntime

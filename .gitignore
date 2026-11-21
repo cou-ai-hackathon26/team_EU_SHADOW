@@ -1,0 +1,27 @@
+# deps / builds
+node_modules/
+web/dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+# secrets — never commit
+.env
+.env.*
+!.env.example
+kaggle.json
+.vercel/
+# data and heavy training outputs (model goes to web/public/model only)
+ml/data/
+ml/artifacts/*
+!ml/artifacts/.gitkeep
+*.pt
+*.pth
+*.ckpt
+*.zip
+# editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.claude/settings.local.json
