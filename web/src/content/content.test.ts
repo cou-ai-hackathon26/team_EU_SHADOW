@@ -1,6 +1,7 @@
 import React from 'react'
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import { DISEASE_CLASS_IDS, NOT_RICE_CLASS_ID } from '../ai/classes'
 import type { DiseaseCard } from './types'
 import { getCard } from './getCard'
@@ -136,17 +137,17 @@ describe('F6: DiseaseCardView component', () => {
     const card = getCard('blast')
     render(React.createElement(DiseaseCardView, { card, lang: 'bn' }))
 
-    expect(screen.getByRole('heading', { name: card.name.bn })).toBeInTheDocument()
-    expect(screen.getByText(card.summary.bn)).toBeInTheDocument()
-    expect(screen.getByText(card.whenToCallExpert.bn)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: card.name.bn })).toBeDefined()
+    expect(screen.getByText(card.summary.bn)).toBeDefined()
+    expect(screen.getByText(card.whenToCallExpert.bn)).toBeDefined()
   })
 
   it('renders card details in English when requested', () => {
     const card = getCard('blast')
     render(React.createElement(DiseaseCardView, { card, lang: 'en' }))
 
-    expect(screen.getByRole('heading', { name: card.name.en })).toBeInTheDocument()
-    expect(screen.getByText(card.summary.en)).toBeInTheDocument()
-    expect(screen.getByText(card.whenToCallExpert.en)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: card.name.en })).toBeDefined()
+    expect(screen.getByText(card.summary.en)).toBeDefined()
+    expect(screen.getByText(card.whenToCallExpert.en)).toBeDefined()
   })
 })
