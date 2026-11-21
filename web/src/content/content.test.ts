@@ -126,7 +126,6 @@ describe('F6: Disease Cards Content & Logic', () => {
     expect(healthyCard.severity).toBe('none')
 
     // fallback for invalid or missing IDs
-    // @ts-expect-error testing invalid ID fallback
     const unknownCard = getCard('non_existent_disease_xyz')
     expect(unknownCard.id).toBe('not_sure')
   })
