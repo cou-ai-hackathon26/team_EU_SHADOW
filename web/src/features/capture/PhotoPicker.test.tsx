@@ -2,6 +2,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import PhotoPicker from './PhotoPicker'
+import { loadImage } from './loadImage'
+
+vi.mock('./loadImage', () => ({
+  loadImage: vi.fn(),
+}))
+
+const mockLoadImage = vi.mocked(loadImage)
 
 describe('PhotoPicker (F2)', () => {
   let createdUrls: string[] = []
@@ -20,10 +27,16 @@ describe('PhotoPicker (F2)', () => {
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation((url: string) => {
       revokedUrls.push(url)
     })
+
+    mockLoadImage.mockImplementation(async (_file: File) => {
+      const img = new Image()
+      return img
+    })
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders camera input with capture="environment" and gallery input with accept="image/*"', () => {
@@ -100,5 +113,61 @@ describe('PhotoPicker (F2)', () => {
     await waitFor(() => {
       expect(revokedUrls).toContain(firstUrl)
     })
+  })
+
+  it('shows error alert and renders no <img> when loadImage rejects', async () => {
+    mockLoadImage.mockRejectedValueOnce(new Error('Corrupt image'))
+
+    render(<PhotoPicker />)
+    const galleryInput = screen.getByLabelText(/গ্যালারি/i)
+
+    const file = new File(['corrupt'], 'corrupt.jpg', { type: 'image/jpeg' })
+    fireEvent.change(galleryInput, { target: { files: [file] } })
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
+  it('handles race conditions: picks slow file A then fast file B, calling onImageReady once with B only', async () => {
+    let resolveA: (img: HTMLImageElement) => void
+    const promiseA = new Promise<HTMLImageElement>((resolve) => {
+      resolveA = resolve
+    })
+    const imgA = new Image()
+    imgA.src = 'blob:img-A'
+
+    const imgB = new Image()
+    imgB.src = 'blob:img-B'
+    const promiseB = Promise.resolve(imgB)
+
+    mockLoadImage
+      .mockImplementationOnce(() => promiseA)
+      .mockImplementationOnce(() => promiseB)
+
+    const onImageReady = vi.fn()
+    render(<PhotoPicker onImageReady={onImageReady} />)
+    const galleryInput = screen.getByLabelText(/গ্যালারি/i)
+
+    const fileA = new File(['fileA'], 'leafA.jpg', { type: 'image/jpeg' })
+    const fileB = new File(['fileB'], 'leafB.jpg', { type: 'image/jpeg' })
+
+    // Pick file A (slow)
+    fireEvent.change(galleryInput, { target: { files: [fileA] } })
+
+    // Pick file B (fast)
+    fireEvent.change(galleryInput, { target: { files: [fileB] } })
+
+    // Fast file B finishes
+    await waitFor(() => {
+      expect(onImageReady).toHaveBeenCalledWith(imgB, fileB)
+    })
+
+    // Now slow file A resolves
+    resolveA!(imgA)
+
+    // onImageReady should NOT have been called with A
+    await new Promise((r) => setTimeout(r, 10))
+    expect(onImageReady).toHaveBeenCalledTimes(1)
+    expect(onImageReady).not.toHaveBeenCalledWith(imgA, fileA)
   })
 })

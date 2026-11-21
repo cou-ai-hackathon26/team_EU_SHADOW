@@ -25,8 +25,26 @@ describe('validateFile (F2)', () => {
     expect(gifResult.error).toMatch(/JPG|PNG|WebP/i)
   })
 
+  it('handles MIME check and empty type fallback correctly', () => {
+    // If file.type is not empty, ignore extension: 'leaf.jpg' with application/pdf must be rejected
+    const spoofedJpg = new File(['dummy'], 'leaf.jpg', { type: 'application/pdf' })
+    expect(validateFile(spoofedJpg).valid).toBe(false)
+    expect(validateFile(spoofedJpg).error).toMatch(/JPG|PNG|WebP/i)
+
+    // 'leaf.png' with image/gif must be rejected
+    const spoofedPng = new File(['dummy'], 'leaf.png', { type: 'image/gif' })
+    expect(validateFile(spoofedPng).valid).toBe(false)
+
+    // If file.type is empty, fallback to extension: 'leaf.jpg' with type '' is accepted
+    const emptyTypeJpg = new File(['dummy'], 'leaf.jpg', { type: '' })
+    expect(validateFile(emptyTypeJpg).valid).toBe(true)
+
+    // 'doc.pdf' with type '' is rejected
+    const emptyTypePdf = new File(['dummy'], 'doc.pdf', { type: '' })
+    expect(validateFile(emptyTypePdf).valid).toBe(false)
+  })
+
   it('rejects files larger than 10 MB with a Bangla error message', () => {
-    // 10 MB + 1 byte
     const largeSize = 10 * 1024 * 1024 + 1
     const largeFile = new File([new Uint8Array(100)], 'huge.jpg', { type: 'image/jpeg' })
     Object.defineProperty(largeFile, 'size', { value: largeSize })
