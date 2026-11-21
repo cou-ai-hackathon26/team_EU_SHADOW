@@ -10,9 +10,11 @@ Teammates write code with **Gemini Antigravity** on their own PCs; you review, t
 ## 2. Team
 | Member | GitHub | Owns |
 |---|---|---|
-| Md. Masum Akondha (lead, PC owner) | masumcit44 | ML (M1–M6), inference engine (M7), deployment (M8), final merges, submission |
-| Tanjil Shaiket | (own account) | Web app & UX (T1–T8) |
-| Md. Mehedi Hasan | (own account) | Content, responsible AI, user features, QA, docs (H1–H8) |
+| Md. Masum Akondha (lead, PC owner) | masumcit44 | Model track M1–M8 (data, training, calibration, report, export, browser engine, deploy); features F11–F15; S3 pitch & submission; final merges |
+| Tanjil Shaiket | tanjil74432 | Features F1–F5 (shell, photo input, quality check, result screens, language toggle); S2 demo video |
+| Md. Mehedi Hasan | EnergiousNPC | Features F6–F10 (disease cards, safety/16123, voice, history, QA e2e); S1 README |
+
+Roles in the proposal are flexible: model training and deployment belong to the lead; the other 15 features are split 5/5/5. Specs: `docs/specs/<ID>.md`.
 
 ## 3. Architecture (decided 22 Nov — see `docs/DECISIONS.md`)
 - `web/` React 19 + Vite + TypeScript + Tailwind v4, tests with Vitest + Testing Library. Deployed on **Vercel** (root dir `web`).
@@ -39,9 +41,10 @@ Teammates write code with **Gemini Antigravity** on their own PCs; you review, t
 
 ## 6. Workflow for every feature
 `Understand → Plan → Tests first → Implement → Test → Review → Approve → Merge → Deploy → Verify`
-- Branch from latest `main`: `feat/ml-*`/`feat/api-*` (Masum), `feat/ui-*`/`feat/integration-*` (Tanjil), `feat/content-*`/`feat/qa-*`/`docs/*` (Mehedi).
+- Branch from latest `main`, named after the item: `feat/<ID>-<short-name>` (e.g. `feat/F3-photo-quality`, `feat/M2-train`) or `docs/S1-readme`.
 - PR must use the template, have CI green, and list the tests written first.
-- Review with the `pr-review` skill and the `code-reviewer` + `rules-auditor` agents. Then merge `--no-ff`, push, and run `deploy-verify`.
+- Review with the `pr-review` skill and the `code-reviewer` + `rules-auditor` agents. Merge with `gh pr merge <n> --merge` (merge commit; squash and rebase merges are disabled on the repo), then run `deploy-verify`.
+- `main` is protected: no force-push or deletion, CI checks `web` and `ml` must pass.
 - Update `docs/FEATURES.md` status and `docs/PROJECT_STATE.md` after each merge; add decisions to `docs/DECISIONS.md`.
 
 ## 7. Commands

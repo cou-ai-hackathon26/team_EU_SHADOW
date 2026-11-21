@@ -1,51 +1,58 @@
 # Feature tracker — AgroLeaf AI (CoU AI Hackathon 2026)
 
-Status: `todo` → `in-progress` → `in-review` (PR open) → `merged` → `verified` (checked on the live/local build).
-Priority: **MUST** = demo fails without it. **SHOULD** = add after all MUST of that owner are merged.
-Every feature follows: Understand → Plan → **Tests first** → Implement → Review → Merge (`--no-ff`) → Deploy → Verify.
+Model work (M1–M8) belongs to the team lead. The other 15 features are split equally (5 each), plus one shared deliverable each.
+Status: `todo` → `in-progress` → `in-review` (PR open) → `merged` → `verified`. Full spec of each item: `docs/specs/<ID>.md`.
+Every item: Understand → Plan → **Tests first** → Implement → PR → Review → Merge (merge commit) → Deploy → Verify.
 
-Checkpoints (Bangladesh time):
-- **CP0 — 22 Nov 11:00** everyone cloned, `npm test` + `pytest` green on own PC, first PR opened.
-- **CP1 — 22 Nov 17:00** model v0 in `web/public/model/`, upload → analyze → result works end to end.
-- **CP2 — 22 Nov 23:00** all MUST features merged; Vercel live link works on a phone.
-- **CP3 — 23 Nov 13:00** all SHOULD features merged; final model v1 + report.json.
-- **CP4 — 23 Nov 18:00** FEATURE FREEZE. README, demo video, pitch, local fallback rehearsed.
+## Checkpoints (Bangladesh time)
+- **CP0 — ২২ নভেম্বর, দুপুর ১২:০০:** সবাই invite accept, repo clone, নিজের PC-তে `npm test` সবুজ, প্রথম feature-এর branch খোলা
+- **CP1 — ২২ নভেম্বর, সন্ধ্যা ৬:০০:** Model v0 repo-তে; প্রত্যেকের প্রথম MUST feature merged; ছবি দিয়ে Analyze করলে আসল ফল আসে
+- **CP2 — ২২ নভেম্বর, রাত ১১:০০:** সব MUST feature merged; Vercel live link ফোনে কাজ করে
+- **CP3 — ২৩ নভেম্বর, দুপুর ১:০০:** সব SHOULD feature merged; final model v1 + report
+- **CP4 — ২৩ নভেম্বর, সন্ধ্যা ৬:০০:** FEATURE FREEZE: README, demo video, pitch, local fallback (Wi-Fi ছাড়া) rehearsal
 
-## Masum Akondha — Lead, AI/ML, inference engine, deployment (branches `feat/ml-*`, `feat/api-*`)
+## Model track — Md. Masum Akondha
 
-| ID | Feature | Pri | Status |
-|---|---|---|---|
-| M1 | Dataset pipeline: download RiceLeafDiseaseBD v3, remove corrupt files + near-duplicates (pHash), stratified 70/15/15 split with duplicate groups kept together, `split_manifest.csv` + class counts | MUST | todo |
-| M2 | Scratch training on Kaggle GPU: small CNN baseline + MobileNetV3-Small (`pretrained=False`), augmentation, checkpoints; choose by validation macro-F1 | MUST | todo |
-| M3 | "Not a rice leaf" handling: 7th class `not_rice` from credited public non-rice images + threshold | SHOULD | todo |
-| M4 | Calibration: temperature scaling on validation; high/medium/healthy/not-rice thresholds from risk–coverage; written to `model_meta.json` | MUST | todo |
-| M5 | Evaluation: test set used once; `report.json` (accuracy, macro-F1, per-class P/R/F1, confusion matrix, coverage) + `docs/MODEL_REPORT.md` | MUST | todo |
-| M6 | ONNX export with outputs `logits` + `cam` (GAP→Linear head so CAM is exact); Python↔browser preprocessing parity fixtures | MUST | todo |
-| M7 | Browser inference engine `web/src/ai/` (`loadModel`, `analyze`, `decideTier`, softmax/temperature, CAM upsample) with unit tests | MUST | todo |
-| M8 | Delivery: Vercel project + CI green, `npm run demo` one-command local fallback, model size budget (< 10 MB) | MUST | todo |
+| ID | Item | Deadline | Branch | Status |
+|---|---|---|---|---|
+| M1 | Dataset pipeline: পরিষ্কার করা ও ভাগ করা | CP1 | `feat/M1-data-split` | todo |
+| M2 | শূন্য থেকে model training (Kaggle GPU) | CP1 (v0), CP3 (v1) | `feat/M2-train` | todo |
+| M3 | "ধানপাতা নয়" চেনা (not_rice class) | CP3 | `feat/M3-not-rice` | todo |
+| M4 | Calibration: confidence-কে সৎ করা | CP3 | `feat/M4-calibration` | todo |
+| M5 | Evaluation ও model report | CP3 | `feat/M5-report` | todo |
+| M6 | ONNX export + parity test | CP1 (v0), CP3 | `feat/M6-export` | todo |
+| M7 | Browser inference engine (web/src/ai) | CP1 | `feat/M7-engine` | todo |
+| M8 | Deployment: Vercel, CI, local fallback | CP2 | `feat/M8-deploy` | todo |
 
-## Tanjil Shaiket — Web app, UX and integration (branches `feat/ui-*`, `feat/integration-*`)
+## Md. Masum Akondha
 
-| ID | Feature | Pri | Status |
-|---|---|---|---|
-| T1 | App shell + design system: mobile-first layout, header, bottom nav, Bangla font, colour tokens, screens (Home, Result, History, About) | MUST | todo |
-| T2 | Photo input: gallery upload + phone camera (`capture`), preview, "অন্য ছবি", type/size validation (JPG/PNG/WebP, ≤ 10 MB), EXIF orientation | MUST | todo |
-| T3 | Photo quality check: brightness + blur (variance of Laplacian) as a pure function, warning + retake tips (never blocks) | MUST | todo |
-| T4 | Analyze flow + result screens: loading state, 4 tiers (high / medium top-2 / low "আমি নিশ্চিত নই" / not rice), confidence meter | MUST | todo |
-| T5 | "কেন এই উত্তর?" heat-map overlay toggle on the result photo (uses `Prediction.heatmap`) | SHOULD | todo |
-| T6 | Bangla / English toggle; all UI strings in `src/i18n/`, Bangla default, choice remembered | SHOULD | todo |
-| T7 | Sample photos gallery for judges (one per class + one non-rice), credited | SHOULD | todo |
-| T8 | Installable offline PWA (app shell + model cached), "নতুন সংস্করণ" reload prompt | SHOULD | todo |
+| ID | Feature | Priority | Deadline | Branch | Status |
+|---|---|---|---|---|---|
+| F11 | "কেন এই উত্তর?" heat-map | SHOULD | CP3 | `feat/F11-heatmap` | todo |
+| F12 | "AI কীভাবে কাজ করে" + Accuracy page | MUST | CP3 | `feat/F12-accuracy-page` | todo |
+| F13 | নমুনা ছবি gallery (judges-দের জন্য) | SHOULD | CP3 | `feat/F13-sample-gallery` | todo |
+| F14 | Offline PWA (install করা যায়) | SHOULD | CP3 | `feat/F14-offline-pwa` | todo |
+| F15 | কৃষি কর্মকর্তার জন্য case summary | SHOULD | CP3 | `feat/F15-case-summary` | todo |
+| S3 | Pitch ও final submission | MUST | CP4 | `docs/S3-pitch-submission` | todo |
 
-## Md. Mehedi Hasan — Content, responsible AI, user features, QA, docs (branches `feat/content-*`, `feat/qa-*`, `docs/*`)
+## Tanjil Shaiket
 
-| ID | Feature | Pri | Status |
-|---|---|---|---|
-| H1 | Bangla + English disease cards `web/src/content/diseases.json` (6 classes + `not_sure` + `not_rice`) with BRRI/DAE/IRRI sources; schema test + banned-words test (no pesticide names, no doses) | MUST | todo |
-| H2 | Safety layer: `<Disclaimer/>` on every result, one-tap `tel:16123`, "কৃষি কর্মকর্তার সাথে যোগাযোগ" guidance; test that every tier renders it | MUST | todo |
-| H3 | Bangla voice read-out of the result (Web Speech API, `bn-BD`), graceful fallback when no Bangla voice | SHOULD | todo |
-| H4 | Officer case summary: downloadable/shareable image (photo, result, tier, date, model version; no location) | SHOULD | todo |
-| H5 | Local scan history in IndexedDB: list, view, delete one / delete all; privacy note | SHOULD | todo |
-| H6 | "AI কীভাবে কাজ করে" + Accuracy page: reads `report.json`, confusion matrix, limitations, dataset credit, model label | MUST | todo |
-| H7 | QA: 30–50 edge-case photo set (each class, blurry, dark, non-rice, huge file), Playwright e2e on 375px + desktop, `docs/TEST_REPORT.md` | MUST | todo |
-| H8 | README (all rule-10 items), AI tool disclosure, credits, pitch slides, ≤ 3-min demo video | MUST | todo |
+| ID | Feature | Priority | Deadline | Branch | Status |
+|---|---|---|---|---|---|
+| F1 | App shell ও design system | MUST | CP1 | `feat/F1-app-shell` | todo |
+| F2 | ছবি নেওয়া: gallery + camera + preview | MUST | CP1 | `feat/F2-photo-input` | todo |
+| F3 | ছবির মান যাচাই (অন্ধকার / ঝাপসা) | MUST | CP2 | `feat/F3-photo-quality` | todo |
+| F4 | Analyze flow ও ফলাফলের screen (৪টি tier) | MUST | CP2 | `feat/F4-result-screens` | todo |
+| F5 | বাংলা / English toggle | SHOULD | CP3 | `feat/F5-language-toggle` | todo |
+| S2 | ৩ মিনিটের demo video | MUST | CP4 | `docs/S2-demo-video` | todo |
+
+## Md. Mehedi Hasan
+
+| ID | Feature | Priority | Deadline | Branch | Status |
+|---|---|---|---|---|---|
+| F6 | বাংলা + English রোগের card (সূত্রসহ) | MUST | CP1 | `feat/F6-disease-cards` | todo |
+| F7 | Safety layer: disclaimer + ১৬১২৩ | MUST | CP1 | `feat/F7-safety-disclaimer` | todo |
+| F8 | বাংলায় ফল পড়ে শোনানো | SHOULD | CP3 | `feat/F8-voice-readout` | todo |
+| F9 | Scan ইতিহাস (শুধু নিজের ফোনে) | SHOULD | CP3 | `feat/F9-scan-history` | todo |
+| F10 | QA: edge-case ছবি সেট + end-to-end test | MUST | CP2–CP4 | `feat/F10-qa-e2e` | todo |
+| S1 | README (সব নিয়ম মেনে) | MUST | CP4 | `docs/S1-readme` | todo |
