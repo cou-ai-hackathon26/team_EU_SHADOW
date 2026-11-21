@@ -44,12 +44,12 @@ describe('M8 deploy guards', () => {
   })
 
   it('.wasm is served as application/wasm', () => {
-    expect(headersFor(loadVercel(), '/(.*)\.wasm')['content-type']).toBe('application/wasm')
+    expect(headersFor(loadVercel(), '/(.*).wasm')['content-type']).toBe('application/wasm')
   })
 
   it('.onnx is served as application/octet-stream and revalidated (file name is not hashed)', () => {
     const h = headersFor(loadVercel(), '/model/(.*)')
-    expect(headersFor(loadVercel(), '/(.*)\.onnx')['content-type']).toBe('application/octet-stream')
+    expect(headersFor(loadVercel(), '/(.*).onnx')['content-type']).toBe('application/octet-stream')
     expect(h['cache-control']).toContain('must-revalidate')
   })
 
