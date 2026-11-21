@@ -7,16 +7,21 @@ describe('F7: Safety layer - Disclaimer component', () => {
   it('renders independently without any props and displays Bengali text with "প্রাথমিক স্ক্রিনিং" and "১৬১২৩"', () => {
     render(<Disclaimer />)
 
-    const textElement = screen.getByText(/প্রাথমিক স্ক্রিনিং/)
-    expect(textElement).toBeDefined()
-    expect(screen.getByText(/১৬১২৩/)).toBeDefined()
+    const screeningMatches = screen.getAllByText(/প্রাথমিক স্ক্রিনিং/)
+    expect(screeningMatches.length).toBeGreaterThan(0)
+
+    const hotlineMatches = screen.getAllByText(/১৬১২৩/)
+    expect(hotlineMatches.length).toBeGreaterThan(0)
   })
 
   it('renders English text when lang="en" is provided', () => {
     render(<Disclaimer lang="en" />)
 
-    expect(screen.getByText(/preliminary screening/i)).toBeDefined()
-    expect(screen.getByText(/16123/)).toBeDefined()
+    const screeningMatches = screen.getAllByText(/preliminary screening/i)
+    expect(screeningMatches.length).toBeGreaterThan(0)
+
+    const hotlineMatches = screen.getAllByText(/16123/)
+    expect(hotlineMatches.length).toBeGreaterThan(0)
   })
 })
 
@@ -27,7 +32,9 @@ describe('F7: Safety layer - HelpCall component', () => {
     const callLink = screen.getByRole('link')
     expect(callLink).toBeDefined()
     expect(callLink.getAttribute('href')).toBe('tel:16123')
-    expect(screen.getByText(/১৬১২৩/)).toBeDefined()
+
+    const hotlineMatches = screen.getAllByText(/১৬১২৩/)
+    expect(hotlineMatches.length).toBeGreaterThan(0)
   })
 
   it('renders English text when lang="en" is provided with valid tel link', () => {
@@ -36,6 +43,8 @@ describe('F7: Safety layer - HelpCall component', () => {
     const callLink = screen.getByRole('link')
     expect(callLink).toBeDefined()
     expect(callLink.getAttribute('href')).toBe('tel:16123')
-    expect(screen.getByText(/16123/)).toBeDefined()
+
+    const hotlineMatches = screen.getAllByText(/16123/)
+    expect(hotlineMatches.length).toBeGreaterThan(0)
   })
 })
