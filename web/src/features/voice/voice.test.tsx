@@ -66,6 +66,7 @@ describe('F8: ListenButton component', () => {
   })
 
   afterEach(() => {
+    vi.unstubAllGlobals()
     Object.defineProperty(window, 'speechSynthesis', {
       value: originalSpeechSynthesis,
       writable: true,
@@ -104,10 +105,13 @@ describe('F8: ListenButton component', () => {
       configurable: true,
     })
 
-    // Mock SpeechSynthesisUtterance constructor
-    global.SpeechSynthesisUtterance = vi.fn().mockImplementation(function (text: string) {
-      return { text, lang: '', voice: null }
-    }) as unknown as typeof SpeechSynthesisUtterance
+    // Mock SpeechSynthesisUtterance using Vitest official stubGlobal
+    vi.stubGlobal(
+      'SpeechSynthesisUtterance',
+      vi.fn().mockImplementation(function (text: string) {
+        return { text, lang: '', voice: null }
+      })
+    )
 
     const { unmount } = render(<ListenButton card={blastCard} tier="high" />)
 
