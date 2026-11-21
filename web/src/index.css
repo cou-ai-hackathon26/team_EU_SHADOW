@@ -4,11 +4,22 @@
 @theme {
   --font-sans: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
   --color-leaf-50: #f0fdf4;
+  --color-leaf-100: #dcfce7;
+  --color-leaf-200: #bbf7d0;
   --color-leaf-600: #16a34a;
+  --color-leaf-700: #15803d;
   --color-leaf-800: #166534;
+  --color-leaf-900: #14532d;
   --color-warn-500: #f59e0b;
   --color-danger-600: #dc2626;
 }
 
-html, body, #root { min-height: 100%; }
-body { @apply bg-leaf-50 text-slate-900 antialiased; }
+html, body, #root {
+  min-height: 100%;
+  width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  @apply bg-leaf-50 text-slate-900 antialiased;
+}
