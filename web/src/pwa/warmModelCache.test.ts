@@ -285,7 +285,7 @@ describe('F8 warmAudioCache', () => {
     expect(result.skipped).toBeUndefined()
     expect(mockFetch).toHaveBeenCalledTimes(15)
     expect(putCalls).toHaveLength(15)
-    expect(fetchedUrls[0]).toBe('/app/audio/high-blast.mp3')
+    expect(fetchedUrls[0]).toBe('/app/audio/high-healthy.mp3')
   })
 
   it('c. online=false: makes no fetch and returns skipped "offline"', async () => {

@@ -36,7 +36,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     ],
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}', 'samples/*.{jpg,json}', 'audio/*.mp3'],
+    globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}', 'samples/*.{jpg,json}'],
     maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
     runtimeCaching: [
       {
@@ -45,6 +45,21 @@ export const pwaOptions: Partial<VitePWAOptions> = {
         options: {
           cacheName: 'agroleaf-model',
           networkTimeoutSeconds: 5,
+        },
+      },
+      // Must match AUDIO_CACHE_NAME in web/src/pwa/warmModelCache.ts
+      {
+        urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'agroleaf-audio',
+          rangeRequests: true,
+          cacheableResponse: {
+            statuses: [200],
+          },
+          expiration: {
+            maxEntries: 40,
+          },
         },
       },
     ],
