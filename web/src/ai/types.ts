@@ -63,6 +63,19 @@ export interface ModelReport {
   /** share of test photos that land in each tier, and how often the top-1 answer was right there */
   tiers: { tier: ConfidenceTier; coverage: number; accuracy: number }[]
   limitations: { bn: string; en: string }[]
+  notRice?: {
+    threshold: number
+    blendConfidenceCap?: number
+    notRiceValRejected: number
+    notRiceTestRejected: number
+    riceValFalseReject: number
+    riceTestFalseReject: number
+    macroF1SixClassBase: number
+    macroF1SixClassWithGate: number
+    sources: { name: string; licence: string; url: string }[]
+    bd5GateOnly?: { note: string; testFalseReject: number }
+    screenRecapture?: { riceFalseReject: number; notRiceRejected: number; macroF1SixClassWithGate: number }
+  }
 }
 
 /** What analyze() returns. The UI renders ONLY from this object. */
