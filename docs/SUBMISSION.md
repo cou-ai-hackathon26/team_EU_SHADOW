@@ -5,8 +5,8 @@
 - **Institution:** Eastern University
 - **Members:**
   1. **মোঃ মাসুম আকন্দ (Md. Masum Akondha)** — Team Lead · Model training, deployment & features F11–F15 · Student ID: 241400049 · GitHub: [masumcit44](https://github.com/masumcit44)
-  2. **তানজিল শাইখাত (Tanjil Shaiket)** — Fullstack UI/UX & features F1–F5 · GitHub: [tanjil74432](https://github.com/tanjil74432)
-  3. **মোঃ মেহেদী হাসান (Md. Mehedi Hasan)** — Content, Safety & features F6–F10 · GitHub: [EnergiousNPC](https://github.com/EnergiousNPC)
+  2. **তানজিল সৈকত (Tanjil Shaiket)** — Fullstack UI/UX & features F1–F5 · Student ID: 241400038 · GitHub: [tanjil74432](https://github.com/tanjil74432)
+  3. **মোঃ মেহেদী হাসান (Md. Mehedi Hasan)** — Content, Safety & features F6–F10 · Student ID: 241400054 · GitHub: [EnergiousNPC](https://github.com/EnergiousNPC)
 
 ---
 
@@ -15,7 +15,7 @@
 - **Live Deployment:** https://agroleaf-ai-olive.vercel.app (and `npm run demo` for local fallback)
 
 ## বিবরণ (Project Summary — 88 Words)
-AgroLeaf AI হলো বাংলাদেশের প্রান্তিক ধানচাষীদের জন্য ব্রাউজার-ভিত্তিক অন-ডিভাইস এআই স্ক্রিনিং সমাধান। এটি ইন্টারনেট সংযোগ ছাড়াই সরাসরি কৃষকের স্মার্টফোনে ডাব্লিউএএসএম (ONNX Runtime Web) প্রযুক্তিতে শূন্য থেকে প্রশিক্ষিত হালকা মোবাইলনেট মডেল চালিয়ে ধানপাতার ব্লাস্ট, বাদামি দাগ, টুংরো সহ প্রধান রোগসমূহ প্রাথমিক স্ক্রিনিং করে। ব্যবহারকারীকে কোনো সার্ভারে ছবি পাঠাতে হয় না, ফলে গোপনীয়তা সুরক্ষিত থাকে। মডেলের সিদ্ধান্ত স্বচ্ছ করতে রয়েছে এক্সএআই হিটম্যাপ এবং চার স্তরের ডায়াগনস্টিক সুপারিশ। রাসায়নিক ওষুধের নাম পরিহার করে সাধারণ কৃষিভিত্তিক সতর্কতা এবং সার্বক্ষণিক সহায়তার জন্য সরকারি কৃষি কল সেন্টার ১৬১২৩ সংযুক্ত রাখা হয়েছে।
+AgroLeaf AI হলো বাংলাদেশের প্রান্তিক ধানচাষীদের জন্য ব্রাউজার-ভিত্তিক অন-ডিভাইস এআই স্ক্রিনিং সমাধান। এটি ইন্টারনেট সংযোগ ছাড়াই সরাসরি কৃষকের স্মার্টফোনে ডাব্লিউএএসএম (ONNX Runtime Web) প্রযুক্তিতে শূন্য থেকে প্রশিক্ষিত হালকা মডেলের সমন্বয় (MobileNetV3-Large-CAM + RegNetY-400MF) চালিয়ে ধানপাতার ব্লাস্ট, বাদামি দাগ, টুংরো সহ প্রধান রোগসমূহ প্রাথমিক স্ক্রিনিং করে। ব্যবহারকারীকে কোনো সার্ভারে ছবি পাঠাতে হয় না, ফলে গোপনীয়তা সুরক্ষিত থাকে। মডেলের সিদ্ধান্ত স্বচ্ছ করতে রয়েছে এক্সএআই হিটম্যাপ এবং চার স্তরের ডায়াগনস্টিক সুপারিশ। রাসায়নিক ওষুধের নাম পরিহার করে সাধারণ কৃষিভিত্তিক সতর্কতা এবং সার্বক্ষণিক সহায়তার জন্য সরকারি কৃষি কল সেন্টার ১৬১২৩ সংযুক্ত রাখা হয়েছে।
 
 ---
 
