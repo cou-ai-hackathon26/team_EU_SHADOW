@@ -3,6 +3,7 @@ export interface WarmModelCacheOptions {
   online?: boolean
   saveData?: boolean
   baseUrl?: string
+  cacheStorage?: Pick<CacheStorage, 'open'> | null
 }
 
 export interface WarmModelCacheResult {

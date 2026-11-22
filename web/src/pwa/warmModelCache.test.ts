@@ -129,4 +129,104 @@ describe('F14 warmModelCache', () => {
     expect(mockFetch).toHaveBeenCalledTimes(3) // no additional fetch calls
     expect(res2.warmed).toEqual(res1.warmed)
   })
+
+  it('f. with a fake cacheStorage: calls open("agroleaf-model") and put once per successful file with path string and Response clone', async () => {
+    const putSpy = vi.fn().mockResolvedValue(undefined)
+    const fakeCache = {
+      put: putSpy,
+    } as unknown as Cache
+    const openSpy = vi.fn().mockResolvedValue(fakeCache)
+    const fakeCacheStorage: Pick<CacheStorage, 'open'> = {
+      open: openSpy,
+    }
+
+    const clones: Record<string, unknown> = {}
+    const mockFetch = vi.fn().mockImplementation(async (url: string | URL | Request) => {
+      const urlStr = url.toString()
+      if (urlStr.endsWith('agroleaf.onnx')) {
+        return {
+          ok: false,
+          status: 404,
+          arrayBuffer: async () => new ArrayBuffer(0),
+          clone: () => ({ isClone: false }),
+        } as unknown as Response
+      }
+      const cloneObj = { url: urlStr, isClone: true }
+      clones[urlStr] = cloneObj
+      return {
+        ok: true,
+        status: 200,
+        clone: () => cloneObj,
+        arrayBuffer: async () => new ArrayBuffer(8),
+      } as unknown as Response
+    })
+
+    const result = await warmModelCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '',
+      cacheStorage: fakeCacheStorage,
+    })
+
+    expect(openSpy).toHaveBeenCalledWith('agroleaf-model')
+    expect(putSpy).toHaveBeenCalledTimes(2)
+    expect(putSpy).toHaveBeenNthCalledWith(1, '/model/model_meta.json', clones['/model/model_meta.json'])
+    expect(putSpy).toHaveBeenNthCalledWith(2, '/model/report.json', clones['/model/report.json'])
+    expect(result.warmed).toEqual(['/model/model_meta.json', '/model/report.json'])
+  })
+
+  it('g. when cacheStorage.open or put throws: warmModelCache still resolves, and warmed lists the files whose fetch succeeded', async () => {
+    const putSpy = vi.fn().mockRejectedValue(new Error('Cache put failure'))
+    const fakeCache = {
+      put: putSpy,
+    } as unknown as Cache
+    const openSpy = vi.fn().mockResolvedValue(fakeCache)
+    const fakeCacheStorage: Pick<CacheStorage, 'open'> = {
+      open: openSpy,
+    }
+
+    const mockFetch = vi.fn().mockImplementation(async () => {
+      return {
+        ok: true,
+        status: 200,
+        clone: () => ({ isClone: true }),
+        arrayBuffer: async () => new ArrayBuffer(8),
+      } as unknown as Response
+    })
+
+    const result = await warmModelCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '',
+      cacheStorage: fakeCacheStorage,
+    })
+
+    expect(result.warmed).toEqual([
+      '/model/model_meta.json',
+      '/model/agroleaf.onnx',
+      '/model/report.json',
+    ])
+
+    // Also verify when cacheStorage.open throws
+    resetWarmModelCache()
+    const throwingOpenStorage: Pick<CacheStorage, 'open'> = {
+      open: vi.fn().mockRejectedValue(new Error('Cache open failure')),
+    }
+
+    const result2 = await warmModelCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '',
+      cacheStorage: throwingOpenStorage,
+    })
+
+    expect(result2.warmed).toEqual([
+      '/model/model_meta.json',
+      '/model/agroleaf.onnx',
+      '/model/report.json',
+    ])
+  })
 })
