@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import ScanFlow from './ScanFlow'
 import * as engine from '../../ai/engine'
+import * as history from '../history/historyStore'
 import type { Prediction } from '../../ai/types'
 
 // Mock the AI engine module
@@ -12,6 +13,11 @@ vi.mock('../../ai/engine', () => ({
 }))
 
 // Mock loadImage and assessQuality so we can trigger handleImageReady cleanly
+// F9: scan history is saved on the device after each analysis
+vi.mock('../history/historyStore', () => ({
+  saveScanFromPrediction: vi.fn(),
+}))
+
 vi.mock('../capture/loadImage', () => ({
   loadImage: vi.fn().mockImplementation(() => {
     const fakeImg = document.createElement('img')
@@ -66,6 +72,7 @@ describe('ScanFlow integration (F4)', () => {
       thresholds: { high: 0.85, medium: 0.5 },
     } as any)
     vi.mocked(engine.analyze).mockResolvedValue(mockPrediction)
+    vi.mocked(history.saveScanFromPrediction).mockResolvedValue({} as any)
 
     // Mock fetch for SampleGallery samples.json and image fetch
     vi.stubGlobal(
@@ -208,5 +215,34 @@ describe('ScanFlow integration (F4)', () => {
     await user.click(retryBtn)
 
     expect(screen.getByRole('button', { name: /ক্যামেরা/i })).toBeInTheDocument()
+  })
+
+  it('saves each analysed scan to local history (F9)', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<ScanFlow />)
+    const file = new File(['fake image bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+    await user.upload(container.querySelector('input[type="file"]') as HTMLInputElement, file)
+    await user.click(await screen.findByRole('button', { name: /Analyze|শনাক্ত/i }))
+
+    await waitFor(() => {
+      expect(history.saveScanFromPrediction).toHaveBeenCalledTimes(1)
+    })
+    const [savedPrediction, savedImage] = vi.mocked(history.saveScanFromPrediction).mock.calls[0]
+    expect(savedPrediction).toBe(mockPrediction)
+    expect(savedImage).toBeInstanceOf(HTMLImageElement)
+  })
+
+  it('still shows the result when saving history fails (F9)', async () => {
+    vi.mocked(history.saveScanFromPrediction).mockRejectedValueOnce(new Error('IndexedDB blocked'))
+    const user = userEvent.setup()
+    const { container } = render(<ScanFlow />)
+    const file = new File(['fake image bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+    await user.upload(container.querySelector('input[type="file"]') as HTMLInputElement, file)
+    await user.click(await screen.findByRole('button', { name: /Analyze|শনাক্ত/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
+    })
+    expect(screen.queryByText(/IndexedDB blocked/)).not.toBeInTheDocument()
   })
 })
