@@ -121,7 +121,7 @@ export default function SampleGallery({
 
       <details className="text-xs text-slate-500 rounded-xl border border-emerald-900/10 bg-emerald-50/40 p-2.5">
         <summary className="cursor-pointer font-medium text-slate-700 hover:text-emerald-800">ছবির সূত্র ও লাইসেন্স (গবেষণা ডেটাসেট)</summary>
-        <p className="mt-1 text-[11px] text-slate-500">ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া; মডেল ট্রেনিংয়ে আলাদা রাখা হয়েছে।</p>
+        <p className="mt-1 text-[11px] text-slate-500">ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া (মডেল ট্রেনিংয়ে ব্যবহার হয়নি) এবং প্রতিটি রোগ দেখাতে বাছাই করা। আসল নির্ভুলতা দেখুন Accuracy পেজে ও docs/MODEL_REPORT.md-এ।</p>
         <ul className="mt-2 flex flex-col gap-1 text-[11px]">
           {samples.map((s) => (
             <li key={s.id}>
