@@ -18,6 +18,13 @@ describe('F15 ShareButton Component', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks()
+    HTMLCanvasElement.prototype.toBlob = vi.fn(function (
+      this: HTMLCanvasElement,
+      callback: (blob: Blob | null) => void,
+      type?: string,
+    ) {
+      callback(new Blob(['mock-blob'], { type: type || 'image/png' }))
+    })
   })
 
   afterEach(() => {
