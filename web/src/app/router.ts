@@ -2,6 +2,7 @@ import { createElement, type ComponentType } from 'react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
+import WeatherRiskCard from '../features/weather/WeatherRiskCard'
 import { useT } from '../i18n/useT'
 
 export interface RouteDef {
@@ -46,6 +47,7 @@ export function HomeScreen() {
         createElement('span', { className: 'inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 shadow-2xs border border-emerald-900/10' }, '🔊 বাংলায় ভয়েস পরামর্শ')
       )
     ),
+    createElement(WeatherRiskCard, null),
     createElement(ScanFlow, null)
   )
 }

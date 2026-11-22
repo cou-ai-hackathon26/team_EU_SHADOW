@@ -14,7 +14,7 @@ const EXPECTED_IDS = [
   'not_sure',
 ] as const
 
-const BANNED_PATTERNS = [
+export const BANNED_PATTERNS = [
   /carbendazim/i,
   /tricyclazole/i,
   /mancozeb/i,
