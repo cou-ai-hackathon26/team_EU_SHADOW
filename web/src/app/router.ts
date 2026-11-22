@@ -1,4 +1,5 @@
 import { createElement, type ComponentType } from 'react'
+import PhotoPicker from '../features/capture/PhotoPicker'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 
 export interface RouteDef {
@@ -28,7 +29,8 @@ export function HomeScreen() {
         { className: 'mt-2 text-slate-700' },
         'ধানগাছের আক্রান্ত পাতার স্পষ্ট ছবি তুলুন বা গ্যালারি থেকে নির্বাচন করুন। এআই মডেল তাৎক্ষণিক রোগ শনাক্ত করতে সাহায্য করবে।'
       )
-    )
+    ),
+    createElement(PhotoPicker, null)
   )
 }
 
