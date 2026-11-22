@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { buildSpokenText, pickVoice } from './speak'
 import { ListenButton } from './ListenButton'
@@ -9,6 +9,7 @@ import { getCard } from '../../content/getCard'
 describe('F8: Voice readout logic (speak.ts)', () => {
   const blastCard: DiseaseCard = getCard('blast')
   const healthyCard: DiseaseCard = getCard('healthy')
+  const brownSpotCard: DiseaseCard = getCard('brown_spot')
 
   it('1. buildSpokenText generates natural Bangla sentences across tiers', () => {
     // High tier disease
@@ -21,14 +22,23 @@ describe('F8: Voice readout logic (speak.ts)', () => {
     expect(healthyText).toContain('সুস্থ')
     expect(healthyText).toContain('লক্ষণ নেই')
 
-    // Medium tier
+    // Medium tier without second card
     const mediumText = buildSpokenText(blastCard, 'medium')
     expect(mediumText).toContain('সম্ভাব্য')
     expect(mediumText).toContain(blastCard.name.bn)
 
-    // Low tier
+    // Medium tier with second card (Fix 2 requirement)
+    const mediumWithSecond = buildSpokenText(blastCard, 'medium', brownSpotCard)
+    expect(mediumWithSecond).toContain(blastCard.name.bn)
+    expect(mediumWithSecond).toContain(brownSpotCard.name.bn)
+    expect(mediumWithSecond).toContain('পরিষ্কার ছবি')
+    expect(mediumWithSecond).toContain('১৬১২৩')
+
+    // Low tier (Fix 2 requirement: exact "আমি নিশ্চিত নই")
     const lowText = buildSpokenText(blastCard, 'low')
-    expect(lowText).toContain('নিশ্চিত হতে পারছি না')
+    expect(lowText).toContain('আমি নিশ্চিত নই')
+    expect(lowText).toContain('ছবি')
+    expect(lowText).toContain('১৬১২৩')
 
     // Not rice tier
     const notRiceCard = getCard('not_rice')
@@ -93,7 +103,9 @@ describe('F8: ListenButton component', () => {
   it('4. speaks when clicked and cancels speech when unmounted', () => {
     const cancelMock = vi.fn()
     const speakMock = vi.fn()
-    const getVoicesMock = vi.fn().mockReturnValue([])
+    const getVoicesMock = vi.fn().mockReturnValue([
+      { name: 'Bangla BD', lang: 'bn-BD' } as SpeechSynthesisVoice,
+    ])
 
     Object.defineProperty(window, 'speechSynthesis', {
       value: {
@@ -101,6 +113,8 @@ describe('F8: ListenButton component', () => {
         speak: speakMock,
         getVoices: getVoicesMock,
         speaking: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       },
       writable: true,
       configurable: true,
@@ -125,5 +139,69 @@ describe('F8: ListenButton component', () => {
     // Unmount stops speech (requirement: Screen বদলালে কথা থেমে যায়)
     unmount()
     expect(cancelMock).toHaveBeenCalled()
+  })
+
+  it('5. disables button and shows "এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন" when no bn voice is installed', () => {
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: {
+        cancel: vi.fn(),
+        speak: vi.fn(),
+        getVoices: vi.fn().mockReturnValue([
+          { name: 'Alex', lang: 'en-US' } as SpeechSynthesisVoice,
+        ]),
+        speaking: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    })
+
+    render(<ListenButton card={blastCard} tier="high" />)
+
+    const button = screen.getByRole('button') as HTMLButtonElement
+    expect(button.disabled).toBe(true)
+    expect(screen.getByText('এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন')).toBeDefined()
+  })
+
+  it('6. enables button when voices arrive later through voiceschanged event with a bn-BD voice', () => {
+    let voicesChangedHandler: (() => void) | undefined
+    let currentVoices: SpeechSynthesisVoice[] = []
+
+    const addEventListenerMock = vi.fn().mockImplementation((event, handler) => {
+      if (event === 'voiceschanged') {
+        voicesChangedHandler = handler
+      }
+    })
+
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: {
+        cancel: vi.fn(),
+        speak: vi.fn(),
+        getVoices: vi.fn().mockImplementation(() => currentVoices),
+        speaking: false,
+        addEventListener: addEventListenerMock,
+        removeEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    })
+
+    render(<ListenButton card={blastCard} tier="high" />)
+
+    const button = screen.getByRole('button') as HTMLButtonElement
+    // Initially disabled because currentVoices is []
+    expect(button.disabled).toBe(true)
+
+    // Now voices arrive asynchronously through voiceschanged
+    act(() => {
+      currentVoices = [
+        { name: 'Bangla BD', lang: 'bn-BD' } as SpeechSynthesisVoice,
+      ]
+      voicesChangedHandler?.()
+    })
+
+    // Button should now become enabled
+    expect(button.disabled).toBe(false)
   })
 })
