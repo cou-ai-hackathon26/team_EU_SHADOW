@@ -76,6 +76,10 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
     expect(workbox.maximumFileSizeToCacheInBytes).toBe(20 * 1024 * 1024)
   })
 
+  it('3b. F13 sample photos and samples.json are precached for the offline demo', () => {
+    expect(pwaOptions.workbox!.globPatterns).toContain('samples/*.{jpg,json}')
+  })
+
   it('4. Workbox runtimeCaching configures /model/ with NetworkFirst, agroleaf-model cache, and 5s timeout', () => {
     const workbox = pwaOptions.workbox!
     expect(Array.isArray(workbox.runtimeCaching)).toBe(true)
