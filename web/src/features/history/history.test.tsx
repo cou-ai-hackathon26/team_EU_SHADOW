@@ -7,7 +7,6 @@ import {
   deleteScan,
   clearAllScans,
   compressThumbnail,
-  type ScanRecord,
 } from './historyStore'
 import { HistoryScreen } from './HistoryScreen'
 
@@ -141,7 +140,7 @@ describe('F9: HistoryScreen UI component (HistoryScreen.tsx)', () => {
     expect(screen.getByText(/৮৮%|88%/)).toBeDefined()
 
     // Test delete single button
-    const deleteBtn = screen.getByRole('button', { name: /মুছুন/i })
+    const deleteBtn = screen.getByRole('button', { name: /^মুছুন$/ })
     fireEvent.click(deleteBtn)
 
     // After deletion, should revert to empty state
@@ -149,5 +148,30 @@ describe('F9: HistoryScreen UI component (HistoryScreen.tsx)', () => {
       const scans = await getScans()
       expect(scans).toHaveLength(0)
     })
+  })
+
+  it('6. সব মুছুন বাটন এবং নিশ্চিতকরণ কাজ করে', async () => {
+    await addScan({
+      diseaseId: 'blast',
+      diseaseName: { bn: 'ব্লাস্ট রোগ', en: 'Blast' },
+      tier: 'high',
+      confidence: 0.85,
+      thumbnail: 'data:image/jpeg;base64,blast_thumb',
+    })
+
+    render(<HistoryScreen />)
+    expect(await screen.findByText(/ব্লাস্ট রোগ/i)).toBeDefined()
+
+    // Click "সব মুছুন"
+    const clearAllBtn = screen.getByRole('button', { name: /সব মুছুন/i })
+    fireEvent.click(clearAllBtn)
+
+    // Confirmation appears
+    expect(screen.getByText(/সব মুছবেন\?/i)).toBeDefined()
+    const confirmBtn = screen.getByRole('button', { name: /হ্যাঁ, মুছুন/i })
+    fireEvent.click(confirmBtn)
+
+    // Should clear and show empty state
+    expect(await screen.findByText(/কোনো স্ক্যান ইতিহাস নেই/i)).toBeDefined()
   })
 })

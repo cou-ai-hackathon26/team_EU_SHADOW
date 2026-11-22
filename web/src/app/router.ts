@@ -1,6 +1,7 @@
 import { createElement, type ComponentType } from 'react'
 import PhotoPicker from '../features/capture/PhotoPicker'
 import AccuracyScreen from '../features/about/AccuracyScreen'
+import HistoryScreen from '../features/history/HistoryScreen'
 
 export interface RouteDef {
   id: string
@@ -34,26 +35,7 @@ export function HomeScreen() {
   )
 }
 
-export function HistoryScreen() {
-  return createElement(
-    'section',
-    { className: 'flex flex-col gap-4' },
-    createElement(
-      'div',
-      { className: 'rounded-2xl border border-leaf-800/10 bg-white p-6 shadow-xs' },
-      createElement(
-        'h1',
-        { className: 'text-2xl font-bold text-leaf-800' },
-        'স্ক্যান ইতিহাস'
-      ),
-      createElement(
-        'p',
-        { className: 'mt-2 text-slate-600' },
-        'আপনার ডিভাইসে সংরক্ষিত পূর্ববর্তী পরীক্ষার ফলাফল এখানে দেখা যাবে।'
-      )
-    )
-  )
-}
+export { HistoryScreen } from '../features/history/HistoryScreen'
 
 export function AboutScreen() {
   return createElement(
