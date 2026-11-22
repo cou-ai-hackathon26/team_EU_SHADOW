@@ -1,6 +1,6 @@
 # Model report (M5) — v1-blend-p2-p3-scratch
 
-All models are trained **from random initialisation** () on the AgroLeaf AI unified dataset build v2
+All models are trained **from random initialisation** (`pretrained=False`) on the AgroLeaf AI unified dataset build v2
 (train 8,863 / val 1,902 / internal test 1,901 / external BD5 2,671). Augmentation profile **A0_baseline** (winner of the
 A0/A1/A2 ablation on validation). Checkpoint, blend weights, temperature and tier thresholds were chosen on **validation only**;
 internal test and BD5 were scored once afterwards. Code: `ml/kaggle/top3/`.
