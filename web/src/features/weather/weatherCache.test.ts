@@ -2,54 +2,59 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import {
   saveWeatherCache,
   loadWeatherCache,
-  WEATHER_CACHE_KEY,
-  type CachedWeather,
+  WEATHER_CACHE_KEY_V2,
+  type CachedWeatherV2,
 } from './weatherCache'
 
-describe('F16: Weather Cache (weatherCache.ts)', () => {
+describe('F16: Weather Cache V2 (weatherCache.ts)', () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
-  it('save/load round trip', () => {
-    const sample: CachedWeather = {
-      divisionId: 'dhaka',
+  it('save/load round trip stores only rounded coordinates and recomputes assessment', () => {
+    const sample: CachedWeatherV2 = {
+      mode: 'gps',
+      lat: 23.81234, // Should be saved rounded to 23.81
+      lon: 90.41499, // Should be saved rounded to 90.41
+      label: 'আপনার অবস্থান',
       hourly: {
-        relative_humidity_2m: [80, 90],
-        temperature_2m: [25, 26],
-        precipitation: [0, 0.5],
-      },
-      assessment: {
-        level: 'medium',
-        humidHours: 10,
-        rainyHours: 2,
+        temperature_2m: Array(72).fill(25),
+        relative_humidity_2m: Array(72).fill(92),
+        precipitation: Array(72).fill(0),
       },
       fetchedAt: Date.now(),
     }
 
     saveWeatherCache(sample)
+
+    // Check stored json directly to ensure coordinates are rounded
+    const raw = localStorage.getItem(WEATHER_CACHE_KEY_V2)
+    expect(raw).not.toBeNull()
+    const parsed = JSON.parse(raw!)
+    expect(parsed.lat).toBe(23.81)
+    expect(parsed.lon).toBe(90.41)
+
     const loaded = loadWeatherCache()
     expect(loaded).not.toBeNull()
-    expect(loaded?.cached.divisionId).toBe('dhaka')
-    expect(loaded?.cached.assessment.level).toBe('medium')
+    expect(loaded?.cached.mode).toBe('gps')
+    expect(loaded?.cached.label).toBe('আপনার অবস্থান')
     expect(loaded?.isStale).toBe(false)
+    expect(loaded?.assessment.diseases.length).toBeGreaterThan(0)
   })
 
   it('entries >= 24 h are reported stale', () => {
     const now = 1_700_000_000_000
     const olderThan24h = now - 25 * 60 * 60 * 1000
 
-    const sample: CachedWeather = {
-      divisionId: 'chattogram',
+    const sample: CachedWeatherV2 = {
+      mode: 'division',
+      lat: 22.36,
+      lon: 91.8,
+      label: 'চট্টগ্রাম',
       hourly: {
-        relative_humidity_2m: [70],
-        temperature_2m: [28],
-        precipitation: [0],
-      },
-      assessment: {
-        level: 'low',
-        humidHours: 0,
-        rainyHours: 0,
+        temperature_2m: Array(72).fill(25),
+        relative_humidity_2m: Array(72).fill(70),
+        precipitation: Array(72).fill(0),
       },
       fetchedAt: olderThan24h,
     }
@@ -60,8 +65,15 @@ describe('F16: Weather Cache (weatherCache.ts)', () => {
     expect(loaded?.isStale).toBe(true)
   })
 
-  it('corrupt JSON returns null', () => {
-    localStorage.setItem(WEATHER_CACHE_KEY, '{invalid json corrupted...')
+  it('removes and ignores legacy agroleaf-weather-v1 cache', () => {
+    localStorage.setItem('agroleaf-weather-v1', JSON.stringify({ old: true }))
+    const loaded = loadWeatherCache()
+    expect(loaded).toBeNull()
+    expect(localStorage.getItem('agroleaf-weather-v1')).toBeNull()
+  })
+
+  it('corrupt JSON in v2 key returns null', () => {
+    localStorage.setItem(WEATHER_CACHE_KEY_V2, '{corrupt JSON...')
     expect(loadWeatherCache()).toBeNull()
   })
 })
