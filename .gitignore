@@ -12,7 +12,10 @@ __pycache__/
 kaggle.json
 .vercel/
 # data and heavy training outputs (model goes to web/public/model only)
-ml/data/
+ml/data/*
+!ml/data/*.py
+!ml/data/*.md
+!ml/data/.gitkeep
 ml/artifacts/*
 !ml/artifacts/.gitkeep
 *.pt
