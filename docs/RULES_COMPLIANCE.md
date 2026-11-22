@@ -13,4 +13,5 @@ Lead re-checks this before every merge to main and before submission.
 | 10 | README items | Team & members, problem/solution, features & AI, stack/models/datasets, AI tools, credits, setup, live link, demo video | ☐ |
 | 11 | Public deployment, stays live | Vercel (root `web`) + local fallback `npm run demo` | ☐ |
 | 12 | Final submission: ≤150-word description, repo link, live link, AI disclosure, optional ≤3-min video | Drafted in `docs/SUBMISSION.md` by 23 Nov | ☐ |
+| Privacy | Zero Location / No GPS Tracking (F16) | Farmer picks division from dropdown; only fixed headquarters coordinates sent to Open-Meteo; choice stored in localStorage on device only | ☑ |
 | Organiser notice | Fully working prototype that runs locally before arriving | CP4 rehearsal on two laptops without internet | ☐ |

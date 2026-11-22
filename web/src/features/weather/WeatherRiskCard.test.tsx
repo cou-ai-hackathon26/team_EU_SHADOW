@@ -1,4 +1,3 @@
-import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
@@ -79,7 +78,7 @@ describe('F16: WeatherRiskCard Component', () => {
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(await screen.findByText(/শেষ আপডেট/)).toBeInTheDocument()
     expect(screen.getByText(/ইন্টারনেট নেই/)).toBeInTheDocument()
-    expect(screen.getByText(/বেশি/)).toBeInTheDocument()
+    expect(screen.getAllByText(/বেশি/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('offline with no cache shows the unavailable line "এখন আবহাওয়ার তথ্য পাওয়া যাচ্ছে না।" without risk badge', async () => {

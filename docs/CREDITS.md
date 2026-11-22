@@ -39,6 +39,7 @@ AgroLeaf AI is made possible by open-source technologies, publicly available agr
 - **idb (IndexedDB Wrapper)** ([jakearchibald/idb](https://github.com/jakearchibald/idb)) — Jake Archibald (ISC License)
 - **Vitest & @testing-library/react** ([vitest-dev/vitest](https://github.com/vitest-dev/vitest), [testing-library](https://github.com/testing-library)) — Vitest Team & Testing Library Contributors (MIT License)
 - **Vite PWA Plugin** ([vite-pwa/vite-plugin-pwa](https://github.com/vite-pwa/vite-plugin-pwa)) — Anthony Fu & Vite PWA Contributors (MIT License)
+- **Open-Meteo** ([open-meteo.com](https://open-meteo.com)) — Open-source weather forecast API for division-level disease risk estimation (Creative Commons Attribution 4.0 International, CC BY 4.0)
 
 ---
 
