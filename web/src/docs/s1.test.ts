@@ -22,25 +22,25 @@ describe('S1: README and Documentation Rule 10 Compliance (s1.test.ts)', () => {
     expect(content).toMatch(/Md\.?\s*Mehedi Hasan/i)
 
     // Problem and solution
-    expect(content).toMatch(/##\s*(?:Problem and Solution|সমস্যা ও সমাধান)/i)
+    expect(content).toMatch(/##\s*(?:[০-৯0-9.]+\s*)?(?:Problem and Solution|সমস্যা ও সমাধান)/i)
     expect(content).toMatch(/16123|১৬১২৩/)
 
     // Features
-    expect(content).toMatch(/##\s*(?:Features|ফিচারসমূহ)/i)
+    expect(content).toMatch(/##\s*(?:[০-৯0-9.]+\s*)?(?:Features|ফিচারসমূহ)/i)
 
     // How the AI works (Browser ONNX, Privacy, No server)
-    expect(content).toMatch(/##\s*(?:How the AI works|এআই কীভাবে কাজ করে)/i)
+    expect(content).toMatch(/##\s*(?:[০-৯0-9.]+\s*)?(?:How the AI works|এআই কীভাবে কাজ করে)/i)
     expect(content).toMatch(/ONNX|MobileNet/i)
     expect(content).toMatch(/browser|অন-ডিভাইস/i)
 
     // Tech Stack
-    expect(content).toMatch(/##\s*(?:Tech stack|প্রযুক্তি)/i)
+    expect(content).toMatch(/##\s*(?:[০-৯0-9.]+\s*)?(?:Tech stack|প্রযুক্তি কাঠামো)/i)
     expect(content).toMatch(/React/i)
     expect(content).toMatch(/Tailwind/i)
     expect(content).toMatch(/PyTorch|ONNX/i)
 
     // Datasets
-    expect(content).toMatch(/##\s*(?:Datasets|উপাত্ত)/i)
+    expect(content).toMatch(/##\s*(?:[০-৯0-9.]+\s*)?(?:Datasets|গবেষণার ডেটাসেট)/i)
     expect(content).toMatch(/RiceLeafDiseaseBD|Mendeley/i)
 
     // AI tools disclosure (Rule 10 & 12)

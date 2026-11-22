@@ -2,52 +2,142 @@
 
 **CoU AI Hackathon 2026 · Team EU_SHADOW · Eastern University, Bangladesh**
 
-A browser-based tool that lets a Bangladeshi rice farmer photograph a leaf and get an honest, Bangla-first first opinion: the likely disease, the two most likely options, or "আমি নিশ্চিত নই" (I am not sure), always with a referral to the Krishi Call Centre **16123**. The AI model is **trained from scratch** by the team and runs **inside the browser**, so the photo never leaves the phone.
+AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজার-ভিত্তিক (On-Device WebAssembly) কৃষকবান্ধব অ্যাপ্লিকেশন, যার মাধ্যমে মাঠপর্যায়ে একজন ধানচাষী মোবাইলে আক্রান্ত পাতার ছবি তুলেই সম্পূর্ণ ইন্টারনেট বা সার্ভার ছাড়া তৎক্ষণাৎ প্রাথমিক রোগ নির্ণয় ও সৎ পরামর্শ পেতে পারেন। 
 
-> Work in progress (pre-build 21–23 Nov 2026). Sections marked _TBD_ are filled as features merge.
+অ্যাপ্লিকেশনটি নির্ণয়ের ক্ষেত্রে অতিরিক্ত আত্মবিশ্বাস না দেখিয়ে সৎ ও দায়িত্বশীল দৃষ্টিভঙ্গি বজায় রাখে: নির্ভরযোগ্য ফলাফল পেলে রোগ ও প্রতিকার জানায়, লক্ষণ অস্পষ্ট হলে শীর্ষ দুটি সম্ভাবনার কথা জানিয়ে পরিষ্কার ছবি তুলতে বলে, বিভ্রান্তিকর বা দুর্বোধ্য ক্ষেত্রে স্পষ্টভাবে **"আমি নিশ্চিত নই"** বলে এবং অনাকাঙ্ক্ষিত ছবির ক্ষেত্রে **"এটি ধানপাতা মনে হচ্ছে না"** বলে সতর্ক করে। প্রতিটি ক্ষেত্রে সার্বক্ষণিক সরকারি কৃষি কল সেন্টার **১৬১২৩**-এ যোগাযোগের রেফারেল প্রদান করা হয়।
 
-## Team
-| Member | Role |
+---
+
+## ১. টিম সদস্যবৃন্দ (Team EU_SHADOW)
+
+| সদস্য | ভূমিকা ও দায়িত্ব | ছাত্র আইডি |
+|---|---|:---:|
+| **Md. Masum Akondha** (Team Lead) | AI Architect & Model Track (M1–M8); ফিচার F11–F15; ফাইনাল পিচ ও সাবমিশন (S3) | `241400030` |
+| **Tanjil Shaiket** | Frontend Lead; অ্যাপ শেল, ক্যামেরা/গ্যালারি ইনপুট, ছবির কোয়ালিটি চেক, রেজাল্ট স্ক্রিন (F1–F5); ডেমো ভিডিও (S2) | `241400035` |
+| **Md. Mehedi Hasan** | Content, Safety & QA Lead; রোগ নির্ণয় কার্ড (F6), সেফটি লেয়ার ও ১৬১২৩ (F7), ভয়েস রিডআউট (F8), লোকাল হিস্ট্রি (F9), ৩৫টি এজ-কেস ও E2E টেস্ট (F10), প্রজেক্ট README ও ক্রেডিটস (S1) | `241400054` |
+
+---
+
+## ২. সমস্যা ও সমাধান (Problem & Solution)
+
+### সমস্যা (The Challenge):
+বাংলাদেশে খাদ্য নিরাপত্তার মূল ভিত্তি ধান চাষ। প্রতি বছর ব্লাস্ট, বাদামি দাগ, খোলপোড়া, লিফ স্মাট এবং টুংরো রোগের সংক্রমণে কৃষকের ফলন ১০% থেকে ৩০% পর্যন্ত ক্ষতিগ্রস্ত হয়। প্রত্যন্ত অঞ্চলের কৃষকদের কাছে তাৎক্ষণিক বিশেষজ্ঞ কৃষিবিদ পৌঁছানো সম্ভব হয় না। এছাড়া প্রচলিত বিভিন্ন অ্যাপ ইন্টারনেট সংযোগ বাধ্যতামূলক করে কিংবা ভুলবশত ভুল ওষুধের নাম সুপারিশ করে কৃষকের আর্থিক ক্ষতি বৃদ্ধি করে।
+
+### সমাধান (Our Solution):
+- **সার্ভারহীন অন-ডিভাইস এআই (Zero Cloud, 100% Privacy)**: পাতার ছবি কোনো সার্ভারে আপলোড হয় না; কৃষকের নিজস্ব ফোনের ব্রাউজারেই ONNX Runtime Web-এর মাধ্যমে মডেল রান করে।
+- **সৎ ও পরিমিত আত্মবিশ্বাস (Calibrated Tiers)**:
+  1. **High Tier**: সুস্পষ্ট লক্ষণ থাকলে রোগের নাম, সুষম সার ও প্রাথমিক সাংস্কৃতিক দমন পরামর্শ।
+  2. **Medium Tier**: লক্ষণ আংশিক হলে শীর্ষ দুটি সম্ভাব্য রোগের নাম এবং নতুন স্পষ্ট ছবির অনুরোধ।
+  3. **Low Tier**: বিভ্রান্তিকর হলে স্পষ্টভাবে **"আমি নিশ্চিত নই"** স্বীকারোক্তি এবং ১৬১২৩ হেল্পলাইন।
+  4. **Not Rice Tier**: ঘাস, আগাছা বা ভুল ছবি দিলে **"এটি ধানপাতা মনে হচ্ছে না"** বলে ফিল্টারিং।
+- **দায়িত্বশীল কৃষকবান্ধব অভিজ্ঞতা**: কোনো বাণিজ্যিক বা ক্ষতিকর রাসায়নিক কীটনাশকের নাম/ডোজ সুপারিশ করা হয় না। অশিক্ষিত বা দৃষ্টিহীন কৃষকের সুবিধার্থে বাংলায় কথা বলে ফলাফল শোনানোর ব্যবস্থা (Voice Readout) রাখা হয়েছে।
+
+---
+
+## ৩. ফিচারসমূহ (Features Overview)
+
+সম্পূর্ণ লাইভ ট্র্যাকার দেখতে পড়ুন: [`docs/FEATURES.md`](docs/FEATURES.md)
+
+### আবশ্যকীয় ফিচার (MUST Features):
+- **F1 (App Shell)**: মোবাইল-ফার্স্ট রেসপন্সিভ ইন্টারফেস ও হ্যাশ রাউটিং।
+- **F2 (Photo Input)**: ক্যামেরা ও গ্যালারি থেকে দ্রুত ছবি গ্রহণ ও প্রিভিউ।
+- **F3 (Quality Check)**: কম আলো, অতিরিক্ত রোদ বা হাত কাঁপা ঝাপসা ছবি তৎক্ষণাৎ শনাক্তকরণ (নন-ব্লকিং ওয়ার্নিং)।
+- **F4 (Result Screens)**: ৪টি ক্যালিব্রেটেড টিয়ারে স্বচ্ছ ও সৎ ফলাফল প্রদর্শন।
+- **F6 (Disease Cards)**: BRRI ও DAE-অনুমোদিত তথ্যসূত্রসহ রোগের বিস্তারিত বাংলা ও ইংরেজি কার্ড।
+- **F7 (Safety Layer)**: প্রাথমিক স্ক্রিনিং সতর্কতা এবং সরকারি কৃষি কল সেন্টার **১৬১২৩** সার্বক্ষণিক উপস্থিতি।
+- **F10 (QA & E2E)**: ৩৫টি বাস্তবমুখী এজ-কেস টেস্ট স্যুট এবং Playwright E2E ব্রাউজার অটোমেশন।
+- **F12 (Accuracy & How It Works)**: এআই কীভাবে সিদ্ধান্ত নেয় এবং স্বচ্ছ টেস্ট রিপোর্ট।
+
+### সুবিধা ও কৃষকবান্ধব ফিচার (SHOULD Features):
+- **F5 (Language Toggle)**: বাংলা এবং ইংরেজি ভাষার সহজ পরিবর্তন।
+- **F8 (Voice Readout)**: Web Speech API-এর মাধ্যমে সাবলীল বাংলায় ফলাফল পড়ে শোনানো (বাংলা ভয়েস ইঞ্জিন না থাকলে উপযুক্ত ফলব্যাক বার্তা)।
+- **F9 (Scan History)**: IndexedDB-এর মাধ্যমে ডিভাইসে পূর্ববর্তী স্ক্যান হিস্ট্রি সংরক্ষণ (≤ ২০০ KB থাম্বনেইল) ও মুছে ফেলার পূর্ণ নিয়ন্ত্রণ।
+- **F11 (Heatmap CAM)**: "কেন এই উত্তর?" — পাতার ঠিক কোন অংশে লক্ষণ দেখে এআই সিদ্ধান্ত নিয়েছে তার ভিজ্যুয়াল হিটম্যাপ।
+- **F13 (Sample Gallery)**: পরীক্ষার জন্য তাৎক্ষণিক টেস্ট-স্প্লিটের নমুনা ছবি নির্বাচন।
+- **F14 (Offline PWA)**: ফোনে ইনস্টলযোগ্য অফলাইন প্রগ্রেসিভ ওয়েব অ্যাপ।
+- **F15 (Case Summary)**: উপসহকারী কৃষি কর্মকর্তার কাছে শেয়ার করার উপযোগী সংক্ষিপ্ত কেস সামারি।
+
+---
+
+## ৪. এআই কীভাবে কাজ করে (How the AI Works)
+
+1. **শূন্য থেকে মডেল প্রশিক্ষণ (Trained from Scratch)**: কোনো প্রি-ট্রেইন্ড ব্ল্যাক-বক্স মডেল নয়; RiceLeafDiseaseBD v3 ডেটাসেটে টিম কর্তৃক শূন্য থেকে MobileNetV3-Small আর্কিটেকচার Kaggle GPU-তে প্রশিক্ষিত।
+2. **মডেল এক্সপোর্ট ও ব্রাউজার রানটাইম**: PyTorch মডেলটিকে অপ্টিমাইজড FP32 ONNX মডেলে রূপান্তর করে `onnxruntime-web` (WebAssembly SIMD) দিয়ে সম্পূর্ণ ক্লায়েন্ট-সাইডে ইনফারেন্স চালানো হয়।
+3. **ক্যালিব্রেশন (Temperature Scaling)**: সফটম্যাক্স আউটপুটকে তাপমাত্রা স্কেলিং দিয়ে সংশোধন করা হয়েছে, যাতে মডেল অতি-আত্মবিশ্বাসী (over-confident) মিথ্যা দাবি না করে।
+4. **বিস্তারিত মডেল ফলাফল**: পুঙ্খানুপুঙ্খ টেস্ট মেট্রিক্স, কনফিউশন ম্যাট্রিক্স এবং ক্লাস ওয়াইজ F1-স্কোর দেখতে পড়ুন: [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md)।
+5. **এজ-কেস ও কিউএ অডিট**: প্রতিকূল পরিবেশে মডেল ও সিস্টেমের কার্যকারিতা জানতে পড়ুন: [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md)।
+
+---
+
+## ৫. প্রযুক্তি কাঠামো (Tech Stack)
+
+- **ফ্রন্টএন্ড**: React 19, Vite 6, TypeScript, Tailwind CSS v4, vite-plugin-pwa (PWA Service Worker)।
+- **অন-ডিভাইস এআই**: ONNX Runtime Web (WASM SIMD), Canvas Image Processing।
+- **মেশিন লার্নিং**: PyTorch, timm (random initialisation), Albumentations, ONNX।
+- **টেস্টিং ও কিউএ**: Vitest (৩০টি টেস্ট ফাইল, ১৫৬+ টেস্ট), Playwright E2E, Testing Library, oxlint।
+- **ডিপ্লয়মেন্ট**: Vercel (Production CI/CD), অফলাইন লোকাল ডেমো সার্ভার।
+- **আর্কিটেকচারাল সিদ্ধান্ত**: বিস্তারিত জানতে পড়ুন: [`docs/DECISIONS.md`](docs/DECISIONS.md)।
+
+---
+
+## ৬. গবেষণার ডেটাসেট (Datasets)
+
+- **RiceLeafDiseaseBD v3**: Munna MMH et al., Mendeley Data 2026, CC BY 4.0, [DOI: 10.17632/86s4jzj2m4.3](https://doi.org/10.17632/86s4jzj2m4.3)।
+- **BanglaRiceLeaf Dataset**: Harvard Dataverse, CC0 1.0 Public Domain, [DOI: 10.7910/DVN/XAOBYW](https://doi.org/10.7910/DVN/XAOBYW)।
+
+---
+
+## ৭. এআই টুলের স্বচ্ছ ডিসক্লোজার (AI Tools Disclosure - Rule 10 & 12)
+
+| এআই টুল | দলীয় কার্যক্রমে ব্যবহারের সুনির্দিষ্ট ক্ষেত্র |
 |---|---|
-| Md. Masum Akondha | Team lead; model training, evaluation and deployment; heat-map, accuracy page, samples, offline PWA, case summary |
-| Tanjil Shaiket | App shell, photo input, photo quality check, result screens, language toggle, demo video |
-| Md. Mehedi Hasan | Bangla disease cards, safety and 16123, voice read-out, scan history, QA, README |
+| **Claude Code (Anthropic)** | আর্কিটেকচার পরিকল্পনা, কোড রিভিউয়ার হিসেবে কাজ করা, টেস্ট ভ্যালিডেশন এবং সিআই সমন্বয় |
+| **Gemini Antigravity (Google)** | দলের সদস্যদের স্ব-স্ব ব্রাঞ্চে ফিচার কোডিং, কঠোর টিডিডি ইউনিট টেস্ট প্রণয়ন, লোকাল ফাইল মিররিং |
 
-## Problem and solution
-_TBD (S1)._ Summary: rice leaf diseases (blast, brown spot, sheath blight, leaf smut, tungro) cut yields; farmers lack a quick, understandable and honest first step. AgroLeaf AI gives a calibrated screening in Bangla and sends uncertain or serious cases to experts.
+*ঘোষণা: সকল কোড, লজিক ও মডেল দলের সদস্যরা ব্যক্তিগতভাবে পরীক্ষা ও পুঙ্খানুপুঙ্খভাবে যাচাই করেছেন।*
 
-## Features
-See [`docs/FEATURES.md`](docs/FEATURES.md) for the live tracker.
+---
 
-## How the AI works
-_TBD (M5/F12)._ Small CNN / MobileNetV3-Small trained from random initialisation on RiceLeafDiseaseBD v3 → temperature-scaled confidence → three answer tiers → class activation map ("why this answer"). Real test results: [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md).
+## ৮. লোকাল সেটআপ ও অফলাইন ডেমো (Run Locally)
 
-## Tech stack
-React 19, Vite, TypeScript, Tailwind CSS 4, ONNX Runtime Web (WASM), Vitest, Testing Library · PyTorch, timm (random init), Kaggle GPU · Vercel. Decisions: [`docs/DECISIONS.md`](docs/DECISIONS.md).
+কোনো পাইথন পরিবেশ বা সার্ভার ছাড়াই শুধুমাত্র ব্রাউজারে অ্যাপটি চালাতে:
 
-## Datasets
-- RiceLeafDiseaseBD v3 — Munna MMH et al., Mendeley Data 2026, CC BY 4.0, https://doi.org/10.17632/86s4jzj2m4.3
-
-## AI tools used (disclosure)
-| Tool | Used for |
-|---|---|
-| Claude Code (Anthropic) | Project setup, architecture, code review, tests, merging, documentation help |
-| Gemini Antigravity (Google) | Members' feature coding on their own branches |
-All AI-assisted code is reviewed, tested and explained by the team.
-
-## Run locally (no internet needed after install)
 ```bash
-cd web
+# ১. রিপোজিটরি ক্লোন করুন
+git clone https://github.com/masumcit44/AgroLeaf_AI-.git
+cd AgroLeaf_AI-/web
+
+# ২. ডিপেনডেন্সি ইনস্টল করুন
 npm ci
-npm run demo     # builds and serves on http://localhost:4173 (also reachable from a phone on the same Wi-Fi)
+
+# ৩. লোকাল ডেমো চালান (সম্পূর্ণ অফলাইন এবং একই ওয়াইফাইতে ফোনেও অ্যাক্সেসযোগ্য)
+npm run demo
 ```
-Development: `npm run dev` · Tests: `npm test` · ML tests: `cd ml && pip install -r requirements.txt && python -m pytest -q`
+ব্রাউজারে খুলুন: `http://localhost:4173`
 
-## Live link and demo video
-_TBD (M8, S1, S2)._
+- ডেভেলপমেন্ট মোড: `npm run dev`
+- টেস্ট চালানো: `npm test`
+- লিন্ট পরীক্ষা: `npm run lint`
+- প্রোডাকশন বিল্ড: `npm run build`
+- প্লেরাইট E2E টেস্ট: `npm run test:e2e`
+- মেশিন লার্নিং টেস্ট: `cd ml && python -m pytest -q`
 
-## Credits
-_TBD._ All third-party libraries are installed from npm/PyPI under their own licences.
+---
 
-## Disclaimer
-AgroLeaf AI is a preliminary screening tool, not a diagnosis. For treatment, contact your local agriculture officer or call **16123**.
+## ৯. লাইভ লিংক ও ডেমো ভিডিও (Live Links)
+
+- **লাইভ ওয়েব অ্যাপ (Vercel)**: [https://agroleaf-web.vercel.app](https://agroleaf-web.vercel.app)
+- **ডেমো ভিডিও (৩ মিনিট)**: [ভিডিও লিংক ও স্ক্রিপ্ট দেখুন](docs/specs/S2.md)
+- **পিচ প্রেজেন্টেশন ও জাজ প্রশ্নোত্তর**: [`docs/PITCH.md`](docs/PITCH.md)
+- **চূড়ান্ত সাবমিশন বিবরণী**: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
+
+---
+
+## ১০. ক্রেডিটস ও কৃতজ্ঞতা স্বীকার (Credits)
+
+ব্যবহৃত সকল ওপেন-সোর্স লাইব্রেরি, কৃষি তথ্যসূত্র এবং গবেষণা সংস্থার বিস্তারিত তালিকা সংরক্ষিত আছে: [`docs/CREDITS.md`](docs/CREDITS.md)।
+
+---
+
+## ১১. আইনি ও চিকিৎসা সংক্রান্ত সতর্কতা (Disclaimer)
+AgroLeaf AI একটি প্রাথমিক স্ক্রিনিং টুল, কোনো চূড়ান্ত বা নির্ভুল প্রেসক্রিপশন নয়। মাঠপর্যায়ে রোগ দমন নিশ্চিত করতে সর্বদা আপনার নিকটস্থ উপসহকারী কৃষি কর্মকর্তার পরামর্শ নিন অথবা সরাসরি সরকারি কৃষি কল সেন্টার **১৬১২৩** নম্বরে কল করুন।
