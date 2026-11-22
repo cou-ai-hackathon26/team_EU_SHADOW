@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Layout from './components/Layout'
 import { matchRoute } from './app/router'
+import { UpdatePrompt } from './pwa/UpdatePrompt'
 
 export default function App() {
   const [currentHash, setCurrentHash] = useState(() =>
@@ -23,6 +24,7 @@ export default function App() {
 
   return (
     <Layout currentHash={currentHash}>
+      <UpdatePrompt />
       <CurrentComponent />
     </Layout>
   )
