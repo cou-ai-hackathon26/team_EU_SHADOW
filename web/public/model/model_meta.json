@@ -1,0 +1,32 @@
+{
+  "version": "v1-blend-p2-p3-scratch",
+  "architecture": "Per-class weighted blend of MNV3L-CAM + RegNetY-400MF (all random init, pretrained=False)",
+  "trainedFromScratch": true,
+  "classes": [
+    "healthy",
+    "blast",
+    "brown_spot",
+    "leaf_smut",
+    "tungro",
+    "sheath_blight"
+  ],
+  "inputSize": 224,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "temperature": 0.9102,
+  "thresholds": {
+    "high": 0.65,
+    "medium": 0.3,
+    "healthyHigh": 0.72,
+    "notRice": 1.01
+  },
+  "camOutput": true
+}
