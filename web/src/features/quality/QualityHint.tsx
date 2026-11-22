@@ -1,4 +1,5 @@
 import type { QualityReport } from '../../ai/types'
+import { useT } from '../../i18n/useT'
 import AnalyzeButton from '../result/AnalyzeButton'
 
 export interface QualityHintProps {
@@ -8,6 +9,8 @@ export interface QualityHintProps {
 }
 
 export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: QualityHintProps) {
+  const { t } = useT()
+
   if (!report) {
     return null
   }
@@ -15,13 +18,13 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
   const warnings: string[] = []
 
   if (report.tooDark) {
-    warnings.push('ছবিটি খুব অন্ধকার। আরও আলোতে বা ফ্ল্যাশ দিয়ে পরিষ্কার ছবি তুলুন।')
+    warnings.push(t('qualityTooDark'))
   } else if (report.tooBright) {
-    warnings.push('ছবিতে অতিরিক্ত আলো পড়েছে। সরাসরি তীব্র রোদ বা অতিরিক্ত ফ্ল্যাশ এড়িয়ে তুলুন।')
+    warnings.push(t('qualityTooBright'))
   }
 
   if (report.tooBlurry) {
-    warnings.push('ছবিটি ঝাপসা দেখাচ্ছে। ক্যামেরা স্থির রেখে পাতার স্পষ্ট ছবি তুলুন।')
+    warnings.push(t('qualityTooBlurry'))
   }
 
   const hasWarnings = warnings.length > 0
@@ -50,14 +53,14 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
             <div className="flex flex-col gap-1">
-              <span className="font-semibold text-amber-950">ছবির গুণমান সতর্কতা:</span>
+              <span className="font-semibold text-amber-950">{t('qualityWarningTitle')}</span>
               <ul className="list-inside list-disc space-y-0.5 text-amber-900">
                 {warnings.map((msg, idx) => (
                   <li key={idx}>{msg}</li>
                 ))}
               </ul>
               <span className="mt-1 text-[11px] text-amber-800/90">
-                (আপনি চাইলে এই ছবি দিয়েই চালিয়ে যেতে পারেন)
+                {t('qualityCanProceed')}
               </span>
             </div>
           </div>
@@ -76,7 +79,7 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
           >
             <path d="M20 6 9 17l-5-5" />
           </svg>
-          <span className="font-medium">ছবির আলো ও স্পষ্টতা রোগ বিশ্লেষণের জন্য উপযুক্ত।</span>
+          <span className="font-medium">{t('qualityGood')}</span>
         </div>
       )}
 

@@ -1,3 +1,5 @@
+import { useT } from '../../i18n/useT'
+
 export interface AnalyzeButtonProps {
   onAnalyze: () => void | Promise<void>
   disabled?: boolean
@@ -11,6 +13,7 @@ export default function AnalyzeButton({
   loading = false,
   className = '',
 }: AnalyzeButtonProps) {
+  const { t } = useT()
   const isDisabled = disabled || loading
 
   return (
@@ -42,7 +45,7 @@ export default function AnalyzeButton({
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
-          <span>বিশ্লেষণ চলছে...</span>
+          <span>{t('analyzingText')}</span>
         </>
       ) : (
         <>
@@ -59,7 +62,7 @@ export default function AnalyzeButton({
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <span>রোগ শনাক্ত করুন (Analyze)</span>
+          <span>{t('analyzeBtn')}</span>
         </>
       )}
     </button>
