@@ -1,12 +1,14 @@
 import 'fake-indexeddb/auto'
 import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import type { Prediction } from '../../ai/types'
 import {
   addScan,
   getScans,
   deleteScan,
   clearAllScans,
   compressThumbnail,
+  saveScanFromPrediction,
 } from './historyStore'
 import { HistoryScreen } from './HistoryScreen'
 
@@ -112,6 +114,37 @@ describe('F9: Scan History Store (historyStore.ts)', () => {
       ['image/jpeg', 0.4],
     ])
     expect(context.drawImage).toHaveBeenCalledWith(source, 0, 0, 256, 128)
+  })
+
+  it('4. prediction সংরক্ষণ করে getScans-এ প্রথমে দেখায়', async () => {
+    await addScan({
+      diseaseId: 'healthy',
+      diseaseName: { bn: 'সুস্থ ধানগাছ', en: 'Healthy Rice Leaf' },
+      tier: 'high',
+      confidence: 0.95,
+      thumbnail: 'data:image/jpeg;base64,older-scan',
+      timestamp: 1,
+    })
+    const prediction: Prediction = {
+      tier: 'medium',
+      top: [
+        { classId: 'blast', prob: 0.72 },
+        { classId: 'healthy', prob: 0.18 },
+      ],
+      modelVersion: 'test',
+      trainedFromScratch: true,
+      latencyMs: 1,
+    }
+
+    await saveScanFromPrediction(prediction, 'data:image/jpeg;base64,small-image')
+
+    const scans = await getScans()
+    expect(scans[0]).toMatchObject({
+      diseaseId: 'blast',
+      diseaseName: { bn: 'ব্লাস্ট রোগ', en: 'Rice Blast' },
+      tier: 'medium',
+      confidence: 0.72,
+    })
   })
 
 })
