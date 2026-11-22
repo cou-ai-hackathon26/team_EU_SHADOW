@@ -7,7 +7,15 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // onnxruntime-web ships its own WASM files; keep it out of dependency pre-bundling.
-  optimizeDeps: { exclude: ['onnxruntime-web'] },
+  optimizeDeps: { exclude: ['onnxruntime-web', 'onnxruntime-web/wasm'] },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+        engine: './src/ai/engine.ts',
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
