@@ -15,9 +15,9 @@ Every item: Understand → Plan → **Tests first** → Implement → PR → Rev
 
 | ID | Item | Deadline | Branch | Status |
 |---|---|---|---|---|
-| M1 | Dataset pipeline: পরিষ্কার করা ও ভাগ করা | CP1 | `feat/M1-data-split` | done (Kaggle kernel agroleaf-unified-dataset-build; code not in repo) |
+| M1 | Dataset pipeline: পরিষ্কার করা ও ভাগ করা | CP1 | `feat/M1-data-split` | merged (#24, ml/data/) |
 | M2 | শূন্য থেকে model training (Kaggle GPU) | CP1 (v0), CP3 (v1) | `feat/M2-train` | merged (#14) |
-| M3 | "ধানপাতা নয়" চেনা (not_rice class) | CP3 | `feat/M3-not-rice` | in-progress (Kaggle run, PR feat/M3-not-rice coming) |
+| M3 | "ধানপাতা নয়" চেনা (not_rice class) | CP3 | `feat/M3-not-rice` | in-review (feat/M3-not-rice) |
 | M4 | Calibration: confidence-কে সৎ করা | CP3 | `feat/M4-calibration` | merged (#17) |
 | M5 | Evaluation ও model report | CP3 | `feat/M5-report` | merged (#16, docs/MODEL_REPORT.md) |
 | M6 | ONNX export + parity test | CP1 (v0), CP3 | `feat/M6-export` | merged (#16) |
