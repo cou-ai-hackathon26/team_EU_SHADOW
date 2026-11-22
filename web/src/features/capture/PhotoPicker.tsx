@@ -185,56 +185,113 @@ export default function PhotoPicker({
         </div>
       )}
 
-      {/* When no image is selected: Choice Buttons */}
+      {/* When no image is selected: 3-step Guide and Primary/Secondary Actions */}
       {!previewUrl ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-3.5">
+          {/* Quick visual 3-step micro-guide for farmers */}
+          <div className="rounded-2xl border border-emerald-900/10 bg-gradient-to-br from-emerald-50/70 to-white p-3.5 shadow-2xs">
+            <div className="mb-2 flex items-center gap-1.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-700 text-white text-[10px] font-bold">✓</span>
+              <span className="text-xs font-bold text-emerald-950">
+                ৩ ধাপে স্পষ্ট ছবি তুলুন:
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="flex flex-col items-center rounded-xl bg-white/90 p-2 border border-emerald-900/10 shadow-2xs">
+                <span className="text-base mb-0.5">📸</span>
+                <span className="text-[11px] font-bold text-emerald-900">১. কাছে ধরুন</span>
+                <span className="text-[10px] text-slate-500 leading-tight">আক্রান্ত অংশের</span>
+              </div>
+              <div className="flex flex-col items-center rounded-xl bg-white/90 p-2 border border-emerald-900/10 shadow-2xs">
+                <span className="text-base mb-0.5">☀️</span>
+                <span className="text-[11px] font-bold text-emerald-900">২. আলোতে তুলুন</span>
+                <span className="text-[10px] text-slate-500 leading-tight">পর্যাপ্ত আলো দিন</span>
+              </div>
+              <div className="flex flex-col items-center rounded-xl bg-white/90 p-2 border border-emerald-900/10 shadow-2xs">
+                <span className="text-base mb-0.5">🔊</span>
+                <span className="text-[11px] font-bold text-emerald-900">৩. পরামর্শ শুনুন</span>
+                <span className="text-[10px] text-slate-500 leading-tight">বাংলায় সমাধান</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Primary Action: Solid Vibrant Emerald Camera Scan Button */}
           <button
             type="button"
             onClick={() => cameraInputRef.current?.click()}
-            className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed border-leaf-600/30 bg-white p-4 text-center transition-all hover:border-leaf-600 hover:bg-leaf-50 active:scale-98"
+            className="group relative flex min-h-[84px] w-full items-center justify-between overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-600 p-4 text-left text-white shadow-md transition-all duration-200 hover:shadow-lg hover:from-emerald-700 hover:to-emerald-500 active:scale-[0.99] ring-2 ring-emerald-600/30"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-leaf-100 text-leaf-800">
-              <svg
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
+            <div className="flex items-center gap-3.5">
+              <div className="relative flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-xs shadow-inner">
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-400"></span>
+                </span>
+                <svg
+                  className="h-7 w-7 transition-transform group-hover:scale-110"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base sm:text-lg font-bold tracking-tight text-white leading-snug">
+                  {t('cameraBtn')}
+                </span>
+                <span className="text-xs text-emerald-100/90 font-medium">
+                  {t('cameraBtnDesc')}
+                </span>
+              </div>
+            </div>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-white transition-transform group-hover:translate-x-1">
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
-            <span className="font-bold text-slate-800">{t('cameraBtn')}</span>
-            <span className="text-xs text-slate-600">{t('cameraBtnDesc')}</span>
           </button>
 
+          {/* Secondary Action: Clean Gallery Card */}
           <button
             type="button"
             onClick={() => galleryInputRef.current?.click()}
-            className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed border-leaf-600/30 bg-white p-4 text-center transition-all hover:border-leaf-600 hover:bg-leaf-50 active:scale-98"
+            className="flex min-h-[58px] w-full items-center justify-between rounded-2xl border-2 border-emerald-900/15 bg-white px-4 py-3 text-left transition-all hover:border-emerald-700/40 hover:bg-emerald-50/50 active:scale-[0.99] shadow-2xs"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-leaf-100 text-leaf-800">
-              <svg
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100/80 text-emerald-800">
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold text-slate-800">
+                  {t('galleryBtn')}
+                </span>
+                <span className="text-xs text-slate-500 font-medium">
+                  {t('galleryBtnDesc')}
+                </span>
+              </div>
             </div>
-            <span className="font-bold text-slate-800">{t('galleryBtn')}</span>
-            <span className="text-xs text-slate-600">{t('galleryBtnDesc')}</span>
+            <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+              ফাইল পছন্দ
+            </span>
           </button>
         </div>
       ) : (

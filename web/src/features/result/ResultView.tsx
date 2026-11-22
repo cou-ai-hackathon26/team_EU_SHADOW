@@ -6,6 +6,7 @@ import { Disclaimer } from '../../components/Disclaimer'
 import { HelpCall } from '../../components/HelpCall'
 import { HeatmapOverlay } from './HeatmapOverlay'
 import { ShareButton } from '../share/ShareButton'
+import { ListenButton } from '../voice/ListenButton'
 import ConfidenceMeter from './ConfidenceMeter'
 
 export interface ResultViewProps {
@@ -137,6 +138,10 @@ export default function ResultView({
               lang={lang}
               className="mt-3.5"
             />
+
+            <div className="mt-4 pt-3 border-t border-emerald-900/10">
+              <ListenButton card={top1Card} tier={tier} className="w-full sm:w-auto" />
+            </div>
           </div>
 
           {/* Disease Card (Mehedi F6) */}
@@ -189,6 +194,10 @@ export default function ResultView({
                 </div>
               )}
             </div>
+
+            <div className="mt-4 pt-3 border-t border-amber-900/10">
+              <ListenButton card={top1Card} tier={tier} secondCard={top2Card ?? undefined} className="w-full sm:w-auto" />
+            </div>
           </div>
 
           <DiseaseCardView card={top1Card} lang={lang} />
@@ -199,14 +208,14 @@ export default function ResultView({
       {/* Tier 3: Low Confidence */}
       {tier === 'low' && (
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-xs">
-            <span className="inline-block rounded-full bg-slate-200 px-3 py-0.5 text-xs font-bold text-slate-800">
+          <div className="rounded-3xl border border-slate-300 bg-white p-5 sm:p-6 shadow-sm">
+            <span className="inline-block rounded-full bg-slate-100 px-3.5 py-1 text-xs font-bold text-slate-800">
               {isBn ? 'অনিশ্চিত অবস্থা' : 'Uncertain'}
             </span>
-            <h2 id="result-heading" className="mt-2 text-xl font-bold text-slate-900">
+            <h2 id="result-heading" className="mt-2 text-xl sm:text-2xl font-bold text-slate-900">
               {isBn ? 'আমি নিশ্চিত নই' : 'I am not sure'}
             </h2>
-            <p className="mt-1 text-xs text-slate-600 sm:text-sm">
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
               {isBn
                 ? 'ছবিটি দেখে মডেল নির্দিষ্ট কোনো রোগ নিশ্চিত করতে পারেনি। মাঠপর্যায়ে কোনো ঝুঁকি না নিয়ে কৃষি কর্মকর্তার পরামর্শ নিন।'
                 : 'The model could not identify any disease with certainty. Please seek human expert advice.'}
@@ -218,26 +227,16 @@ export default function ResultView({
       {/* Tier 4: Not Rice */}
       {tier === 'not_rice' && (
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-5 shadow-xs">
+          <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-5 sm:p-6 shadow-sm">
             <div className="flex items-start gap-3">
-              <svg
-                className="mt-0.5 h-6 w-6 shrink-0 text-rose-600"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-              </svg>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-200 text-rose-800 font-bold">
+                ✕
+              </span>
               <div>
-                <h2 id="result-heading" className="text-xl font-bold text-rose-950">
+                <h2 id="result-heading" className="text-xl sm:text-2xl font-bold text-rose-950">
                   {isBn ? 'এটি ধানপাতা মনে হচ্ছে না' : 'Not Rice Leaf'}
                 </h2>
-                <p className="mt-1 text-xs text-rose-900 sm:text-sm">
+                <p className="mt-2 text-sm leading-relaxed text-rose-900">
                   {isBn
                     ? 'আপলোডকৃত ছবিটি ধানগাছের পাতা হিসেবে শনাক্ত করা যায়নি। অনুগ্রহ করে শুধু ধানক্ষেতের আক্রান্ত পাতার স্পষ্ট ছবি দিন।'
                     : 'The uploaded image does not appear to be a rice leaf. Please upload a clear photo of a rice leaf.'}
@@ -270,14 +269,14 @@ export default function ResultView({
           <button
             type="button"
             onClick={onReset}
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+            className="flex min-h-[48px] w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-emerald-900/15 bg-white px-6 py-3 text-sm font-bold text-slate-800 shadow-2xs transition-all hover:bg-emerald-50/60 hover:border-emerald-700/30 active:scale-98"
           >
             <svg
               className="h-4 w-4 text-slate-500"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
