@@ -2,16 +2,41 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import AccuracyScreen from './AccuracyScreen'
 import sampleReport from './__fixtures__/report.sample.json'
+import sampleNotRiceReport from './__fixtures__/report.notrice.sample.json'
 import sampleMeta from './__fixtures__/model_meta.sample.json'
 
-function mockSuccessfulFetch(metaOverride = {}) {
+function mockSuccessfulFetch(metaOverride = {}, reportOverride = {}) {
+  const meta = { ...sampleMeta, ...metaOverride }
+  const report = { ...sampleReport, ...reportOverride }
+  const fetchMock = vi.fn().mockImplementation((url: string) => {
+    if (url.includes('/model/report.json')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => report,
+      } as Response)
+    }
+    if (url.includes('/model/model_meta.json')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => meta,
+      } as Response)
+    }
+    return Promise.resolve({ ok: false, status: 404 } as Response)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
+function mockNotRiceFetch(metaOverride = {}) {
   const meta = { ...sampleMeta, ...metaOverride }
   const fetchMock = vi.fn().mockImplementation((url: string) => {
     if (url.includes('/model/report.json')) {
       return Promise.resolve({
         ok: true,
         status: 200,
-        json: async () => sampleReport,
+        json: async () => sampleNotRiceReport,
       } as Response)
     }
     if (url.includes('/model/model_meta.json')) {
@@ -180,5 +205,101 @@ describe('AccuracyScreen & HowItWorks', () => {
     expect(screen.getByText(/ক্যালিব্রেটেড/)).toBeInTheDocument()
     expect(screen.getAllByText(/৪টি/).length).toBeGreaterThan(0)
     expect(screen.getByText(/ফোন থেকে বাইরে যায় না/)).toBeInTheDocument()
+  })
+
+  describe('F12 not-rice section (M3 integration)', () => {
+    it('when report.notRice exists: renders section with heading "ধানপাতা নয় যাচাই", test rejection %, false reject %, and macro-F1 with/without gate', async () => {
+      mockNotRiceFetch()
+      render(<AccuracyScreen />)
+
+      const heading = await screen.findByRole('heading', {
+        level: 2,
+        name: /ধানপাতা নয় যাচাই/i,
+      })
+      expect(heading).toBeInTheDocument()
+
+      // notRiceTestRejected: 0.952 -> ৯৫.২%
+      expect(screen.getByText(/৯৫\.২%/)).toBeInTheDocument()
+      // riceTestFalseReject: 0.024 -> ২.৪%
+      expect(screen.getByText(/২\.৪%/)).toBeInTheDocument()
+      // macroF1SixClassBase: 0.884 -> ৮৮.৪%
+      expect(screen.getByText(/৮৮\.৪%/)).toBeInTheDocument()
+      // macroF1SixClassWithGate: 0.892 -> ৮৯.২%
+      expect(screen.getByText(/৮৯\.২%/)).toBeInTheDocument()
+    })
+
+    it('lists every source with its licence and a link with target="_blank" and rel="noreferrer"', async () => {
+      mockNotRiceFetch()
+      render(<AccuracyScreen />)
+
+      await screen.findByRole('heading', {
+        level: 2,
+        name: /ধানপাতা নয় যাচাই/i,
+      })
+
+      // Source 1
+      const link1 = screen.getByRole('link', {
+        name: /Kaggle Rice Weed & Non-rice Leaves/i,
+      })
+      expect(link1).toHaveAttribute('href', 'https://example.com/non-rice-source-1')
+      expect(link1).toHaveAttribute('target', '_blank')
+      expect(link1.getAttribute('rel')).toContain('noreferrer')
+      expect(screen.getByText(/CC BY-SA 4.0/)).toBeInTheDocument()
+
+      // Source 2
+      const link2 = screen.getByRole('link', {
+        name: /PlantVillage Non-Rice Subset/i,
+      })
+      expect(link2).toHaveAttribute('href', 'https://example.com/non-rice-source-2')
+      expect(link2).toHaveAttribute('target', '_blank')
+      expect(link2.getAttribute('rel')).toContain('noreferrer')
+      expect(screen.getByText(/CC0 1.0/)).toBeInTheDocument()
+    })
+
+    it('shows bd5GateOnly note as a small honest disclosure line when present', async () => {
+      mockNotRiceFetch()
+      render(<AccuracyScreen />)
+
+      expect(
+        await screen.findByText(
+          /বি\.দ্র\. BD5 এক্সটার্নাল টেস্ট সেটে গেট ব্যবহারে সামান্য মিথ্যা বাতিল হতে পারে।/,
+        ),
+      ).toBeInTheDocument()
+    })
+
+    it('does NOT render the "ধানপাতা নয় যাচাই" section when report.notRice is absent', async () => {
+      mockSuccessfulFetch() // standard report without notRice
+      render(<AccuracyScreen />)
+
+      // Wait for page to load
+      await screen.findByText(/সার্বিক নির্ভুলতা/)
+      expect(
+        screen.queryByRole('heading', {
+          level: 2,
+          name: /ধানপাতা নয় যাচাই/i,
+        }),
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders 7-class confusion matrix (including not_rice) with Bangla name "ধানপাতা নয়" for row and column headers', async () => {
+      mockNotRiceFetch()
+      render(<AccuracyScreen />)
+
+      await screen.findByRole('heading', {
+        level: 2,
+        name: /ধানপাতা নয় যাচাই/i,
+      })
+
+      // Both rowheader and columnheader with "ধানপাতা নয়" must exist in the confusion matrix table
+      const colHeader = screen.getByRole('columnheader', {
+        name: 'ধানপাতা নয়',
+      })
+      expect(colHeader).toBeInTheDocument()
+
+      const rowHeader = screen.getByRole('rowheader', {
+        name: 'ধানপাতা নয়',
+      })
+      expect(rowHeader).toBeInTheDocument()
+    })
   })
 })

@@ -8,6 +8,7 @@ import {
 } from './format'
 import HowItWorks from './HowItWorks'
 import { loadReport, type ReportLoadResult } from './loadReport'
+import NotRiceSection from './NotRiceSection'
 
 export default function AccuracyScreen() {
   const [loadState, setLoadState] = useState<ReportLoadResult | null>(null)
@@ -173,6 +174,9 @@ export default function AccuracyScreen() {
           </table>
         </div>
       </section>
+
+      {/* Not-Rice Verification Section (if present in report) */}
+      {report.notRice && <NotRiceSection notRice={report.notRice} />}
 
       {/* Tier Breakdown Table */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">

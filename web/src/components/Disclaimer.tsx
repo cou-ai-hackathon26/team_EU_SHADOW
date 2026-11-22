@@ -10,22 +10,24 @@ export function Disclaimer({ lang = 'bn', className = '' }: DisclaimerProps = {}
     <aside
       role="note"
       aria-label={isBn ? 'সতর্কবার্তা ও দায়িত্বশীল এআই নির্দেশনা' : 'Safety disclaimer'}
-      className={`flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/90 p-3.5 text-xs text-amber-950 shadow-sm sm:p-4 sm:text-sm ${className}`}
+      className={`flex items-start gap-3 rounded-2xl border border-amber-200/90 bg-amber-50/80 p-4 text-xs sm:text-sm text-amber-950 shadow-2xs ${className}`}
     >
-      <svg
-        className="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          fillRule="evenodd"
-          d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
-          clipRule="evenodd"
-        />
-      </svg>
+      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 mt-0.5">
+        <svg
+          className="h-4 w-4"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </div>
       <div className="leading-relaxed">
-        <strong className="font-semibold text-amber-900">
+        <strong className="font-bold text-amber-950">
           {isBn ? 'প্রাথমিক স্ক্রিনিং:' : 'Preliminary screening:'}
         </strong>{' '}
         {isBn

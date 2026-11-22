@@ -1,0 +1,13 @@
+{
+  "id": "mdmasumakondha/agroleaf-m3-not-rice-gate",
+  "title": "AgroLeaf M3 Not Rice Gate",
+  "code_file": "m3_not_rice.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": true,
+  "dataset_sources": ["nirmalsankalana/plantdoc-dataset", "awsaf49/coco-2017-dataset"],
+  "competition_sources": [],
+  "kernel_sources": ["mdmasumakondha/agroleaf-unified-dataset-build"]
+}

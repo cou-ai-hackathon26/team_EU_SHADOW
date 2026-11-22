@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import type { Prediction, QualityReport } from '../../ai/types'
 import { loadModel, analyze } from '../../ai/engine'
+import { useT } from '../../i18n/useT'
 import PhotoPicker from '../capture/PhotoPicker'
 import SampleGallery from '../capture/SampleGallery'
 import ResultView from './ResultView'
+import { saveScanFromPrediction } from '../history/historyStore'
 
 export default function ScanFlow() {
+  const { lang } = useT()
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -39,6 +42,8 @@ export default function ScanFlow() {
       await loadModel()
       const result = await analyze(selectedImage)
       setPrediction(result)
+      // F9: keep a small thumbnail on this device only; a failed save must not block the result
+      saveScanFromPrediction(result, selectedImage).catch(() => {})
     } catch (err) {
       setAnalysisError(err instanceof Error ? err : new Error('মডেল চালাতে সমস্যা হয়েছে'))
     } finally {
@@ -55,6 +60,7 @@ export default function ScanFlow() {
           onReset={handleClear}
           image={selectedImage}
           imageFile={selectedFile}
+          lang={lang}
         />
       ) : (
         <>

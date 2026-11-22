@@ -33,4 +33,17 @@ describe('softmax', () => {
       expect(p).toBeCloseTo(expectedUniform, 2)
     }
   })
+
+  it('temperature 1.0 with log-prob logits: softmax returns the original probabilities (sum 1, within 1e-6)', () => {
+    const origProbs = [0.05, 0.35, 0.10, 0.01, 0.01, 0.01, 0.47]
+    const logits = origProbs.map((p) => Math.log(p))
+    const probs = softmax(logits, 1.0)
+
+    const sum = Array.from(probs).reduce((acc, p) => acc + p, 0)
+    expect(sum).toBeCloseTo(1.0, 6)
+
+    for (let i = 0; i < origProbs.length; i++) {
+      expect(probs[i]).toBeCloseTo(origProbs[i]!, 6)
+    }
+  })
 })
