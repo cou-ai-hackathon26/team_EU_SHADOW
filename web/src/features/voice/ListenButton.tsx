@@ -109,24 +109,25 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
       onClick={handleToggle}
       aria-label={isSpeaking ? 'পড়া বন্ধ করুন' : 'ফলাফল বাংলায় পড়ে শুনুন'}
       aria-pressed={isSpeaking}
-      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
+      className={`inline-flex min-h-[48px] items-center justify-center gap-3 rounded-2xl px-5 py-2.5 text-sm sm:text-base font-bold shadow-2xs transition-all active:scale-[0.98] ${
         isSpeaking
-          ? 'border border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100'
-          : 'border border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 hover:border-emerald-400'
+          ? 'border-2 border-amber-400 bg-amber-50 text-amber-950 shadow-amber-200/50 hover:bg-amber-100'
+          : 'border-2 border-emerald-600/30 bg-gradient-to-r from-emerald-50 to-emerald-100/60 text-emerald-950 hover:border-emerald-600 hover:bg-emerald-100'
       } ${className}`}
     >
       {isSpeaking ? (
         <>
-          <span className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500"></span>
-          </span>
+          <div className="flex items-center gap-1 h-4">
+            <span className="w-1 bg-amber-600 rounded-full animate-bounce h-3"></span>
+            <span className="w-1 bg-amber-600 rounded-full animate-bounce delay-75 h-4"></span>
+            <span className="w-1 bg-amber-600 rounded-full animate-bounce delay-150 h-2.5"></span>
+          </div>
           <svg
-            className="h-5 w-5 text-amber-700"
+            className="h-5 w-5 text-amber-800"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
@@ -138,21 +139,23 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
         </>
       ) : (
         <>
-          <svg
-            className="h-5 w-5 text-emerald-700"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
-          <span>শুনুন (বাংলায় পড়ুন)</span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-700 text-white shadow-2xs">
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          </span>
+          <span>শুনুন (বাংলায় ভয়েস পরামর্শ)</span>
         </>
       )}
     </button>

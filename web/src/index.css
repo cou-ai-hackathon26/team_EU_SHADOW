@@ -1,16 +1,20 @@
 @import "tailwindcss";
 
-/* Design tokens. Owner: Tanjil (T1). Change colours here, not inline. */
+/* Design tokens for AgroLeaf AI: Modern, trustworthy AgriTech system. */
 @theme {
-  --font-sans: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
-  --color-leaf-50: #f0fdf4;
-  --color-leaf-100: #dcfce7;
-  --color-leaf-200: #bbf7d0;
+  --font-sans: "Hind Siliguri", "Noto Sans Bengali", system-ui, -apple-system, sans-serif;
+  --color-leaf-50: #f8faf8;
+  --color-leaf-100: #e8f5ea;
+  --color-leaf-200: #cbe7cf;
   --color-leaf-600: #16a34a;
   --color-leaf-700: #15803d;
-  --color-leaf-800: #166534;
-  --color-leaf-900: #14532d;
-  --color-warn-500: #f59e0b;
+  --color-leaf-800: #0f5132;
+  --color-leaf-900: #0a3622;
+  --color-harvest-50: #fffbeb;
+  --color-harvest-100: #fef3c7;
+  --color-harvest-500: #d97706;
+  --color-harvest-600: #b45309;
+  --color-warn-500: #d97706;
   --color-danger-600: #dc2626;
 }
 
@@ -18,8 +22,11 @@ html, body, #root {
   min-height: 100%;
   width: 100%;
   overflow-x: clip;
+  background-color: var(--color-leaf-50);
 }
 
 body {
-  @apply bg-leaf-50 text-slate-900 antialiased;
+  @apply bg-leaf-50 text-slate-900 antialiased font-sans;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
