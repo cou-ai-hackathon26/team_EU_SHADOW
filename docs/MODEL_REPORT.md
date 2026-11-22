@@ -10,7 +10,7 @@ internal test and BD5 were scored once afterwards. Code: `ml/kaggle/top3/`.
 | P1 AgroFusedNet-M | 3.69M | 14.8 | 0.908 | 0.880 | 0.78 / 0.69 | 0.268 | 0.050 |
 | P2 MobileNetV3-Large-CAM | 4.21M | 16.9 | 0.903 | 0.877 | 0.73 / 0.69 | 0.233 | 0.037 |
 | P3 RegNetY-400MF | 3.91M | 15.6 | 0.896 | 0.888 | 0.79 / 0.77 | 0.383 | 0.028 |
-| **Blend P2+P3 (deployed)** | 8.12M | 16.3 (FP16 weights) | 0.910 | 0.894 | 0.78 / 0.78 | 0.371 | 0.021 |
+| **Blend P2+P3 (deployed)** | 8.12M | 16.3 (FP16 weights; 16.6 with the M3 gate) | 0.910 | 0.894 | 0.78 / 0.78 | 0.371 | 0.021 |
 | Blend P1+P2+P3 | 11.81M | 23.7 (FP16 weights) | 0.910 | 0.890 | 0.78 / 0.72 | 0.328 | 0.026 |
 
 **Why P2+P3 and not all three:** the 3-model blend tied on validation macro-F1 (0.9100 vs 0.9099) and is 7 MB larger and slower,
@@ -39,6 +39,24 @@ Checks: FP32 graph vs PyTorch max |Δ| 5.7e-06; FP16-stored vs FP32 on 200 real 
 | tungro | 0.923 | 0.934 | 0.928 | 410 |
 | sheath_blight | 0.974 | 0.956 | 0.965 | 315 |
 
+## Internal test, confusion matrix (final shipped ONNX, gate on)
+
+Rows = true class, columns = predicted class. 1,901 rice photos + 1,489 not-rice photos (PlantDoc + COCO test split) = 3,390.
+Same numbers as `web/public/model/report.json`, which the app's Accuracy page shows.
+
+| true \ predicted | healthy | blast | brown_spot | leaf_smut | tungro | sheath_blight | not_rice |
+|---|---|---|---|---|---|---|---|
+| healthy | **323** | 1 | 5 | 1 | 0 | 2 | 1 |
+| blast | 6 | **321** | 17 | 5 | 7 | 2 | 1 |
+| brown_spot | 9 | 19 | **310** | 14 | 20 | 1 | 3 |
+| leaf_smut | 2 | 5 | 13 | **84** | 3 | 1 | 0 |
+| tungro | 1 | 7 | 15 | 2 | **383** | 2 | 0 |
+| sheath_blight | 7 | 1 | 3 | 2 | 1 | **298** | 3 |
+| not_rice | 37 | 11 | 27 | 0 | 16 | 49 | **1349** |
+
+Most rice errors are Brown Spot ↔ Blast / Tungro / Leaf Smut. 8 rice photos (0.42%) are wrongly sent to "not rice"; 140 not-rice
+photos (9.4%) pass the gate, most often as Sheath Blight or Healthy.
+
 ## Limitations
 
 - **BD5 (external, Savar) is weak (4-class macro-F1 0.37).** BD5 photos are detached leaves on white paper
@@ -60,7 +78,7 @@ Checks: FP32 graph vs PyTorch max |Δ| 5.7e-06; FP16-stored vs FP32 on 200 real 
 ## M3 — "ধানপাতা নয়" (not_rice) gate — v2-blend-p2-p3-scratch-gate
 
 A small separate CNN answers "is this a rice leaf?". It is trained **from random initialisation** (`pretrained=False`,
-80,353 parameters) and folded into the same `agroleaf.onnx`, so the browser still loads one file (15.9 MB).
+80,353 parameters) and folded into the same `agroleaf.onnx`, so the browser still loads one file (16.6 MB, 16,637,529 bytes).
 The disease blend above is **unchanged**. Code: `ml/kaggle/m3/m3_not_rice.py` (Kaggle notebook `agroleaf-m3-not-rice-gate`, v5).
 
 **How the output is built (inside the graph):** `p6` = calibrated blend probabilities (T = 0.910 is now applied inside the graph,
