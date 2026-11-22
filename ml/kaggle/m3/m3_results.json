@@ -1,0 +1,33 @@
+{
+  "rice_test_n": 1901,
+  "macroF1_6class_base": 0.8937359620868778,
+  "macroF1_6class_with_gate": 0.8925215187585986,
+  "rice_test_false_reject": 0.004208311415044713,
+  "accuracy_6class_with_gate": 0.9042609153077328,
+  "max_abs_diff_composition": 0.0001366734504699707,
+  "rice_val_false_reject": 0.0005257623554153522,
+  "not_rice_val_rejected": 0.9166666666666666,
+  "not_rice_val_n": 1488,
+  "not_rice_test_rejected": 0.905977165883143,
+  "not_rice_test_n": 1489,
+  "not_rice_test_rejected_plantdoc": 0.7744874715261959,
+  "not_rice_test_rejected_coco2017": 0.960952380952381,
+  "bd5_gate_test_false_reject": 0.0,
+  "bd5_gate_test_n": 401,
+  "bd5_gate_val_false_reject": 0.0,
+  "screen_rice_test_false_reject": 0.0005260389268805891,
+  "screen_macroF1_6class_with_gate": 0.6499577688583996,
+  "screen_not_rice_test_rejected": 0.74,
+  "threshold_notRice": 0.9470907249450675,
+  "blend_conf_cap": 0.98,
+  "val_choice": [
+    0.9470907249450675,
+    0.98,
+    0.0004342162396873643,
+    0.9173387096774194
+  ],
+  "gate_params": 80353,
+  "onnx_mb": 15.86678409576416,
+  "macroF1_7class_test": 0.8747276036131747,
+  "elapsed_s": 5518.816442012787
+}
