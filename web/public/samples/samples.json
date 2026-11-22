@@ -1,0 +1,92 @@
+[
+  {
+    "id": "healthy",
+    "classId": "healthy",
+    "file": "healthy.jpg",
+    "split": "test",
+    "credit": "RiceLeafDiseaseBD v3 — CC BY 4.0",
+    "source": {
+      "name": "RiceLeafDiseaseBD v3",
+      "doi": "10.17632/86s4jzj2m4.3",
+      "url": "https://data.mendeley.com/datasets/86s4jzj2m4/3",
+      "licence": "CC BY 4.0"
+    },
+    "originalFile": "RiceLeafDiseaseBD/Original images/Healthy/Healthy_245.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  },
+  {
+    "id": "blast",
+    "classId": "blast",
+    "file": "blast.jpg",
+    "split": "test",
+    "credit": "BanglaRiceLeaf — CC0 1.0",
+    "source": {
+      "name": "BanglaRiceLeaf",
+      "doi": "10.7910/DVN/XAOBYW",
+      "url": "https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XAOBYW",
+      "licence": "CC0 1.0"
+    },
+    "originalFile": "Leaf Blast/LB_0477.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  },
+  {
+    "id": "brown_spot",
+    "classId": "brown_spot",
+    "file": "brown_spot.jpg",
+    "split": "test",
+    "credit": "RiceLeafDiseaseBD v3 — CC BY 4.0",
+    "source": {
+      "name": "RiceLeafDiseaseBD v3",
+      "doi": "10.17632/86s4jzj2m4.3",
+      "url": "https://data.mendeley.com/datasets/86s4jzj2m4/3",
+      "licence": "CC BY 4.0"
+    },
+    "originalFile": "RiceLeafDiseaseBD/Original images/Brown spot/brown spot_1642.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  },
+  {
+    "id": "leaf_smut",
+    "classId": "leaf_smut",
+    "file": "leaf_smut.jpg",
+    "split": "test",
+    "credit": "RiceLeafDiseaseBD v3 — CC BY 4.0",
+    "source": {
+      "name": "RiceLeafDiseaseBD v3",
+      "doi": "10.17632/86s4jzj2m4.3",
+      "url": "https://data.mendeley.com/datasets/86s4jzj2m4/3",
+      "licence": "CC BY 4.0"
+    },
+    "originalFile": "RiceLeafDiseaseBD/Original images/Leaf smut/Leaf smut_273.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  },
+  {
+    "id": "tungro",
+    "classId": "tungro",
+    "file": "tungro.jpg",
+    "split": "test",
+    "credit": "RiceLeafDiseaseBD v3 — CC BY 4.0",
+    "source": {
+      "name": "RiceLeafDiseaseBD v3",
+      "doi": "10.17632/86s4jzj2m4.3",
+      "url": "https://data.mendeley.com/datasets/86s4jzj2m4/3",
+      "licence": "CC BY 4.0"
+    },
+    "originalFile": "RiceLeafDiseaseBD/Original images/Rice Tungro/Rice Tungro_2027.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  },
+  {
+    "id": "sheath_blight",
+    "classId": "sheath_blight",
+    "file": "sheath_blight.jpg",
+    "split": "test",
+    "credit": "RiceLeafDiseaseBD v3 — CC BY 4.0",
+    "source": {
+      "name": "RiceLeafDiseaseBD v3",
+      "doi": "10.17632/86s4jzj2m4.3",
+      "url": "https://data.mendeley.com/datasets/86s4jzj2m4/3",
+      "licence": "CC BY 4.0"
+    },
+    "originalFile": "RiceLeafDiseaseBD/Original images/Sheath blight/Sheath blight_591.jpg",
+    "changes": "EXIF orientation applied, resized to max 480 px, re-encoded as JPEG"
+  }
+]
