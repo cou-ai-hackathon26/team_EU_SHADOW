@@ -1,5 +1,6 @@
 import { openDB, type IDBPDatabase } from 'idb'
-import type { ConfidenceTier } from '../../ai/types'
+import type { ConfidenceTier, Prediction } from '../../ai/types'
+import { getCard } from '../../content/getCard'
 
 export interface ScanRecord {
   id: string
@@ -125,6 +126,28 @@ export async function addScan(
     await db.put(STORE_NAME, fullRecord)
   }
   return fullRecord
+}
+
+/**
+ * Saves a prediction and its image as a local scan history record.
+ */
+export async function saveScanFromPrediction(
+  prediction: Prediction,
+  image: HTMLImageElement | ImageBitmap | string
+): Promise<ScanRecord> {
+  const topPrediction = prediction.top[0]
+  if (!topPrediction) {
+    throw new Error('Cannot save a prediction without a top class')
+  }
+
+  const thumbnail = await compressThumbnail(image)
+  return addScan({
+    diseaseId: topPrediction.classId,
+    diseaseName: getCard(topPrediction.classId).name,
+    tier: prediction.tier,
+    confidence: topPrediction.prob,
+    thumbnail,
+  })
 }
 
 /**
