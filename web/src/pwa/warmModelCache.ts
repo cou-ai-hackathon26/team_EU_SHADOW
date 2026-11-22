@@ -11,6 +11,12 @@ export interface WarmModelCacheResult {
   skipped?: 'offline' | 'save-data'
 }
 
+/**
+ * Name of the runtime cache for ML model assets.
+ * Must match the cacheName 'agroleaf-model' configured in vite.config.ts runtimeCaching.
+ */
+export const MODEL_CACHE_NAME = 'agroleaf-model'
+
 let warmedPromise: Promise<WarmModelCacheResult> | null = null
 
 export function resetWarmModelCache(): void {
@@ -66,13 +72,36 @@ export function warmModelCache(
       `${base}/model/report.json`,
     ]
 
+    const cacheStorage =
+      opts?.cacheStorage !== undefined
+        ? opts.cacheStorage
+        : typeof globalThis !== 'undefined' && 'caches' in globalThis
+          ? globalThis.caches
+          : null
+
+    let cache: Cache | null = null
+    if (cacheStorage) {
+      try {
+        cache = await cacheStorage.open(MODEL_CACHE_NAME)
+      } catch {
+        cache = null
+      }
+    }
+
     const warmed: string[] = []
 
     for (const path of targetPaths) {
       try {
         const res = await fetchFn(path)
         if (res.ok) {
-          // Read response body fully so SW stores it in runtime cache
+          if (cache) {
+            try {
+              await cache.put(path, res.clone())
+            } catch {
+              // Ignore cache write errors
+            }
+          }
+          // Read response body fully so SW (if controlling) stores it in runtime cache
           await res.arrayBuffer()
           warmed.push(path)
         }
