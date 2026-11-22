@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path'
 
 // M8: deployment guards. Runs from web/ (vitest root).
 const webRoot = resolve(__dirname, '../..')
-const MAX_MODEL_BYTES = 10 * 1024 * 1024
+const MAX_MODEL_BYTES = 30 * 1024 * 1024 // raised from 10 MB on 22 Nov (D8)
 
 interface VercelHeader { key: string; value: string }
 interface VercelConfig {
@@ -27,7 +27,7 @@ function headersFor(cfg: VercelConfig, source: string): Record<string, string> {
 }
 
 describe('M8 deploy guards', () => {
-  it('every .onnx model in public/model is at most 10 MB', () => {
+  it('every .onnx model in public/model is at most 30 MB', () => {
     const dir = join(webRoot, 'public', 'model')
     const models = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.onnx')) : []
     for (const f of models) {
