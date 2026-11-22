@@ -1,24 +1,71 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { loadImage } from './loadImage'
 
-describe('loadImage (F2)', () => {
-  it('loads an image file and resolves with HTMLImageElement', async () => {
-    const file = new File(['fake image data'], 'sample.jpg', { type: 'image/jpeg' })
+describe('loadImage (F2 review fixes)', () => {
+  let revokeObjectURLSpy: any
 
-    // In jsdom, Image onload does not fire naturally without triggering src
-    const mockRevoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
-    const mockCreate = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url')
+  beforeEach(() => {
+    revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url')
+  })
 
-    const promise = loadImage(file)
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
 
-    // Trigger onload on the newly created image if jsdom doesn't auto-fire
-    const imgPromise = promise.then((img) => {
-      expect(img).toBeInstanceOf(HTMLImageElement)
-      expect(img.src).toContain('blob:test-url')
-    })
+  it('resolves with HTMLImageElement and calls URL.revokeObjectURL on success', async () => {
+    class FakeSuccessImage {
+      onload: ((ev: any) => void) | null = null
+      onerror: ((ev: any) => void) | null = null
+      private _src = ''
 
-    mockCreate.mockRestore()
-    mockRevoke.mockRestore()
-    return imgPromise
+      get src() {
+        return this._src
+      }
+      set src(value: string) {
+        this._src = value
+        setTimeout(() => {
+          if (this.onload) {
+            this.onload(new Event('load'))
+          }
+        }, 0)
+      }
+    }
+
+    vi.stubGlobal('Image', FakeSuccessImage)
+
+    const file = new File(['valid'], 'leaf.jpg', { type: 'image/jpeg' })
+    const img = await loadImage(file)
+
+    expect(img).toBeDefined()
+    expect(img.src).toBe('blob:test-url')
+    expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:test-url')
+  })
+
+  it('rejects with error and calls URL.revokeObjectURL on failure', async () => {
+    class FakeFailureImage {
+      onload: ((ev: any) => void) | null = null
+      onerror: ((ev: any) => void) | null = null
+      private _src = ''
+
+      get src() {
+        return this._src
+      }
+      set src(value: string) {
+        this._src = value
+        setTimeout(() => {
+          if (this.onerror) {
+            this.onerror(new Event('error'))
+          }
+        }, 0)
+      }
+    }
+
+    vi.stubGlobal('Image', FakeFailureImage)
+
+    const file = new File(['corrupt'], 'corrupt.jpg', { type: 'image/jpeg' })
+    await expect(loadImage(file)).rejects.toThrow(/ছবি লোড করতে ব্যর্থ/i)
+    expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:test-url')
   })
 })

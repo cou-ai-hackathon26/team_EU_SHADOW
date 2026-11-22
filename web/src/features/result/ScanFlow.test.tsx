@@ -96,6 +96,36 @@ describe('ScanFlow integration (F4)', () => {
     expect(screen.getByRole('button', { name: /ক্যামেরা/i })).toBeInTheDocument()
   })
 
+  it('disables Analyze button and displays "বিশ্লেষণ চলছে" while analysis is in flight, then shows result', async () => {
+    const user = userEvent.setup()
+    let resolveInference!: (pred: Prediction) => void
+    const pendingPromise = new Promise<Prediction>((resolve) => {
+      resolveInference = resolve
+    })
+    vi.mocked(engine.analyze).mockImplementationOnce(() => pendingPromise)
+
+    const { container } = render(<ScanFlow />)
+
+    const file = new File(['fake bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
+    await user.upload(fileInput, file)
+
+    const analyzeBtn = await screen.findByRole('button', { name: /Analyze|শনাক্ত/i })
+    await user.click(analyzeBtn)
+
+    // Button is now disabled and shows "বিশ্লেষণ চলছে"
+    expect(analyzeBtn).toBeDisabled()
+    expect(analyzeBtn).toHaveTextContent(/বিশ্লেষণ চলছে/)
+
+    // Resolve the inference promise
+    resolveInference(mockPrediction)
+
+    // Result heading appears
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
+    })
+  })
+
   it('handles engine errors gracefully by rendering Bengali error view without crashing', async () => {
     const user = userEvent.setup()
     vi.mocked(engine.analyze).mockRejectedValueOnce(new Error('Inference failure'))
