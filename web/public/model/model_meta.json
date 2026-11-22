@@ -24,7 +24,7 @@
   "temperature": 0.9102,
   "thresholds": {
     "high": 0.65,
-    "medium": 0.3,
+    "medium": 0.57,
     "healthyHigh": 0.72,
     "notRice": 1.01
   },

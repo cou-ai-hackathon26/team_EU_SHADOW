@@ -46,3 +46,13 @@ Checks: FP32 graph vs PyTorch max |Δ| 5.7e-06; FP16-stored vs FP32 on 200 real 
   field photos are unreliable; the confidence tiers and the "not sure" answer are the safety net.
 - Leaf Smut comes from one source (RiceLeafDiseaseBD v3) and is most often confused with Brown Spot.
 - No not_rice class yet (M3), so `thresholds.notRice` is 1.01 (never triggers).
+
+## Confidence tiers (thresholds chosen on validation)
+
+`high` 0.65 (≤ 5% val error), `healthyHigh` 0.72 (≥ 97% val precision for "healthy"), `medium` 0.57: below it the app says "আমি নিশ্চিত নই". 0.57 is the largest threshold where the abstained validation photos are mostly wrong (top-1 accuracy ≤ 60%) while abstaining on ≤ 5% of validation photos.
+
+| Tier | Val coverage / accuracy | Internal test coverage / accuracy | BD5 coverage / accuracy |
+|---|---|---|---|
+| high | 92.8% / 95.4% | 92.5% / 94.4% | 36.5% / 37.7% |
+| medium (top-2) | 2.5% / 51.1% | 2.8% / 49.1% | 16.8% / 36.6% |
+| not sure | 4.7% / 56.7% | 4.7% / 43.8% | 46.8% / 35.6% |
