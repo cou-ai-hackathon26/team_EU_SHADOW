@@ -111,4 +111,38 @@ describe('SampleGallery (F13)', () => {
       expect(screen.getAllByText(new RegExp(s.source.licence.replace('.', '\\.'))).length).toBeGreaterThan(0)
     }
   })
+
+  it('5. samples.json originalFile for brown_spot and leaf_smut match the swapped test samples', () => {
+    const list = readSamples()
+    const brownSpot = list.find((s) => s.id === 'brown_spot')
+    const leafSmut = list.find((s) => s.id === 'leaf_smut')
+
+    expect(brownSpot?.originalFile).toBe(
+      'RiceLeafDiseaseBD/Original images/Brown spot/brown spot_1163.jpg',
+    )
+    expect(leafSmut?.originalFile).toBe(
+      'RiceLeafDiseaseBD/Original images/Leaf smut/Leaf smut_656.jpg',
+    )
+  })
+
+  it('6. every sample JPEG on disk is <= 150 KB and starts with JPEG magic bytes FF D8 FF', () => {
+    const list = readSamples()
+    for (const s of list) {
+      const filePath = join(samplesDir, s.file)
+      expect(existsSync(filePath)).toBe(true)
+      const buffer = readFileSync(filePath)
+      expect(buffer.length).toBeLessThanOrEqual(150 * 1024)
+      expect(buffer[0]).toBe(0xff)
+      expect(buffer[1]).toBe(0xd8)
+      expect(buffer[2]).toBe(0xff)
+    }
+  })
+
+  it('7. shows the honesty note text pointing to Accuracy page', async () => {
+    render(<SampleGallery onImageReady={vi.fn()} />)
+    await screen.findAllByRole('button', { name: /নমুনা ছবি:/ })
+    expect(
+      screen.getByText(/আসল নির্ভুলতা দেখুন Accuracy পেজে/),
+    ).toBeInTheDocument()
+  })
 })
