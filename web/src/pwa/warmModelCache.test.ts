@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { warmModelCache, resetWarmModelCache } from './warmModelCache'
+import {
+  warmModelCache,
+  resetWarmModelCache,
+  warmAudioCache,
+  resetWarmAudioCache,
+  AUDIO_CACHE_NAME,
+} from './warmModelCache'
 
 describe('F14 warmModelCache', () => {
   beforeEach(() => {
@@ -228,5 +234,193 @@ describe('F14 warmModelCache', () => {
       '/model/agroleaf.onnx',
       '/model/report.json',
     ])
+  })
+})
+
+describe('F8 warmAudioCache', () => {
+  beforeEach(() => {
+    resetWarmAudioCache()
+    vi.restoreAllMocks()
+  })
+
+  it('a. exports AUDIO_CACHE_NAME as "agroleaf-audio"', () => {
+    expect(AUDIO_CACHE_NAME).toBe('agroleaf-audio')
+  })
+
+  it('b. Online: fetches ${base}/audio/<file> for all entries in voice-manifest.json in sequence and puts into agroleaf-audio', async () => {
+    const fetchedUrls: string[] = []
+    const putCalls: Array<{ cacheName: string; path: string }> = []
+    const fakeCache = {
+      match: vi.fn().mockResolvedValue(undefined),
+      put: vi.fn().mockImplementation(async (path: string) => {
+        putCalls.push({ cacheName: 'agroleaf-audio', path })
+      }),
+    } as unknown as Cache
+    const openSpy = vi.fn().mockResolvedValue(fakeCache)
+    const fakeCacheStorage: Pick<CacheStorage, 'open'> = {
+      open: openSpy,
+    }
+
+    const mockFetch = vi.fn().mockImplementation(async (url: string | URL | Request) => {
+      const urlStr = url.toString()
+      fetchedUrls.push(urlStr)
+      return {
+        ok: true,
+        status: 200,
+        clone: () => ({ isClone: true, url: urlStr }),
+        arrayBuffer: async () => new ArrayBuffer(8),
+      } as unknown as Response
+    })
+
+    const result = await warmAudioCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '/app',
+      cacheStorage: fakeCacheStorage,
+    })
+
+    expect(openSpy).toHaveBeenCalledWith('agroleaf-audio')
+    expect(result.warmed).toHaveLength(15)
+    expect(result.skipped).toBeUndefined()
+    expect(mockFetch).toHaveBeenCalledTimes(15)
+    expect(putCalls).toHaveLength(15)
+    expect(fetchedUrls[0]).toBe('/app/audio/high-healthy.mp3')
+  })
+
+  it('c. online=false: makes no fetch and returns skipped "offline"', async () => {
+    const mockFetch = vi.fn()
+
+    const result = await warmAudioCache({
+      fetchFn: mockFetch,
+      online: false,
+      saveData: false,
+    })
+
+    expect(result.skipped).toBe('offline')
+    expect(result.warmed).toEqual([])
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('d. saveData=true: makes no fetch and returns skipped "save-data"', async () => {
+    const mockFetch = vi.fn()
+
+    const result = await warmAudioCache({
+      fetchFn: mockFetch,
+      online: true,
+      saveData: true,
+    })
+
+    expect(result.skipped).toBe('save-data')
+    expect(result.warmed).toEqual([])
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('e. skips any file that is already in the cache (cache.match hit means no fetch)', async () => {
+    const fetchedUrls: string[] = []
+    const fakeCache = {
+      match: vi.fn().mockImplementation(async (path: string) => {
+        if (path.endsWith('high-blast.mp3')) {
+          return { ok: true } // hit!
+        }
+        return undefined
+      }),
+      put: vi.fn().mockResolvedValue(undefined),
+    } as unknown as Cache
+    const fakeCacheStorage: Pick<CacheStorage, 'open'> = {
+      open: vi.fn().mockResolvedValue(fakeCache),
+    }
+
+    const mockFetch = vi.fn().mockImplementation(async (url: string | URL | Request) => {
+      const urlStr = url.toString()
+      fetchedUrls.push(urlStr)
+      return {
+        ok: true,
+        status: 200,
+        clone: () => ({ isClone: true }),
+        arrayBuffer: async () => new ArrayBuffer(8),
+      } as unknown as Response
+    })
+
+    const result = await warmAudioCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '',
+      cacheStorage: fakeCacheStorage,
+    })
+
+    // 1 file was cached, 14 fetched
+    expect(mockFetch).toHaveBeenCalledTimes(14)
+    expect(fetchedUrls.some((u) => u.endsWith('high-blast.mp3'))).toBe(false)
+    expect(result.warmed).toContain('/audio/high-blast.mp3')
+    expect(result.warmed).toHaveLength(15)
+  })
+
+  it('f. One fetch rejects or returns ok:false: does not throw, continues other files', async () => {
+    const mockFetch = vi.fn().mockImplementation(async (url: string | URL | Request) => {
+      const urlStr = url.toString()
+      if (urlStr.endsWith('high-blast.mp3')) {
+        return { ok: false, status: 500 } as unknown as Response
+      }
+      if (urlStr.endsWith('low.mp3')) {
+        throw new Error('Network error on low.mp3')
+      }
+      return {
+        ok: true,
+        status: 200,
+        clone: () => ({ isClone: true }),
+        arrayBuffer: async () => new ArrayBuffer(8),
+      } as unknown as Response
+    })
+
+    const result = await warmAudioCache({
+      fetchFn: mockFetch as unknown as typeof fetch,
+      online: true,
+      saveData: false,
+      baseUrl: '',
+    })
+
+    expect(result.warmed).toHaveLength(13)
+    expect(result.warmed.some((u) => u.endsWith('high-blast.mp3'))).toBe(false)
+    expect(result.warmed.some((u) => u.endsWith('low.mp3'))).toBe(false)
+  })
+
+  it('g. Calling it twice only warms once per page load (module-level guard, resetWarmAudioCache)', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      clone: () => ({ isClone: true }),
+      arrayBuffer: async () => new ArrayBuffer(8),
+    } as unknown as Response)
+
+    const res1 = await warmAudioCache({
+      fetchFn: mockFetch,
+      online: true,
+      saveData: false,
+    })
+
+    expect(mockFetch).toHaveBeenCalledTimes(15)
+    expect(res1.warmed).toHaveLength(15)
+
+    const res2 = await warmAudioCache({
+      fetchFn: mockFetch,
+      online: true,
+      saveData: false,
+    })
+
+    expect(mockFetch).toHaveBeenCalledTimes(15) // no new calls
+    expect(res2.warmed).toEqual(res1.warmed)
+
+    resetWarmAudioCache()
+
+    const res3 = await warmAudioCache({
+      fetchFn: mockFetch,
+      online: true,
+      saveData: false,
+    })
+
+    expect(mockFetch).toHaveBeenCalledTimes(30) // called again after reset
+    expect(res3.warmed).toHaveLength(15)
   })
 })
