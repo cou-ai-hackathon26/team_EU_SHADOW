@@ -54,4 +54,12 @@ describe('S3 Pitch and Final Submission Documentation', () => {
     expect(content).toMatch(/scratch|শূন্য থেকে|random init/i)
     expect(content).toMatch(/১৬১২৩|16123/i)
   })
+
+  it('4. SUBMISSION.md contains Eastern University and live deployment URL', () => {
+    expect(fs.existsSync(submissionPath)).toBe(true)
+    const content = fs.readFileSync(submissionPath, 'utf8')
+
+    expect(content).toContain('Eastern University')
+    expect(content).toContain('https://agroleaf-ai-olive.vercel.app')
+  })
 })
