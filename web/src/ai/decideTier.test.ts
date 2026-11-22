@@ -84,4 +84,31 @@ describe('decideTier', () => {
     ]
     expect(decideTier(probsLowHealthy, dummyMeta)).toBe('low')
   })
+
+  it('when not_rice has highest prob but below thresholds.notRice, tier is graded only on best disease prob', () => {
+    // not_rice is 0.48 (< 0.50). best disease is blast 0.40.
+    // With medium threshold = 0.45, blast is below medium => must be 'low' (not 'medium' from not_rice)
+    const metaWithLowMedium: ModelMeta = {
+      ...dummyMeta,
+      thresholds: {
+        ...dummyMeta.thresholds,
+        medium: 0.45,
+        notRice: 0.5,
+      },
+    }
+    const probs: ClassProb[] = [
+      { classId: 'not_rice', prob: 0.48 },
+      { classId: 'blast', prob: 0.40 },
+      { classId: 'brown_spot', prob: 0.12 },
+    ]
+    expect(decideTier(probs, metaWithLowMedium)).toBe('low')
+
+    // If best disease is >= medium (e.g. 0.46), it should be 'medium'
+    const probsMediumDisease: ClassProb[] = [
+      { classId: 'not_rice', prob: 0.48 },
+      { classId: 'blast', prob: 0.46 },
+      { classId: 'brown_spot', prob: 0.06 },
+    ]
+    expect(decideTier(probsMediumDisease, metaWithLowMedium)).toBe('medium')
+  })
 })

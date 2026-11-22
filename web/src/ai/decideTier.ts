@@ -21,9 +21,12 @@ export function decideTier(
     return 'not_rice'
   }
 
-  // 2. Find top-1
+  // 2. Find top-1 among non-not_rice classes
   let top1: ClassProb | undefined
   for (const p of probs) {
+    if (p.classId === 'not_rice') {
+      continue
+    }
     if (!top1 || p.prob > top1.prob) {
       top1 = p
     }

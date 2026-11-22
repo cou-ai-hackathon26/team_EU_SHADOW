@@ -1,3 +1,5 @@
+import { useT } from '../../i18n/useT'
+
 export interface AnalyzeButtonProps {
   onAnalyze: () => void | Promise<void>
   disabled?: boolean
@@ -11,6 +13,7 @@ export default function AnalyzeButton({
   loading = false,
   className = '',
 }: AnalyzeButtonProps) {
+  const { t } = useT()
   const isDisabled = disabled || loading
 
   return (
@@ -18,7 +21,7 @@ export default function AnalyzeButton({
       type="button"
       onClick={onAnalyze}
       disabled={isDisabled}
-      className={`flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-leaf-800 px-5 py-3 text-sm font-bold text-white shadow-xs transition-colors hover:bg-leaf-700 active:scale-98 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      className={`flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-600 px-6 py-3.5 text-base font-extrabold text-white shadow-md transition-all duration-200 hover:from-emerald-700 hover:to-emerald-500 hover:shadow-lg active:scale-[0.98] ring-2 ring-emerald-600/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:shadow-none ${className}`}
     >
       {loading ? (
         <>
@@ -42,7 +45,7 @@ export default function AnalyzeButton({
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
-          <span>বিশ্লেষণ চলছে...</span>
+          <span>{t('analyzingText')}</span>
         </>
       ) : (
         <>
@@ -59,7 +62,7 @@ export default function AnalyzeButton({
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <span>রোগ শনাক্ত করুন (Analyze)</span>
+          <span>{t('analyzeBtn')}</span>
         </>
       )}
     </button>

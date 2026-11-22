@@ -1,4 +1,5 @@
 import type { QualityReport } from '../../ai/types'
+import { useT } from '../../i18n/useT'
 import AnalyzeButton from '../result/AnalyzeButton'
 
 export interface QualityHintProps {
@@ -8,6 +9,8 @@ export interface QualityHintProps {
 }
 
 export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: QualityHintProps) {
+  const { t } = useT()
+
   if (!report) {
     return null
   }
@@ -15,68 +18,48 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
   const warnings: string[] = []
 
   if (report.tooDark) {
-    warnings.push('ছবিটি খুব অন্ধকার। আরও আলোতে বা ফ্ল্যাশ দিয়ে পরিষ্কার ছবি তুলুন।')
+    warnings.push(t('qualityTooDark'))
   } else if (report.tooBright) {
-    warnings.push('ছবিতে অতিরিক্ত আলো পড়েছে। সরাসরি তীব্র রোদ বা অতিরিক্ত ফ্ল্যাশ এড়িয়ে তুলুন।')
+    warnings.push(t('qualityTooBright'))
   }
 
   if (report.tooBlurry) {
-    warnings.push('ছবিটি ঝাপসা দেখাচ্ছে। ক্যামেরা স্থির রেখে পাতার স্পষ্ট ছবি তুলুন।')
+    warnings.push(t('qualityTooBlurry'))
   }
 
   const hasWarnings = warnings.length > 0
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-leaf-800/10 bg-white p-4 shadow-xs">
+    <div className="flex flex-col gap-3 rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-2xs">
       {hasWarnings ? (
         <div
           role="status"
           aria-live="polite"
-          className="rounded-xl border border-amber-200 bg-amber-50/90 p-3.5 text-xs text-amber-900"
+          className="rounded-2xl border border-amber-300 bg-amber-50/95 p-4 text-xs sm:text-sm text-amber-950 shadow-2xs"
         >
-          <div className="flex items-start gap-2.5">
-            <svg
-              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
+          <div className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-xs">
+              ⚠️
+            </span>
             <div className="flex flex-col gap-1">
-              <span className="font-semibold text-amber-950">ছবির গুণমান সতর্কতা:</span>
-              <ul className="list-inside list-disc space-y-0.5 text-amber-900">
+              <span className="font-bold text-amber-950">{t('qualityWarningTitle')}</span>
+              <ul className="list-inside list-disc space-y-1 text-amber-900">
                 {warnings.map((msg, idx) => (
-                  <li key={idx}>{msg}</li>
+                  <li key={idx} className="leading-snug">{msg}</li>
                 ))}
               </ul>
-              <span className="mt-1 text-[11px] text-amber-800/90">
-                (আপনি চাইলে এই ছবি দিয়েই চালিয়ে যেতে পারেন)
+              <span className="mt-1 text-xs text-amber-800 font-medium">
+                {t('qualityCanProceed')}
               </span>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 rounded-xl border border-leaf-600/20 bg-leaf-50/80 px-3 py-2 text-xs text-leaf-800">
-          <svg
-            className="h-4 w-4 text-leaf-600"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-          <span className="font-medium">ছবির আলো ও স্পষ্টতা রোগ বিশ্লেষণের জন্য উপযুক্ত।</span>
+        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-emerald-50/90 px-4 py-3 text-xs sm:text-sm text-emerald-950 shadow-2xs">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold">
+            ✓
+          </span>
+          <span className="font-semibold">{t('qualityGood')}</span>
         </div>
       )}
 

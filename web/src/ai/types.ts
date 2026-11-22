@@ -63,12 +63,25 @@ export interface ModelReport {
   /** share of test photos that land in each tier, and how often the top-1 answer was right there */
   tiers: { tier: ConfidenceTier; coverage: number; accuracy: number }[]
   limitations: { bn: string; en: string }[]
+  notRice?: {
+    threshold: number
+    blendConfidenceCap?: number
+    notRiceValRejected: number
+    notRiceTestRejected: number
+    riceValFalseReject: number
+    riceTestFalseReject: number
+    macroF1SixClassBase: number
+    macroF1SixClassWithGate: number
+    sources: { name: string; licence: string; url: string }[]
+    bd5GateOnly?: { note: string; testFalseReject: number }
+    screenRecapture?: { riceFalseReject: number; notRiceRejected: number; macroF1SixClassWithGate: number }
+  }
 }
 
 /** What analyze() returns. The UI renders ONLY from this object. */
 export interface Prediction {
   tier: ConfidenceTier
-  top: ClassProb[]                // sorted desc, length = number of classes
+  top: ClassProb[]                // diseases sorted desc; not_rice (if the model has it) is always last
   /** Heat map for top-1 class, values 0..1, row-major, size heatmapSize x heatmapSize. Absent if camOutput=false. */
   heatmap?: Float32Array
   heatmapSize?: number

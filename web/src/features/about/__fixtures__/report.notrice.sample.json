@@ -1,0 +1,90 @@
+{
+  "modelVersion": "SAMPLE-NOTRICE-FOR-TESTS",
+  "createdAt": "2026-11-22T00:00:00Z",
+  "dataset": {
+    "name": "RiceLeafDiseaseBD v3 + Non-Rice Extensions",
+    "url": "https://doi.org/10.17632/86s4jzj2m4.3",
+    "license": "CC BY 4.0",
+    "images": { "train": 4200, "val": 700, "test": 700 }
+  },
+  "test": {
+    "n": 700,
+    "accuracy": 0.8523,
+    "macroF1": 0.8451,
+    "classes": [
+      "healthy",
+      "blast",
+      "brown_spot",
+      "leaf_smut",
+      "tungro",
+      "sheath_blight",
+      "not_rice"
+    ],
+    "perClass": [
+      { "classId": "healthy", "precision": 0.88, "recall": 0.90, "f1": 0.89, "support": 100 },
+      { "classId": "blast", "precision": 0.82, "recall": 0.80, "f1": 0.81, "support": 100 },
+      { "classId": "brown_spot", "precision": 0.79, "recall": 0.81, "f1": 0.80, "support": 100 },
+      { "classId": "leaf_smut", "precision": 0.85, "recall": 0.83, "f1": 0.84, "support": 100 },
+      { "classId": "tungro", "precision": 0.86, "recall": 0.88, "f1": 0.87, "support": 100 },
+      { "classId": "sheath_blight", "precision": 0.81, "recall": 0.79, "f1": 0.80, "support": 100 },
+      { "classId": "not_rice", "precision": 0.95, "recall": 0.96, "f1": 0.955, "support": 100 }
+    ],
+    "confusionMatrix": [
+      [90, 2, 3, 1, 2, 2, 0],
+      [3, 80, 8, 4, 2, 3, 0],
+      [2, 7, 81, 5, 2, 3, 0],
+      [1, 4, 6, 83, 3, 3, 0],
+      [2, 2, 3, 2, 88, 3, 0],
+      [3, 5, 5, 4, 4, 79, 0],
+      [0, 1, 1, 0, 1, 1, 96]
+    ]
+  },
+  "calibration": {
+    "temperature": 1.0,
+    "eceBefore": 0.125,
+    "eceAfter": 0.032
+  },
+  "tiers": [
+    { "tier": "high", "coverage": 0.725, "accuracy": 0.941 },
+    { "tier": "medium", "coverage": 0.185, "accuracy": 0.723 },
+    { "tier": "low", "coverage": 0.075, "accuracy": 0.385 },
+    { "tier": "not_rice", "coverage": 0.015, "accuracy": 0.985 }
+  ],
+  "limitations": [
+    {
+      "bn": "অতিরিক্ত আলো বা গভীর ছায়ায় তোলা ছবিতে ফলাফলের নির্ভুলতা কমতে পারে।",
+      "en": "Accuracy may degrade under severe direct sunlight or deep shadows."
+    }
+  ],
+  "notRice": {
+    "threshold": 0.50,
+    "blendConfidenceCap": 0.70,
+    "notRiceValRejected": 0.965,
+    "notRiceTestRejected": 0.952,
+    "riceValFalseReject": 0.018,
+    "riceTestFalseReject": 0.024,
+    "macroF1SixClassBase": 0.884,
+    "macroF1SixClassWithGate": 0.892,
+    "sources": [
+      {
+        "name": "Kaggle Rice Weed & Non-rice Leaves",
+        "licence": "CC BY-SA 4.0",
+        "url": "https://example.com/non-rice-source-1"
+      },
+      {
+        "name": "PlantVillage Non-Rice Subset",
+        "licence": "CC0 1.0",
+        "url": "https://example.com/non-rice-source-2"
+      }
+    ],
+    "bd5GateOnly": {
+      "note": "বি.দ্র. BD5 এক্সটার্নাল টেস্ট সেটে গেট ব্যবহারে সামান্য মিথ্যা বাতিল হতে পারে।",
+      "testFalseReject": 0.045
+    },
+    "screenRecapture": {
+      "riceFalseReject": 0.03,
+      "notRiceRejected": 0.94,
+      "macroF1SixClassWithGate": 0.88
+    }
+  }
+}

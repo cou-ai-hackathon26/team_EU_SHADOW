@@ -71,15 +71,17 @@ export default function SampleGallery({
   if (samples.length === 0 && !error) return null
 
   return (
-    <section aria-labelledby="sample-gallery-title" className="flex flex-col gap-3">
-      <h2 id="sample-gallery-title" className="text-lg font-bold text-leaf-800">
-        নমুনা ছবি দিয়ে চেষ্টা করুন
-      </h2>
-      <p className="text-sm text-slate-600">
-        ছবিগুলো আমাদের test split থেকে নেওয়া; মডেলের training-এ ব্যবহার হয়নি।
-      </p>
+    <section aria-labelledby="sample-gallery-title" className="flex flex-col gap-3.5">
+      <div className="flex flex-col gap-1">
+        <h2 id="sample-gallery-title" className="text-lg font-bold text-emerald-950">
+          নমুনা ছবি দিয়ে চেষ্টা করুন
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+          পরীক্ষা করার জন্য নিচের নমুনা ছবিতে ট্যাপ করুন — তাৎক্ষণিক ডেমো রোগ নির্ণয় দেখুন।
+        </p>
+      </div>
 
-      <ul className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-6">
         {samples.map((s) => {
           const name = getCard(s.classId).name.bn
           return (
@@ -89,15 +91,20 @@ export default function SampleGallery({
                 aria-label={`নমুনা ছবি: ${name}`}
                 disabled={loadingId !== null}
                 onClick={() => void pick(s)}
-                className="flex w-full flex-col overflow-hidden rounded-xl border border-leaf-800/15 bg-white text-left shadow-xs transition hover:border-leaf-800/40 focus:outline-none focus:ring-2 focus:ring-leaf-800/40 disabled:opacity-60"
+                className="group flex w-full flex-col overflow-hidden rounded-2xl border border-emerald-900/15 bg-white text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-600 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/40 active:scale-95 disabled:opacity-60"
               >
-                <img
-                  src={`${BASE}/samples/${s.file}`}
-                  alt=""
-                  loading="lazy"
-                  className="aspect-square w-full object-cover"
-                />
-                <span className="px-2 py-1 text-xs font-medium text-slate-800">
+                <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+                  <img
+                    src={`${BASE}/samples/${s.file}`}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <span className="absolute bottom-1 right-1 rounded-md bg-black/60 px-1 py-0.5 text-[9px] font-semibold text-white backdrop-blur-xs">
+                    ট্যাপ করুন
+                  </span>
+                </div>
+                <span className="truncate px-2 py-1.5 text-xs font-bold text-slate-800 group-hover:text-emerald-900">
                   {loadingId === s.id ? 'লোড হচ্ছে…' : name}
                 </span>
               </button>
@@ -107,18 +114,19 @@ export default function SampleGallery({
       </ul>
 
       {error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-xs font-semibold text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200">
           {error}
         </p>
       )}
 
-      <details className="text-xs text-slate-600">
-        <summary className="cursor-pointer">ছবির সূত্র ও লাইসেন্স</summary>
-        <ul className="mt-2 flex flex-col gap-1">
+      <details className="text-xs text-slate-500 rounded-xl border border-emerald-900/10 bg-emerald-50/40 p-2.5">
+        <summary className="cursor-pointer font-medium text-slate-700 hover:text-emerald-800">ছবির সূত্র ও লাইসেন্স (গবেষণা ডেটাসেট)</summary>
+        <p className="mt-1 text-[11px] text-slate-500">ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া; মডেল ট্রেনিংয়ে আলাদা রাখা হয়েছে।</p>
+        <ul className="mt-2 flex flex-col gap-1 text-[11px]">
           {samples.map((s) => (
             <li key={s.id}>
               {getCard(s.classId).name.bn}: {s.credit} ·{' '}
-              <a href={s.source.url} target="_blank" rel="noreferrer" className="underline">
+              <a href={s.source.url} target="_blank" rel="noreferrer" className="underline hover:text-emerald-800">
                 {s.source.name}
               </a>{' '}
               · {s.source.licence} · {s.changes}
