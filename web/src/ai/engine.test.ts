@@ -308,4 +308,232 @@ describe('engine', () => {
       expect(val).toBe(0)
     }
   })
+
+  describe('7-class not_rice handling (M7 follow-up)', () => {
+    const meta7: ModelMeta = {
+      version: 'v2-7class',
+      architecture: 'MobileNetV3-Small (random init)',
+      trainedFromScratch: true,
+      classes: [
+        'healthy',
+        'blast',
+        'brown_spot',
+        'leaf_smut',
+        'tungro',
+        'sheath_blight',
+        'not_rice',
+      ],
+      inputSize: 224,
+      mean: [0.485, 0.456, 0.406],
+      std: [0.229, 0.224, 0.225],
+      temperature: 1.0,
+      thresholds: {
+        high: 0.85,
+        medium: 0.45,
+        healthyHigh: 0.9,
+        notRice: 0.5,
+      },
+      camOutput: true,
+    }
+
+    it('if not_rice has highest prob but below thresholds.notRice: top[0] and top[1] are diseases, not_rice is last in top', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => meta7,
+        } as Response),
+      )
+
+      // 7 probabilities: not_rice is 0.47 (index 6, highest), blast is 0.35 (index 1), brown_spot is 0.10 (index 2)
+      const probs = [0.05, 0.35, 0.10, 0.01, 0.01, 0.01, 0.47]
+      const fakeLogits = new Float32Array(probs.map((p) => Math.log(p)))
+
+      const sessionMock = (ort as any)._sessionMock
+      sessionMock.outputNames = ['logits']
+      sessionMock.run.mockResolvedValue({
+        logits: { data: fakeLogits },
+      })
+
+      const dummyImage = {
+        data: new Uint8ClampedArray(224 * 224 * 4),
+        width: 224,
+        height: 224,
+      } as any
+
+      const prediction = await analyze(dummyImage)
+
+      // top[0] and top[1] must be disease classes
+      expect(prediction.top[0].classId).toBe('blast')
+      expect(prediction.top[1].classId).toBe('brown_spot')
+
+      // not_rice must be the LAST entry
+      const lastEntry = prediction.top[prediction.top.length - 1]
+      expect(lastEntry.classId).toBe('not_rice')
+      expect(lastEntry.prob).toBeCloseTo(0.47, 4)
+
+      // Diseases before not_rice must be sorted desc
+      for (let i = 0; i < prediction.top.length - 2; i++) {
+        expect(prediction.top[i].prob).toBeGreaterThanOrEqual(
+          prediction.top[i + 1].prob,
+        )
+      }
+    })
+
+    it('tier is computed from the best disease prob (e.g. 0.35 < 0.45 medium -> "low"), never medium/high from not_rice', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => meta7,
+        } as Response),
+      )
+
+      // not_rice is 0.47 (index 6, which is > medium 0.45), but top disease blast is 0.35 (< medium 0.45)
+      const probs = [0.05, 0.35, 0.10, 0.01, 0.01, 0.01, 0.47]
+      const fakeLogits = new Float32Array(probs.map((p) => Math.log(p)))
+
+      const sessionMock = (ort as any)._sessionMock
+      sessionMock.outputNames = ['logits']
+      sessionMock.run.mockResolvedValue({
+        logits: { data: fakeLogits },
+      })
+
+      const dummyImage = {
+        data: new Uint8ClampedArray(224 * 224 * 4),
+        width: 224,
+        height: 224,
+      } as any
+
+      const prediction = await analyze(dummyImage)
+      expect(prediction.tier).toBe('low')
+    })
+
+    it('not_rice >= thresholds.notRice returns tier "not_rice"', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => meta7,
+        } as Response),
+      )
+
+      // not_rice is 0.55 (>= notRice 0.5)
+      const probs = [0.05, 0.30, 0.08, 0.01, 0.01, 0.00, 0.55]
+      const fakeLogits = new Float32Array(probs.map((p) => Math.log(p)))
+
+      const sessionMock = (ort as any)._sessionMock
+      sessionMock.outputNames = ['logits']
+      sessionMock.run.mockResolvedValue({
+        logits: { data: fakeLogits },
+      })
+
+      const dummyImage = {
+        data: new Uint8ClampedArray(224 * 224 * 4),
+        width: 224,
+        height: 224,
+      } as any
+
+      const prediction = await analyze(dummyImage)
+      expect(prediction.tier).toBe('not_rice')
+      expect(prediction.top[prediction.top.length - 1].classId).toBe('not_rice')
+    })
+
+    it('heatmap uses the channel of the top DISEASE class, not the not_rice channel', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => meta7,
+        } as Response),
+      )
+
+      // not_rice is 0.47 (index 6), blast is 0.35 (index 1 = top disease)
+      const probs = [0.05, 0.35, 0.10, 0.01, 0.01, 0.01, 0.47]
+      const fakeLogits = new Float32Array(probs.map((p) => Math.log(p)))
+
+      // 7 channels of 7x7 = 49 values each
+      const camData = new Float32Array(7 * 49)
+      // Fill channel 1 ('blast') with values 10..58
+      for (let i = 0; i < 49; i++) {
+        camData[1 * 49 + i] = 10 + i
+      }
+      // Fill channel 6 ('not_rice') with 999
+      for (let i = 0; i < 49; i++) {
+        camData[6 * 49 + i] = 999
+      }
+
+      const sessionMock = (ort as any)._sessionMock
+      sessionMock.outputNames = ['logits', 'cam']
+      sessionMock.run.mockResolvedValue({
+        logits: { data: fakeLogits },
+        cam: { data: camData, dims: [1, 7, 7, 7] },
+      })
+
+      const dummyImage = {
+        data: new Uint8ClampedArray(224 * 224 * 4),
+        width: 224,
+        height: 224,
+      } as any
+
+      const prediction = await analyze(dummyImage)
+
+      expect(prediction.heatmap).toBeDefined()
+      // Should reflect channel 1 (min 10 -> 0, max 58 -> 1), not channel 6 (all 999 -> zeros)
+      expect(prediction.heatmap![0]).toBeCloseTo(0.0, 4)
+      expect(prediction.heatmap![48]).toBeCloseTo(1.0, 4)
+    })
+
+    it('a 6-class model (no not_rice in meta.classes) behaves exactly as before', async () => {
+      const meta6: ModelMeta = {
+        ...sampleMeta,
+        classes: [
+          'healthy',
+          'blast',
+          'brown_spot',
+          'leaf_smut',
+          'tungro',
+          'sheath_blight',
+        ],
+      }
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => meta6,
+        } as Response),
+      )
+
+      // 6 classes: blast (index 1) is highest
+      const fakeLogits = new Float32Array([1.0, 8.0, 2.0, 0.5, 0.2, 0.1])
+      const sessionMock = (ort as any)._sessionMock
+      sessionMock.outputNames = ['logits']
+      sessionMock.run.mockResolvedValue({
+        logits: { data: fakeLogits },
+      })
+
+      const dummyImage = {
+        data: new Uint8ClampedArray(224 * 224 * 4),
+        width: 224,
+        height: 224,
+      } as any
+
+      const prediction = await analyze(dummyImage)
+
+      expect(prediction.top).toHaveLength(6)
+      expect(prediction.top[0].classId).toBe('blast')
+      expect(prediction.top.find((p) => p.classId === 'not_rice')).toBeUndefined()
+      for (let i = 0; i < prediction.top.length - 1; i++) {
+        expect(prediction.top[i].prob).toBeGreaterThanOrEqual(
+          prediction.top[i + 1].prob,
+        )
+      }
+    })
+  })
 })

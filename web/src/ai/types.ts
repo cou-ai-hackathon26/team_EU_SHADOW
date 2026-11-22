@@ -68,7 +68,7 @@ export interface ModelReport {
 /** What analyze() returns. The UI renders ONLY from this object. */
 export interface Prediction {
   tier: ConfidenceTier
-  top: ClassProb[]                // sorted desc, length = number of classes
+  top: ClassProb[]                // diseases sorted desc; not_rice (if the model has it) is always last
   /** Heat map for top-1 class, values 0..1, row-major, size heatmapSize x heatmapSize. Absent if camOutput=false. */
   heatmap?: Float32Array
   heatmapSize?: number
