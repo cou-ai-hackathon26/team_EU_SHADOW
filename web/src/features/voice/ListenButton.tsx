@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
 import type { DiseaseCard } from '../../content/types'
 import type { ConfidenceTier } from '../../ai/types'
-import { isSpeechSupported, buildSpokenText, speakText, stopSpeaking } from './speak'
+import { buildSpokenText, speakText, stopSpeaking, useBanglaVoice } from './speak'
 
 export interface ListenButtonProps {
   card: DiseaseCard
   tier: ConfidenceTier
+  secondCard?: DiseaseCard
   className?: string
 }
 
-export function ListenButton({ card, tier, className = '' }: ListenButtonProps) {
+export function ListenButton({ card, tier, secondCard, className = '' }: ListenButtonProps) {
   const [isSpeaking, setIsSpeaking] = useState(false)
-  const supported = isSpeechSupported()
+  const { supported, voice, hasBanglaVoice } = useBanglaVoice()
 
   // Requirement 4: Screen বদলালে কথা থেমে যায়
   useEffect(() => {
@@ -21,15 +22,16 @@ export function ListenButton({ card, tier, className = '' }: ListenButtonProps) 
   }, [])
 
   const handleToggle = () => {
-    if (!supported) return
+    if (!supported || !hasBanglaVoice) return
 
     if (isSpeaking) {
       stopSpeaking()
       setIsSpeaking(false)
     } else {
-      const text = buildSpokenText(card, tier)
+      const text = buildSpokenText(card, tier, secondCard)
       setIsSpeaking(true)
       speakText(text, {
+        voice,
         onStart: () => setIsSpeaking(true),
         onEnd: () => setIsSpeaking(false),
         onError: () => setIsSpeaking(false),
@@ -64,6 +66,38 @@ export function ListenButton({ card, tier, className = '' }: ListenButtonProps) 
         </button>
         <span className="text-[11px] text-slate-500">
           ভয়েস সাপোর্ট নেই (আপনার ব্রাউজারে ভয়েস সুবিধা নেই)
+        </span>
+      </div>
+    )
+  }
+
+  if (!hasBanglaVoice) {
+    return (
+      <div className={`inline-flex flex-col items-start gap-1 ${className}`}>
+        <button
+          type="button"
+          disabled
+          aria-disabled="true"
+          className="inline-flex min-h-[44px] cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-400 opacity-80"
+        >
+          <svg
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+          <span>শুনুন</span>
+        </button>
+        <span className="text-[11px] text-slate-500">
+          এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন
         </span>
       </div>
     )

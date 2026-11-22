@@ -202,6 +202,7 @@ describe('F8: ListenButton component', () => {
     })
 
     // Button should now become enabled
-    expect(button.disabled).toBe(false)
+    const enabledButton = screen.getByRole('button', { name: /শুনুন/i }) as HTMLButtonElement
+    expect(enabledButton.disabled).toBe(false)
   })
 })
