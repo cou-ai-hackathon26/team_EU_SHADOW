@@ -24,12 +24,16 @@ export const bn = {
 
   // Capture / PhotoPicker (F2)
   cameraBtn: 'ক্যামেরা দিয়ে তুলুন',
-  galleryBtn: 'গ্যালারি থেকে বেছে নিন',
+  cameraBtnDesc: 'সরাসরি ধানপাতা স্ক্যান করুন',
+  galleryBtn: 'গ্যালারি থেকে নিন',
+  galleryBtnDesc: 'সংরক্ষিত ছবি নির্বাচন করুন',
   chooseAnotherPhoto: 'অন্য ছবি',
   previewAlt: 'নির্বাচিত ধানপাতার ছবি',
+  photoRejectedTitle: 'ছবি গ্রহণ করা যায়নি',
+  fallbackLeafPhoto: 'ধানপাতার ছবি',
   errInvalidFormat: 'শুধুমাত্র JPG, PNG বা WebP ফরম্যাটের ছবি আপলোড করুন।',
   errFileTooLarge: 'ছবির আকার ১০ মেগাবাইট (10 MB)-এর চেয়ে বেশি হতে পারবে না।',
-  errLoadFailed: 'ছবি লোড করতে ব্যর্থ হয়েছে।',
+  errLoadFailed: 'ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।',
 
   // Sample Gallery
   sampleGalleryTitle: 'বা নমুনা ছবি দিয়ে পরীক্ষা করুন:',

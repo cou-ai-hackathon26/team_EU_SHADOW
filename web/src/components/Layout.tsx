@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react'
 import BottomNav from './BottomNav'
 import { LanguageToggle, useT } from '../i18n/useT'
+import { Disclaimer } from './Disclaimer'
 
 interface LayoutProps {
-  children: ReactNode
+  children?: ReactNode
   currentHash: string
 }
 
 export default function Layout({ children, currentHash }: LayoutProps) {
-  const { t } = useT()
+  const { lang, t } = useT()
   return (
     <div className="flex min-h-screen w-full flex-col bg-leaf-50 text-slate-900 antialiased">
       {/* Header */}
@@ -68,39 +69,8 @@ export default function Layout({ children, currentHash }: LayoutProps) {
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pt-4 pb-28">
         {children}
 
-        {/* Screening Safety Disclaimer */}
-        <aside
-          role="note"
-          aria-label="সতর্কবার্তা"
-          className="mt-8 rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs text-amber-900"
-        >
-          <div className="flex items-start gap-2">
-            <svg
-              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p className="leading-relaxed">
-              <strong>সতর্কতা:</strong> এটি প্রাথমিক স্ক্রিনিং, চূড়ান্ত রোগ নির্ণয় নয়। মাঠপর্যায়ে সিদ্ধান্তের আগে উপসহকারী কৃষি কর্মকর্তা বা কৃষি কল সেন্টার{' '}
-              <a
-                href="tel:16123"
-                className="font-bold underline underline-offset-2 hover:text-amber-950"
-              >
-                ১৬১২৩
-              </a>
-              -এ যোগাযোগ করুন।
-            </p>
-          </div>
-        </aside>
+        {/* Screening Safety Disclaimer (F7) */}
+        <Disclaimer lang={lang} className="mt-8" />
       </main>
 
       {/* Bottom Navigation */}

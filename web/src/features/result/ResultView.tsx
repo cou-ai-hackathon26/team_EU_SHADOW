@@ -134,6 +134,7 @@ export default function ResultView({
             <ConfidenceMeter
               prob={top1.prob}
               label={isBn ? 'শনাক্তকরণের আত্মবিশ্বাস' : 'Model Confidence'}
+              lang={lang}
               className="mt-3.5"
             />
           </div>
@@ -175,7 +176,7 @@ export default function ResultView({
                   {isBn ? (top2 ? 'সম্ভাবনা ১' : 'সম্ভাব্য রোগ') : (top2 ? 'Option 1' : 'Possible Condition')}
                 </span>
                 <p className="text-base font-bold text-slate-900">{top1Card.name[lang]}</p>
-                <ConfidenceMeter prob={top1.prob} className="mt-2" />
+                <ConfidenceMeter prob={top1.prob} lang={lang} className="mt-2" />
               </div>
 
               {top2 && top2Card && (
@@ -184,7 +185,7 @@ export default function ResultView({
                     {isBn ? 'সম্ভাবনা ২' : 'Option 2'}
                   </span>
                   <p className="text-base font-bold text-slate-900">{top2Card.name[lang]}</p>
-                  <ConfidenceMeter prob={top2.prob} className="mt-2" />
+                  <ConfidenceMeter prob={top2.prob} lang={lang} className="mt-2" />
                 </div>
               )}
             </div>

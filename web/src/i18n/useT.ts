@@ -45,6 +45,11 @@ function updateGlobalLang(newLang: Lang) {
   listeners.forEach((listener) => listener(newLang))
 }
 
+export function resetGlobalLang(): void {
+  currentGlobalLang = getStoredLang()
+  listeners.forEach((listener) => listener(currentGlobalLang))
+}
+
 export interface UseTReturn {
   lang: Lang
   setLang: (lang: Lang) => void
@@ -70,7 +75,8 @@ export function useT(): UseTReturn {
   }, [])
 
   const toggleLang = useCallback(() => {
-    const nextLang: Lang = currentGlobalLang === 'bn' ? 'en' : 'bn'
+    const current = getStoredLang()
+    const nextLang: Lang = current === 'bn' ? 'en' : 'bn'
     updateGlobalLang(nextLang)
   }, [])
 

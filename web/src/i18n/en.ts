@@ -26,12 +26,16 @@ export const en: Record<I18nKeys, string> = {
 
   // Capture / PhotoPicker (F2)
   cameraBtn: 'Take with Camera',
+  cameraBtnDesc: 'Directly scan rice leaf',
   galleryBtn: 'Choose from Gallery',
+  galleryBtnDesc: 'Select saved leaf photo',
   chooseAnotherPhoto: 'Change Photo',
   previewAlt: 'Selected rice leaf photo',
+  photoRejectedTitle: 'Could not accept photo',
+  fallbackLeafPhoto: 'Rice leaf photo',
   errInvalidFormat: 'Only JPG, PNG, or WebP images are supported.',
   errFileTooLarge: 'Image size cannot exceed 10 MB.',
-  errLoadFailed: 'Failed to load image.',
+  errLoadFailed: 'Failed to process image. Please choose another photo.',
 
   // Sample Gallery
   sampleGalleryTitle: 'Or test with sample photos:',
