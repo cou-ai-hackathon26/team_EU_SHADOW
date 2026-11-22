@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import {
   addScan,
@@ -13,6 +13,10 @@ import { HistoryScreen } from './HistoryScreen'
 describe('F9: Scan History Store (historyStore.ts)', () => {
   beforeEach(async () => {
     await clearAllScans()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('1. যোগ করলে নতুনটা আগে দেখায় (newest scan appears first)', async () => {
@@ -84,30 +88,32 @@ describe('F9: Scan History Store (historyStore.ts)', () => {
     expect(scans).toHaveLength(0)
   })
 
-  it('3. পূর্ণ ছবি নয়, ছোট thumbnail (≤ 200 KB) রাখে', async () => {
-    // Generate a large data URL (> 250 KB)
-    const largeData = 'data:image/jpeg;base64,' + 'A'.repeat(300 * 1024)
-    expect(largeData.length).toBeGreaterThan(200 * 1024)
-
-    const thumbnail = await compressThumbnail(largeData, 200 * 1024)
-
-    // Calculate approximate byte size of base64 data URL
-    const base64Data = thumbnail.split(',')[1] || thumbnail
-    const approxBytes = Math.ceil((base64Data.length * 3) / 4)
-    expect(approxBytes).toBeLessThanOrEqual(200 * 1024)
-
-    // When saving through addScan with an oversized thumbnail, it is automatically kept <= 200 KB
-    const saved = await addScan({
-      diseaseId: 'leaf_smut',
-      diseaseName: { bn: 'লিফ স্মাট', en: 'Leaf Smut' },
-      tier: 'low',
-      confidence: 0.42,
-      thumbnail: largeData,
+  it('3. canvas দিয়ে বৈধ JPEG thumbnail ২০০ KB-এর মধ্যে রাখে', async () => {
+    const source = document.createElement('img')
+    Object.defineProperties(source, {
+      naturalWidth: { value: 1024 },
+      naturalHeight: { value: 512 },
     })
+    const context = { drawImage: vi.fn() } as unknown as CanvasRenderingContext2D
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context)
+    const oversizedJpeg = `data:image/jpeg;base64,${'A'.repeat(300 * 1024)}`
+    const smallJpeg = 'data:image/jpeg;base64,small-thumbnail'
+    const toDataURL = vi
+      .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+      .mockImplementation((_type, quality) => (quality === 0.4 ? smallJpeg : oversizedJpeg))
 
-    const savedBytes = Math.ceil((saved.thumbnail.length * 3) / 4)
-    expect(savedBytes).toBeLessThanOrEqual(200 * 1024)
+    const thumbnail = await compressThumbnail(source, 200 * 1024)
+
+    expect(thumbnail.startsWith('data:image/jpeg;base64,')).toBe(true)
+    expect(Math.ceil((thumbnail.split(',')[1].length * 3) / 4)).toBeLessThanOrEqual(200 * 1024)
+    expect(toDataURL.mock.calls).toEqual([
+      ['image/jpeg', 0.8],
+      ['image/jpeg', 0.6],
+      ['image/jpeg', 0.4],
+    ])
+    expect(context.drawImage).toHaveBeenCalledWith(source, 0, 0, 256, 128)
   })
+
 })
 
 describe('F9: HistoryScreen UI component (HistoryScreen.tsx)', () => {
