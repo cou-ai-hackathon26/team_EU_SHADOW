@@ -2,7 +2,7 @@
 
 **CoU AI Hackathon 2026 · Team EU_SHADOW · Eastern University, Bangladesh**
 
-AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজার-ভিত্তিক (On-Device WebAssembly) কৃষকবান্ধব অ্যাপ্লিকেশন, যার মাধ্যমে মাঠপর্যায়ে একজন ধানচাষী মোবাইলে আক্রান্ত পাতার ছবি তুলেই সম্পূর্ণ ইন্টারনেট বা সার্ভার ছাড়া তৎক্ষণাৎ প্রাথমিক রোগ নির্ণয় ও সৎ পরামর্শ পেতে পারেন।
+AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজার-ভিত্তিক (On-Device WebAssembly) কৃষকবান্ধব অ্যাপ্লিকেশন, যার মাধ্যমে মাঠপর্যায়ে একজন ধানচাষী মোবাইলে আক্রান্ত পাতার ছবি তুলেই কোনো সার্ভারে ছবি না পাঠিয়ে তৎক্ষণাৎ (প্রথমবার খুলতে ইন্টারনেট লাগে, এরপর অফলাইনেও চলে) প্রাথমিক রোগ নির্ণয় ও সৎ পরামর্শ পেতে পারেন।
 
 অ্যাপ্লিকেশনটি নির্ণয়ের ক্ষেত্রে অতিরিক্ত আত্মবিশ্বাস না দেখিয়ে সৎ ও দায়িত্বশীল দৃষ্টিভঙ্গি বজায় রাখে: নির্ভরযোগ্য ফলাফল পেলে রোগ ও প্রতিকার জানায়, লক্ষণ অস্পষ্ট হলে শীর্ষ দুটি সম্ভাবনার কথা জানিয়ে পরিষ্কার ছবি তুলতে বলে, বিভ্রান্তিকর বা দুর্বোধ্য ক্ষেত্রে স্পষ্টভাবে **"আমি নিশ্চিত নই"** বলে এবং অনাকাঙ্ক্ষিত ছবির ক্ষেত্রে **"এটি ধানপাতা মনে হচ্ছে না"** বলে সতর্ক করে। প্রতিটি ক্ষেত্রে সার্বক্ষণিক সরকারি কৃষি কল সেন্টার **১৬১২৩**-এ যোগাযোগের রেফারেল প্রদান করা হয়।
 
@@ -80,6 +80,16 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 
 ---
 
+## ৫ক. সীমাবদ্ধতা (Limitations)
+
+বিস্তারিত: [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md)।
+- সাদা কাগজে রাখা ছেঁড়া পাতার ছবিতে (BD5, Savar) রোগ মডেল দুর্বল: 4-class macro-F1 মাত্র 0.37।
+- Leaf Smut একটি মাত্র উৎস থেকে এসেছে এবং প্রায়ই Brown Spot-এর সাথে গুলিয়ে যায়।
+- not-rice গেট সব ভুল ছবি ধরতে পারে না (test-এ 90.6% প্রত্যাখ্যান; অন্য ফসলের পাতা 77.4%)।
+- মোবাইল/কম্পিউটার স্ক্রিনের ছবি তুললে রোগ মডেলের macro-F1 প্রায় 0.65-এ নেমে আসে (সাধারণ ছবিতে 0.89)।
+
+---
+
 ## ৬. গবেষণার ডেটাসেট (Datasets)
 
 সকল ডেটাসেট যাচাইকৃত চেকসাম সহ তাদের অফিসিয়াল রিপোজিটরি থেকে ডাউনলোড করা হয়েছে:
@@ -89,7 +99,7 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 | **RiceLeafDiseaseBD v3** (Gazipur, 2025) | CC BY 4.0 | [DOI: 10.17632/86s4jzj2m4.3](https://doi.org/10.17632/86s4jzj2m4.3) |
 | **BanglaRiceLeaf** (BRRI Gazipur) | CC0 1.0 Public Domain | [DOI: 10.7910/DVN/XAOBYW](https://doi.org/10.7910/DVN/XAOBYW) |
 | **RiceLeafBD real-field** (Sylhet/Dhaka) | CC BY 4.0 | [DOI: 10.17632/kx9rx8p2mz.1](https://doi.org/10.17632/kx9rx8p2mz.1) |
-| **RiceLeafDisease-BD5 v2** (Savar, 2024) — external test only | CC BY 4.0 | [DOI: 10.17632/sjkptpgv79.2](https://doi.org/10.17632/sjkptpgv79.2) |
+| **RiceLeafDisease-BD5 v2** (Savar, 2024) — disease model: external test only; not-rice gate: 70/15/15 split used in training | CC BY 4.0 | [DOI: 10.17632/sjkptpgv79.2](https://doi.org/10.17632/sjkptpgv79.2) |
 | **PlantDoc** (not-rice gate, other crops) | CC BY 4.0 | [github.com/pratikkayal/PlantDoc-Dataset](https://github.com/pratikkayal/PlantDoc-Dataset) |
 | **COCO 2017** (not-rice gate, non-leaf images) | CC BY 2.0 / US Gov Work | [cocodataset.org](https://cocodataset.org) |
 
