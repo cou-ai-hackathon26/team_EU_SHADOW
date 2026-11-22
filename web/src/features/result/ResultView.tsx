@@ -5,6 +5,9 @@ import { DiseaseCardView } from '../../content/DiseaseCardView'
 import { Disclaimer } from '../../components/Disclaimer'
 import { HelpCall } from '../../components/HelpCall'
 import { HeatmapOverlay } from './HeatmapOverlay'
+import { SeverityBadge } from '../severity/SeverityBadge'
+import { UrgentCallout } from '../severity/UrgentCallout'
+import { estimateSpread } from '../severity/estimateSpread'
 import { ShareButton } from '../share/ShareButton'
 import { ListenButton } from '../voice/ListenButton'
 import ConfidenceMeter from './ConfidenceMeter'
@@ -34,6 +37,15 @@ export default function ResultView({
     }
     return image?.src ?? null
   }, [imageFile, image])
+
+  const severityEstimate = useMemo(() => {
+    if (!prediction || prediction.tier !== 'high') return null
+    if (!prediction.heatmap) return null
+    if (prediction.top[0]?.classId === 'healthy') return null
+    const size =
+      prediction.heatmapSize || Math.round(Math.sqrt(prediction.heatmap.length))
+    return estimateSpread(prediction.heatmap, size)
+  }, [prediction])
 
   useEffect(() => {
     return () => {
@@ -255,12 +267,21 @@ export default function ResultView({
         />
       )}
 
+      {/* F18: Severity Badge & Urgent Callout directly under HeatmapOverlay */}
+      <SeverityBadge prediction={prediction} />
+      <UrgentCallout
+        tier={tier}
+        card={top1Card}
+        severity={severityEstimate}
+      />
+
       {/* Action Buttons: Share (F15) & Reset */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
         <ShareButton
           input={{
             prediction,
             image: image ?? undefined,
+            severity: severityEstimate ?? undefined,
           }}
           className="w-full sm:w-auto"
         />

@@ -260,8 +260,9 @@ describe('ResultView (F4)', () => {
 
     render(<ResultView prediction={pred} />)
 
-    const callLink = screen.getByRole('link', { name: /১৬১২৩/ })
-    expect(callLink).toHaveAttribute('href', 'tel:16123')
+    const callLinks = screen.getAllByRole('link', { name: /১৬১২৩/ })
+    expect(callLinks.length).toBeGreaterThanOrEqual(1)
+    expect(callLinks[0]).toHaveAttribute('href', 'tel:16123')
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
   })
 

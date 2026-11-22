@@ -55,4 +55,5 @@ Every item: Understand → Plan → **Tests first** → Implement → PR → Rev
 | F8 | বাংলায় ফল পড়ে শোনানো | SHOULD | CP3 | `feat/F8-voice-readout` | merged (#23, #34, #36) |
 | F9 | Scan ইতিহাস (শুধু নিজের ফোনে) | SHOULD | CP3 | `feat/F9-scan-history` | merged (#25, #35) |
 | F10 | QA: edge-case ছবি সেট + end-to-end test | MUST | CP2–CP4 | `feat/F10-qa-e2e` | merged (#26) |
+| F18 | আনুমানিক আক্রান্ত এলাকা + ১৬১২৩ জরুরি সংকেত | SHOULD | CP3 | `feat/F18-severity-estimate` | in-review |
 | S1 | README (সব নিয়ম মেনে) | MUST | CP4 | `docs/S1-readme` | merged (#27) |
