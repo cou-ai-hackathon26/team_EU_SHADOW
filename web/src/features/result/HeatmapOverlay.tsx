@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Prediction } from '../../ai/types'
-import { heatmapToRGBA } from './heatmapColor'
+import { cropRegion, heatmapToRGBA } from './heatmapColor'
 
 export interface HeatmapOverlayProps {
   prediction?: Prediction | null
@@ -16,11 +16,32 @@ export function HeatmapOverlay({
   className = '',
 }: HeatmapOverlayProps) {
   const [showHeatmap, setShowHeatmap] = useState(false)
+  const [cropStyle, setCropStyle] = useState<{
+    left: string
+    top: string
+    width: string
+    height: string
+  } | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const hasHeatmap = Boolean(
     prediction?.heatmap && prediction.heatmap.length > 0,
   )
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget
+    const w = img.naturalWidth
+    const h = img.naturalHeight
+    if (w > 0 && h > 0) {
+      const region = cropRegion(w, h)
+      setCropStyle({
+        left: `${region.leftPercent}%`,
+        top: `${region.topPercent}%`,
+        width: `${region.widthPercent}%`,
+        height: `${region.heightPercent}%`,
+      })
+    }
+  }
 
   useEffect(() => {
     if (!showHeatmap || !hasHeatmap || !prediction?.heatmap || !canvasRef.current) {
@@ -60,6 +81,7 @@ export function HeatmapOverlay({
           <img
             src={imageSrc}
             alt={alt}
+            onLoad={handleImageLoad}
             className="block h-auto max-w-full object-contain"
           />
         ) : (
@@ -72,7 +94,22 @@ export function HeatmapOverlay({
           <canvas
             ref={canvasRef}
             aria-label="মডেলের সিদ্ধান্ত অঞ্চলের হিটম্যাপ"
-            className="absolute inset-0 h-full w-full object-fill opacity-75 mix-blend-multiply transition-opacity duration-300"
+            style={
+              cropStyle
+                ? {
+                    position: 'absolute',
+                    left: cropStyle.left,
+                    top: cropStyle.top,
+                    width: cropStyle.width,
+                    height: cropStyle.height,
+                  }
+                : undefined
+            }
+            className={
+              cropStyle
+                ? 'absolute object-fill opacity-75 mix-blend-multiply transition-opacity duration-300'
+                : 'absolute inset-0 h-full w-full object-fill opacity-75 mix-blend-multiply transition-opacity duration-300'
+            }
           />
         )}
       </div>
@@ -102,6 +139,11 @@ export function HeatmapOverlay({
           {showHeatmap ? 'হিটম্যাপ লুকান' : 'কেন এই উত্তর? (হিটম্যাপ দেখুন)'}
         </span>
       </button>
+
+      {/* One-line legend under the toggle */}
+      <p className="text-xs text-slate-600">
+        লাল = যেখানে মডেল বেশি গুরুত্ব দিয়েছে (আনুমানিক)
+      </p>
     </div>
   )
 }
