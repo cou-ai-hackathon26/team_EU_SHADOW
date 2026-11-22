@@ -55,8 +55,10 @@ export default function SampleGallery({
     try {
       const res = await fetch(`${BASE}/samples/${s.file}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const blob = await res.blob()
-      const file = new File([blob], s.file, { type: blob.type || 'image/jpeg' })
+      // arrayBuffer (not blob) keeps File construction portable across browsers and test runtimes
+      const bytes = await res.arrayBuffer()
+      const type = res.headers.get('content-type') || 'image/jpeg'
+      const file = new File([bytes], s.file, { type })
       const img = await loadImage(file)
       onImageReady(img, file)
     } catch {

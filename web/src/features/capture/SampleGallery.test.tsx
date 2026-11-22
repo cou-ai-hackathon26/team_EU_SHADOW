@@ -35,7 +35,10 @@ describe('SampleGallery (F13)', () => {
             headers: { 'Content-Type': 'application/json' },
           })
         }
-        return new Response(new Blob(['jpeg-bytes'], { type: 'image/jpeg' }))
+        // raw bytes, not a jsdom Blob: Node's Response cannot read a jsdom Blob on every Node version
+        return new Response(new Uint8Array([0xff, 0xd8, 0xff, 0xd9]), {
+          headers: { 'Content-Type': 'image/jpeg' },
+        })
       }),
     )
     mockLoadImage.mockImplementation(async () => new Image())
