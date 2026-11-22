@@ -80,6 +80,11 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
     expect(pwaOptions.workbox!.globPatterns).toContain('samples/*.{jpg,json}')
   })
 
+  it('3c. F8 Bangla fallback MP3 audio clips are precached in workbox globPatterns', () => {
+    const patterns = pwaOptions.workbox!.globPatterns ?? []
+    expect(patterns).toContain('audio/*.mp3')
+  })
+
   it('4. Workbox runtimeCaching configures /model/ with NetworkFirst, agroleaf-model cache, and 5s timeout', () => {
     const workbox = pwaOptions.workbox!
     expect(Array.isArray(workbox.runtimeCaching)).toBe(true)
