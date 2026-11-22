@@ -30,16 +30,8 @@ async def generate_clip(communicate_cls, text: str, dest_path: Path, max_retries
             communicate = communicate_cls(text, voice=VOICE)
             await communicate.save(str(temp_path))
 
-            ffmpeg = shutil.which("ffmpeg")
-            if not ffmpeg:
-                # Check common local installations if not on system PATH
-                for p in [
-                    Path(r"C:\Users\DREAMER\.vscode\extensions\kilocode.kilo-code-7.8.32-win32-x64\bin\ffmpeg.exe"),
-                    Path(r"C:\Users\DREAMER\.vscode\extensions\.f8f48ce1-7578-42b3-a3b5-62eacb114ae8\bin\ffmpeg.exe"),
-                ]:
-                    if p.exists():
-                        ffmpeg = str(p)
-                        break
+            # ffmpeg is optional: use $FFMPEG if set, else the one on PATH
+            ffmpeg = os.environ.get("FFMPEG") or shutil.which("ffmpeg")
 
             if ffmpeg:
                 # Re-encode to mono 24 kHz 32 kbps to save storage space

@@ -14,13 +14,31 @@
 - **Repository:** https://github.com/masumcit44/AgroLeaf_AI-
 - **Live Deployment:** https://agroleaf-ai-olive.vercel.app (and `npm run demo` for local fallback)
 
-## বিবরণ (Project Summary — 88 Words)
-AgroLeaf AI হলো বাংলাদেশের প্রান্তিক ধানচাষীদের জন্য ব্রাউজার-ভিত্তিক অন-ডিভাইস এআই স্ক্রিনিং সমাধান। এটি ইন্টারনেট সংযোগ ছাড়াই সরাসরি কৃষকের স্মার্টফোনে ডাব্লিউএএসএম (ONNX Runtime Web) প্রযুক্তিতে শূন্য থেকে প্রশিক্ষিত হালকা মডেলের সমন্বয় (MobileNetV3-Large-CAM + RegNetY-400MF) চালিয়ে ধানপাতার ব্লাস্ট, বাদামি দাগ, টুংরো সহ প্রধান রোগসমূহ প্রাথমিক স্ক্রিনিং করে। ব্যবহারকারীকে কোনো সার্ভারে ছবি পাঠাতে হয় না, ফলে গোপনীয়তা সুরক্ষিত থাকে। মডেলের সিদ্ধান্ত স্বচ্ছ করতে রয়েছে এক্সএআই হিটম্যাপ এবং চার স্তরের ডায়াগনস্টিক সুপারিশ। রাসায়নিক ওষুধের নাম পরিহার করে সাধারণ কৃষিভিত্তিক সতর্কতা এবং সার্বক্ষণিক সহায়তার জন্য সরকারি কৃষি কল সেন্টার ১৬১২৩ সংযুক্ত রাখা হয়েছে।
+- **Demo video (≤ 3 min):** _to be added (S2, Tanjil)_
+- **Test login:** none needed (no login)
+
+- **Title:** AgroLeaf AI
+
+<!-- Rule 12: title + description max 150 words. Paste the paragraph below as is (147 words). -->
+## Description
+
+AgroLeaf AI is a Bangla-first web app that screens a rice leaf photo for five common diseases (Blast, Brown Spot, Leaf Smut, Tungro, Sheath Blight) or a healthy leaf. Our own models, trained from scratch with random initialisation on public Bangladeshi field datasets, run entirely in the phone's browser with ONNX Runtime Web, so the photo never leaves the device and the app keeps working offline after the first visit. Confidence is calibrated with temperature scaling: the app names the likely disease, shows the top two options and asks for a clearer photo, or honestly says "আমি নিশ্চিত নই". A separate gate warns when the photo is not a rice leaf. Each result gives Bangla symptoms, causes and prevention from BRRI, DAE and IRRI, a heat-map of where the model looked, a voice readout and the 16123 helpline, with no pesticide names or doses. Internal test macro-F1: 0.894.
+
+## Privacy (what is and is not stored)
+Photos are analysed inside the phone's browser and are never sent to or stored on any server. Scan history (F9) keeps a small
+thumbnail (≤ 200 KB) only in that device's own browser storage (IndexedDB); the user can delete one scan or clear all of it at any
+time from the History screen. See `docs/DECISIONS.md` D13.
 
 ---
 
-## AI Disclosure (কৃত্রিম বুদ্ধিমত্তা ব্যবহারের ঘোষণা)
-হ্যাকাতন রুলবুকের ১২ নম্বর নিয়ম অনুযায়ী আমাদের এআই ব্যবহারের বিবরণ নিম্নরূপ:
-1. **Claude Code (Anthropic):** টেক লিড সহকারী হিসেবে আর্কিটেকচার পর্যালোচনা, পিআর রিভিউ, রুল কমপ্লায়েন্স ও কোড কোয়ালিটি অডিটে ব্যবহৃত হয়েছে।
-2. **Gemini Antigravity (Google DeepMind):** মাল্টি-এজেন্ট কোডিং, টিডিডি টেস্ট প্রণয়ন এবং রেসপন্সিভ ইউআই শৈলী বিনির্মাণে সাহায্য করেছে।
-3. **মডেল ও কোডবেস:** কোনো কপি করা পুরাতন কোড বা পূর্বে ট্রেইন্ড প্রি-ট্রেইন্ড চেকপয়েন্ট ব্যবহৃত হয়নি; সকল প্রিপ্রসেসিং অ্যালগরিদম, টিডিডি টেস্ট স্যুট ও ওয়েব অ্যাপ্লিকেশন হ্যাকাথন চলাকালীন নতুনভাবে রচিত।
+## AI Disclosure (Rule 9 / 12)
+| Tool | Who | Used for |
+|---|---|---|
+| Claude Code (Anthropic) | Masum | Code assistance (scaffold, ML data pipeline, Kaggle training and ONNX export scripts, web features, tests), architecture planning, PR review, CI and rule-compliance checks, docs |
+| Gemini Antigravity (Google) | Masum, Tanjil, Mehedi | Feature coding on own branches, TDD tests, UI/UX redesign |
+| GitHub Copilot (VS Code) | Mehedi | Code and test assistance for F9 scan history |
+| ChatGPT (OpenAI) | Team | Research only (datasets, disease information, methods); no code |
+
+**Models / APIs:** our own scratch-trained ONNX models (disease blend + not-rice gate), run in the browser with ONNX Runtime Web.
+Bangla voice MP3s were pre-generated once with Microsoft Edge neural TTS (`edge-tts`, voice `bn-BD-NabanitaNeural`). The app calls
+no outside AI API at run time. No old code and no pretrained checkpoint was used; all code was written from 21 Nov in this repo.
