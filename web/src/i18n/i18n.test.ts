@@ -129,12 +129,14 @@ describe('F5 i18n — Language Toggle and Translations', () => {
     expect(screen.getByText('Rice Leaf Disease Early Screening')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Home/ })).toBeInTheDocument()
     expect(localStorage.getItem(STORAGE_KEY)).toBe('en')
+    expect(document.documentElement.lang).toBe('en')
 
     // Click again to toggle back to Bengali
     await user.click(toggleBtn)
     expect(screen.getByText('ধানপাতার রোগের প্রাথমিক স্ক্রিনিং')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /হোম/ })).toBeInTheDocument()
     expect(localStorage.getItem(STORAGE_KEY)).toBe('bn')
+    expect(document.documentElement.lang).toBe('bn')
   })
 
   it('8. works in-memory when localStorage throws (bn -> en -> bn and second component sync)', async () => {

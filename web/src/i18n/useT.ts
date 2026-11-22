@@ -42,11 +42,17 @@ let currentGlobalLang: Lang = getStoredLang()
 function updateGlobalLang(newLang: Lang) {
   currentGlobalLang = newLang
   setStoredLang(newLang)
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.lang = newLang
+  }
   listeners.forEach((listener) => listener(newLang))
 }
 
 export function resetGlobalLang(): void {
   currentGlobalLang = getStoredLang()
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.lang = currentGlobalLang
+  }
   listeners.forEach((listener) => listener(currentGlobalLang))
 }
 
@@ -58,7 +64,7 @@ export interface UseTReturn {
 }
 
 export function useT(): UseTReturn {
-  const [lang, setLangState] = useState<Lang>(() => getStoredLang())
+  const [lang, setLangState] = useState<Lang>(() => currentGlobalLang)
 
   useEffect(() => {
     const handleLangChange: Listener = (newLang) => {
@@ -75,8 +81,7 @@ export function useT(): UseTReturn {
   }, [])
 
   const toggleLang = useCallback(() => {
-    const current = getStoredLang()
-    const nextLang: Lang = current === 'bn' ? 'en' : 'bn'
+    const nextLang: Lang = currentGlobalLang === 'bn' ? 'en' : 'bn'
     updateGlobalLang(nextLang)
   }, [])
 
