@@ -5,7 +5,7 @@ Generates high-quality pre-rendered Bangla MP3 clips for devices without a built
 ## Prerequisites
 - Python 3.10+
 - `pip install edge-tts`
-- (Optional) `ffmpeg` on PATH to optimize MP3 size to mono 24 kHz 32 kbps.
+- (Optional) `ffmpeg` on PATH, or its full path in the `FFMPEG` environment variable, to optimize MP3 size to mono 24 kHz 32 kbps.
 
 ## Commands to Regenerate
 
