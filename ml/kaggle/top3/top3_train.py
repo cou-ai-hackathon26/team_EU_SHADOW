@@ -315,13 +315,12 @@ def fit_temperature(logits: np.ndarray, y: np.ndarray) -> float:
     return float(log_t.detach().exp().clamp(0.05, 20.0))
 
 
-def choose_thresholds(logits, y, T, high_risk=0.05, medium_top2=0.95, healthy_precision=0.97) -> dict:
+def choose_thresholds(logits, y, T, high_risk=0.05, abstain_acc=0.60, max_abstain=0.05, healthy_precision=0.97) -> dict:
     """Validation-only risk-coverage choice of the three tiers (ModelMeta.thresholds)."""
     z = logits / T
     p = np.exp(z - z.max(1, keepdims=True))
     p /= p.sum(1, keepdims=True)
     conf, pred = p.max(1), p.argmax(1)
-    top2 = (np.argsort(-p, 1)[:, :2] == y[:, None]).any(1)
     grid = np.round(np.arange(0.30, 0.995, 0.01), 2)
 
     def first(ok):
@@ -332,7 +331,15 @@ def choose_thresholds(logits, y, T, high_risk=0.05, medium_top2=0.95, healthy_pr
         return None
 
     high = first(lambda m: (pred[m] != y[m]).mean() <= high_risk) or 0.90
-    medium = first(lambda m: top2[m].mean() >= medium_top2) or 0.50
+    # "not sure" (below medium): the largest threshold where the abstained photos are mostly wrong
+    # (val top-1 accuracy <= 60%) while abstaining on at most 5% of validation photos.
+    medium = 0.30
+    for t in grid:
+        low = conf < t
+        if low.mean() > max_abstain:
+            break
+        if low.sum() >= 10 and (pred[low] == y[low]).mean() <= abstain_acc:
+            medium = float(t)
     medium = min(medium, high - 0.05)
     hm = pred == HEALTHY
     healthy = None
