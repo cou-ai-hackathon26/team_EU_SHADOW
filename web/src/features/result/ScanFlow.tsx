@@ -1,0 +1,63 @@
+import { useState } from 'react'
+import type { Prediction, QualityReport } from '../../ai/types'
+import { loadModel, analyze } from '../../ai/engine'
+import PhotoPicker from '../capture/PhotoPicker'
+import ResultView from './ResultView'
+
+export default function ScanFlow() {
+  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [prediction, setPrediction] = useState<Prediction | null>(null)
+  const [analysisError, setAnalysisError] = useState<Error | null>(null)
+
+  const handleImageReady = (image: HTMLImageElement, _file: File, _report?: QualityReport) => {
+    setSelectedImage(image)
+    setPrediction(null)
+    setAnalysisError(null)
+  }
+
+  const handleClear = () => {
+    setSelectedImage(null)
+    setPrediction(null)
+    setAnalysisError(null)
+    setIsAnalyzing(false)
+  }
+
+  const handleAnalyze = async () => {
+    if (!selectedImage || isAnalyzing) {
+      return
+    }
+
+    setIsAnalyzing(true)
+    setAnalysisError(null)
+
+    try {
+      await loadModel()
+      const result = await analyze(selectedImage)
+      setPrediction(result)
+    } catch (err) {
+      setAnalysisError(err instanceof Error ? err : new Error('মডেল চালাতে সমস্যা হয়েছে'))
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {prediction || analysisError ? (
+        <ResultView
+          prediction={prediction}
+          error={analysisError}
+          onReset={handleClear}
+        />
+      ) : (
+        <PhotoPicker
+          onImageReady={handleImageReady}
+          onClear={handleClear}
+          onAnalyze={selectedImage ? handleAnalyze : undefined}
+          isAnalyzing={isAnalyzing}
+        />
+      )}
+    </div>
+  )
+}

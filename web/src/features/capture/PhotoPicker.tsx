@@ -1,16 +1,28 @@
 import { useState, useRef, useEffect, type ChangeEvent } from 'react'
 import { validateFile } from './validateFile'
 import { loadImage } from './loadImage'
+import { assessQuality } from '../quality/quality'
+import QualityHint from '../quality/QualityHint'
+import AnalyzeButton from '../result/AnalyzeButton'
+import type { QualityReport } from '../../ai/types'
 
 export interface PhotoPickerProps {
-  onImageReady?: (image: HTMLImageElement, file: File) => void
+  onImageReady?: (image: HTMLImageElement, file: File, report?: QualityReport) => void
   onClear?: () => void
+  onAnalyze?: () => void
+  isAnalyzing?: boolean
 }
 
-export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps) {
+export default function PhotoPicker({
+  onImageReady,
+  onClear,
+  onAnalyze,
+  isAnalyzing = false,
+}: PhotoPickerProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [qualityReport, setQualityReport] = useState<QualityReport | null>(null)
 
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
@@ -52,7 +64,9 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
       if (id !== requestIdRef.current) {
         return
       }
-      onImageReady?.(img, file)
+      const report = assessQuality(img)
+      setQualityReport(report)
+      onImageReady?.(img, file, report ?? undefined)
     } catch {
       if (id !== requestIdRef.current) {
         return
@@ -63,6 +77,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
       }
       setPreviewUrl(null)
       setFileName(null)
+      setQualityReport(null)
       setErrorMessage('ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।')
     }
   }
@@ -85,6 +100,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
     setPreviewUrl(null)
     setErrorMessage(null)
     setFileName(null)
+    setQualityReport(null)
     onClear?.()
   }
 
@@ -229,6 +245,19 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
               <span>অন্য ছবি</span>
             </button>
           </div>
+
+          {/* Quality Assessment Hint and Analyze Button */}
+          <QualityHint
+            report={qualityReport}
+            onAnalyze={onAnalyze}
+            isAnalyzing={isAnalyzing}
+          />
+          {!qualityReport && onAnalyze && (
+            <AnalyzeButton
+              onAnalyze={onAnalyze}
+              loading={isAnalyzing}
+            />
+          )}
         </div>
       )}
     </div>

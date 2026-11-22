@@ -1,4 +1,4 @@
-import { routes, normalizeHash, type RouteDef } from '../app/router'
+import { routes, matchRoute, type RouteDef } from '../app/router'
 
 interface BottomNavProps {
   currentHash: string
@@ -77,7 +77,7 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
 }
 
 export default function BottomNav({ currentHash }: BottomNavProps) {
-  const activeNormalized = normalizeHash(currentHash)
+  const activeId = matchRoute(currentHash).id
 
   return (
     <nav
@@ -86,7 +86,7 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
     >
       <div className="mx-auto flex max-w-xl items-center justify-around px-2 py-1">
         {routes.map((route: RouteDef) => {
-          const isActive = route.hash === activeNormalized
+          const isActive = route.id === activeId
           const href = route.hash ? route.hash : '#/'
 
           return (
