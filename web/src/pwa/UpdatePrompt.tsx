@@ -1,82 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useRegisterSW } from 'virtual:pwa-register/react'
 
-interface UpdatePromptProps {
-  registration?: ServiceWorkerRegistration | null
-}
+export function UpdatePrompt() {
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW()
 
-export function UpdatePrompt({
-  registration: propRegistration,
-}: UpdatePromptProps = {}) {
-  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(
-    () => propRegistration?.waiting ?? null,
-  )
-  const [showPrompt, setShowPrompt] = useState(
-    () => Boolean(propRegistration?.waiting),
-  )
-
-  useEffect(() => {
-    // If propRegistration already handled during initialization
-    if (propRegistration?.waiting) {
-      return
-    }
-
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-      return
-    }
-
-    const handleWaiting = (reg: ServiceWorkerRegistration) => {
-      if (reg.waiting) {
-        setWaitingWorker(reg.waiting)
-        setShowPrompt(true)
-      }
-    }
-
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (reg) {
-        handleWaiting(reg)
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (
-                newWorker.state === 'installed' &&
-                navigator.serviceWorker.controller
-              ) {
-                setWaitingWorker(newWorker)
-                setShowPrompt(true)
-              }
-            })
-          }
-        })
-      }
-    })
-
-    let refreshing = false
-    const handleControllerChange = () => {
-      if (!refreshing) {
-        refreshing = true
-        window.location.reload()
-      }
-    }
-    navigator.serviceWorker.addEventListener(
-      'controllerchange',
-      handleControllerChange,
-    )
-
-    return () => {
-      navigator.serviceWorker.removeEventListener(
-        'controllerchange',
-        handleControllerChange,
-      )
-    }
-  }, [propRegistration])
-
-  if (!showPrompt || !waitingWorker) {
+  if (!needRefresh) {
     return null
   }
 
   const handleReload = () => {
-    waitingWorker.postMessage({ type: 'SKIP_WAITING' })
+    void updateServiceWorker(true)
   }
 
   return (
@@ -108,7 +43,7 @@ export function UpdatePrompt({
           onClick={handleReload}
           className="shrink-0 rounded-lg bg-leaf-800 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-leaf-700 focus:outline-none focus:ring-2 focus:ring-leaf-800/40"
         >
-          নতুন সংস্করণ — Reload
+          নতুন সংস্করণ এসেছে — Reload
         </button>
       </div>
     </aside>
