@@ -14,10 +14,18 @@ const ALLOWED_MIME_TYPES = new Set([
 const ALLOWED_EXTENSIONS = /\.(jpe?g|png|webp)$/i
 
 export function validateFile(file: File): ValidationResult {
-  const isAllowedMime = ALLOWED_MIME_TYPES.has(file.type.toLowerCase())
-  const isAllowedExt = ALLOWED_EXTENSIONS.test(file.name)
+  const mime = file.type.trim().toLowerCase()
+  let isAllowed = false
 
-  if (!isAllowedMime && !isAllowedExt) {
+  if (mime !== '') {
+    // If file.type is not empty: allow only image/jpeg, image/png, image/webp (by MIME). Ignore the extension.
+    isAllowed = ALLOWED_MIME_TYPES.has(mime)
+  } else {
+    // If file.type is empty: fall back to the extension check (.jpg/.jpeg/.png/.webp).
+    isAllowed = ALLOWED_EXTENSIONS.test(file.name)
+  }
+
+  if (!isAllowed) {
     return {
       valid: false,
       error: 'শুধুমাত্র JPG, PNG বা WebP ফরম্যাটের ছবি আপলোড করুন।',

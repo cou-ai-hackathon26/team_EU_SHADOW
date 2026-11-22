@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import ResultView from './ResultView'
-import type { Prediction, PredictionTier } from '../../ai/types'
+import type { Prediction, ConfidenceTier } from '../../ai/types'
 
 const basePrediction: Prediction = {
   tier: 'high',
@@ -132,7 +132,7 @@ describe('ResultView (F4)', () => {
     expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 
-  const tiers: PredictionTier[] = ['high', 'medium', 'low', 'not_rice']
+  const tiers: ConfidenceTier[] = ['high', 'medium', 'low', 'not_rice']
 
   it.each(tiers)('renders HelpCall (tel:16123) and Disclaimer for %s tier', (tier) => {
     const pred: Prediction = {
