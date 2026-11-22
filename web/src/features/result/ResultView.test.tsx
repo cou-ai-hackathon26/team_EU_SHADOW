@@ -195,15 +195,19 @@ describe('ResultView (F4)', () => {
       }
 
       render(<ResultView prediction={pred} />)
-      const link = screen.getByRole('link', { name: /১৬১২৩/ })
-      expect(link).toHaveAttribute('href', 'tel:16123')
+      const links = screen.getAllByRole('link', { name: /১৬১২৩/ })
+      const telLink = links.find((l) => l.getAttribute('href') === 'tel:16123')
+      expect(telLink).toBeDefined()
+      expect(telLink).toHaveAttribute('href', 'tel:16123')
       expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
     })
 
     it('renders HelpCall 16123 tel link in error state', () => {
       render(<ResultView error={new Error('Engine crash')} />)
-      const link = screen.getByRole('link', { name: /১৬১২৩/ })
-      expect(link).toHaveAttribute('href', 'tel:16123')
+      const links = screen.getAllByRole('link', { name: /১৬১২৩/ })
+      const telLink = links.find((l) => l.getAttribute('href') === 'tel:16123')
+      expect(telLink).toBeDefined()
+      expect(telLink).toHaveAttribute('href', 'tel:16123')
       expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
     })
   })

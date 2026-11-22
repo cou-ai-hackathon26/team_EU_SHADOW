@@ -2,22 +2,26 @@ import { useState } from 'react'
 import type { Prediction, QualityReport } from '../../ai/types'
 import { loadModel, analyze } from '../../ai/engine'
 import PhotoPicker from '../capture/PhotoPicker'
+import SampleGallery from '../capture/SampleGallery'
 import ResultView from './ResultView'
 
 export default function ScanFlow() {
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [prediction, setPrediction] = useState<Prediction | null>(null)
   const [analysisError, setAnalysisError] = useState<Error | null>(null)
 
-  const handleImageReady = (image: HTMLImageElement, _file: File, _report?: QualityReport) => {
+  const handleImageReady = (image: HTMLImageElement, file: File, _report?: QualityReport) => {
     setSelectedImage(image)
+    setSelectedFile(file)
     setPrediction(null)
     setAnalysisError(null)
   }
 
   const handleClear = () => {
     setSelectedImage(null)
+    setSelectedFile(null)
     setPrediction(null)
     setAnalysisError(null)
     setIsAnalyzing(false)
@@ -43,20 +47,28 @@ export default function ScanFlow() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {prediction || analysisError ? (
         <ResultView
           prediction={prediction}
           error={analysisError}
           onReset={handleClear}
+          image={selectedImage}
+          imageFile={selectedFile}
         />
       ) : (
-        <PhotoPicker
-          onImageReady={handleImageReady}
-          onClear={handleClear}
-          onAnalyze={selectedImage ? handleAnalyze : undefined}
-          isAnalyzing={isAnalyzing}
-        />
+        <>
+          <PhotoPicker
+            onImageReady={handleImageReady}
+            onClear={handleClear}
+            onAnalyze={selectedImage ? handleAnalyze : undefined}
+            isAnalyzing={isAnalyzing}
+            selectedFile={selectedFile}
+          />
+          {!selectedImage && (
+            <SampleGallery onImageReady={handleImageReady} />
+          )}
+        </>
       )}
     </div>
   )

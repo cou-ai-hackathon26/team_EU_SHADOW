@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ChangeEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, type ChangeEvent } from 'react'
 import { validateFile } from './validateFile'
 import { loadImage } from './loadImage'
 import { assessQuality } from '../quality/quality'
@@ -11,6 +11,7 @@ export interface PhotoPickerProps {
   onClear?: () => void
   onAnalyze?: () => void
   isAnalyzing?: boolean
+  selectedFile?: File | null
 }
 
 export default function PhotoPicker({
@@ -18,6 +19,7 @@ export default function PhotoPicker({
   onClear,
   onAnalyze,
   isAnalyzing = false,
+  selectedFile,
 }: PhotoPickerProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -27,6 +29,7 @@ export default function PhotoPicker({
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const currentUrlRef = useRef<string | null>(null)
+  const currentFileRef = useRef<File | null>(null)
   const requestIdRef = useRef(0)
 
   // Clean up object URL when component unmounts to prevent memory leaks
@@ -38,7 +41,8 @@ export default function PhotoPicker({
     }
   }, [])
 
-  const handleFile = async (file: File) => {
+  const handleFile = useCallback(async (file: File) => {
+    currentFileRef.current = file
     const id = ++requestIdRef.current
     setErrorMessage(null)
 
@@ -66,7 +70,11 @@ export default function PhotoPicker({
       }
       const report = assessQuality(img)
       setQualityReport(report)
-      onImageReady?.(img, file, report ?? undefined)
+      if (report) {
+        onImageReady?.(img, file, report)
+      } else {
+        onImageReady?.(img, file)
+      }
     } catch {
       if (id !== requestIdRef.current) {
         return
@@ -80,7 +88,24 @@ export default function PhotoPicker({
       setQualityReport(null)
       setErrorMessage('ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।')
     }
-  }
+  }, [onImageReady])
+
+  // Handle external selectedFile (e.g. from SampleGallery)
+  useEffect(() => {
+    if (selectedFile && selectedFile !== currentFileRef.current) {
+      void handleFile(selectedFile)
+    } else if (!selectedFile && currentFileRef.current) {
+      currentFileRef.current = null
+      if (currentUrlRef.current) {
+        URL.revokeObjectURL(currentUrlRef.current)
+        currentUrlRef.current = null
+      }
+      setPreviewUrl(null)
+      setErrorMessage(null)
+      setFileName(null)
+      setQualityReport(null)
+    }
+  }, [selectedFile, handleFile])
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -92,6 +117,7 @@ export default function PhotoPicker({
   }
 
   const handleReset = () => {
+    currentFileRef.current = null
     requestIdRef.current++
     if (currentUrlRef.current) {
       URL.revokeObjectURL(currentUrlRef.current)

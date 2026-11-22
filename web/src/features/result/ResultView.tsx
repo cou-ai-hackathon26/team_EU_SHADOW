@@ -1,7 +1,11 @@
+import { useEffect, useMemo } from 'react'
 import type { Prediction } from '../../ai/types'
 import { getCard } from '../../content/getCard'
 import { DiseaseCardView } from '../../content/DiseaseCardView'
 import { Disclaimer } from '../../components/Disclaimer'
+import { HelpCall } from '../../components/HelpCall'
+import { HeatmapOverlay } from './HeatmapOverlay'
+import { ShareButton } from '../share/ShareButton'
 import ConfidenceMeter from './ConfidenceMeter'
 
 export interface ResultViewProps {
@@ -9,6 +13,8 @@ export interface ResultViewProps {
   error?: Error | string | null
   onReset?: () => void
   lang?: 'bn' | 'en'
+  image?: HTMLImageElement | null
+  imageFile?: File | Blob | null
 }
 
 export default function ResultView({
@@ -16,8 +22,25 @@ export default function ResultView({
   error,
   onReset,
   lang = 'bn',
+  image,
+  imageFile,
 }: ResultViewProps) {
   const isBn = lang === 'bn'
+
+  const objectUrl = useMemo(() => {
+    if (imageFile) {
+      return URL.createObjectURL(imageFile)
+    }
+    return image?.src ?? null
+  }, [imageFile, image])
+
+  useEffect(() => {
+    return () => {
+      if (objectUrl && objectUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(objectUrl)
+      }
+    }
+  }, [objectUrl])
 
   // 1. Error state handling (Engine error without crashing the app)
   if (error) {
@@ -65,6 +88,7 @@ export default function ResultView({
           )}
         </div>
 
+        <HelpCall lang={lang} />
         <Disclaimer lang={lang} />
       </section>
     )
@@ -120,7 +144,7 @@ export default function ResultView({
       )}
 
       {/* Tier 2: Medium Confidence */}
-      {tier === 'medium' && top1 && top2 && (
+      {tier === 'medium' && top1 && (
         <div className="flex flex-col gap-4">
           <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-xs sm:p-5">
             <span className="inline-block rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-900">
@@ -223,13 +247,27 @@ export default function ResultView({
         </div>
       )}
 
-      {/* Reset button */}
-      {onReset && (
-        <div className="flex justify-center pt-1">
+      {/* Heatmap Overlay (F11) - under the result card */}
+      <HeatmapOverlay
+        prediction={prediction}
+        imageSrc={objectUrl ?? image?.src}
+      />
+
+      {/* Action Buttons: Share (F15) & Reset */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <ShareButton
+          input={{
+            prediction,
+            image: image ?? undefined,
+          }}
+          className="w-full sm:w-auto"
+        />
+
+        {onReset && (
           <button
             type="button"
             onClick={onReset}
-            className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 hover:text-slate-900 active:scale-98"
           >
             <svg
               className="h-4 w-4 text-slate-500"
@@ -246,11 +284,14 @@ export default function ResultView({
             </svg>
             <span>{isBn ? 'অন্য পাতা পরীক্ষা করুন' : 'Scan Another Leaf'}</span>
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Safety Disclaimer (F7) included in all tiers */}
-      <Disclaimer lang={lang} />
+      {/* Safety HelpCall (16123) & Disclaimer (F7) included in all tiers */}
+      <div className="flex flex-col gap-3 pt-2">
+        <HelpCall lang={lang} />
+        <Disclaimer lang={lang} />
+      </div>
     </section>
   )
 }
