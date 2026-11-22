@@ -1,7 +1,8 @@
 import { createElement, type ComponentType } from 'react'
-import PhotoPicker from '../features/capture/PhotoPicker'
+import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
+import { useT } from '../i18n/useT'
 
 export interface RouteDef {
   id: string
@@ -14,6 +15,7 @@ export interface RouteDef {
 
 // Placeholder screens for F1 shell. Teammates plug their screens here (e.g. Mehedi for F9, Masum for F12).
 export function HomeScreen() {
+  const { t } = useT()
   return createElement(
     'section',
     { className: 'flex flex-col gap-4' },
@@ -23,21 +25,22 @@ export function HomeScreen() {
       createElement(
         'h1',
         { className: 'text-2xl font-bold text-leaf-800' },
-        'AgroLeaf AI — ধানপাতার রোগ নির্ণয়'
+        t('homeHeroTitle')
       ),
       createElement(
         'p',
         { className: 'mt-2 text-slate-700' },
-        'ধানগাছের আক্রান্ত পাতার স্পষ্ট ছবি তুলুন বা গ্যালারি থেকে নির্বাচন করুন। এআই মডেল তাৎক্ষণিক রোগ শনাক্ত করতে সাহায্য করবে।'
+        t('homeHeroDesc')
       )
     ),
-    createElement(PhotoPicker, null)
+    createElement(ScanFlow, null)
   )
 }
 
 export { HistoryScreen } from '../features/history/HistoryScreen'
 
 export function AboutScreen() {
+  const { t } = useT()
   return createElement(
     'section',
     { className: 'flex flex-col gap-4' },
@@ -47,12 +50,12 @@ export function AboutScreen() {
       createElement(
         'h1',
         { className: 'text-2xl font-bold text-leaf-800' },
-        'সম্পর্কে'
+        t('aboutTitle')
       ),
       createElement(
         'p',
         { className: 'mt-2 text-slate-600' },
-        'AgroLeaf AI — টিম EU_SHADOW কর্তৃক CoU AI হ্যাকাথন ২০২৬-এর জন্য তৈরি।'
+        t('aboutDesc')
       )
     )
   )

@@ -1,20 +1,37 @@
-import { useState, useRef, useEffect, type ChangeEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, type ChangeEvent } from 'react'
 import { validateFile } from './validateFile'
 import { loadImage } from './loadImage'
+import { assessQuality } from '../quality/quality'
+import QualityHint from '../quality/QualityHint'
+import AnalyzeButton from '../result/AnalyzeButton'
+import type { QualityReport } from '../../ai/types'
+import { useT } from '../../i18n/useT'
 
 export interface PhotoPickerProps {
-  onImageReady?: (image: HTMLImageElement, file: File) => void
+  onImageReady?: (image: HTMLImageElement, file: File, report?: QualityReport) => void
   onClear?: () => void
+  onAnalyze?: () => void
+  isAnalyzing?: boolean
+  selectedFile?: File | null
 }
 
-export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps) {
+export default function PhotoPicker({
+  onImageReady,
+  onClear,
+  onAnalyze,
+  isAnalyzing = false,
+  selectedFile,
+}: PhotoPickerProps) {
+  const { t } = useT()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [qualityReport, setQualityReport] = useState<QualityReport | null>(null)
 
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const currentUrlRef = useRef<string | null>(null)
+  const currentFileRef = useRef<File | null>(null)
   const requestIdRef = useRef(0)
 
   // Clean up object URL when component unmounts to prevent memory leaks
@@ -26,7 +43,8 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
     }
   }, [])
 
-  const handleFile = async (file: File) => {
+  const handleFile = useCallback(async (file: File) => {
+    currentFileRef.current = file
     const id = ++requestIdRef.current
     setErrorMessage(null)
 
@@ -52,7 +70,13 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
       if (id !== requestIdRef.current) {
         return
       }
-      onImageReady?.(img, file)
+      const report = assessQuality(img)
+      setQualityReport(report)
+      if (report) {
+        onImageReady?.(img, file, report)
+      } else {
+        onImageReady?.(img, file)
+      }
     } catch {
       if (id !== requestIdRef.current) {
         return
@@ -63,9 +87,27 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
       }
       setPreviewUrl(null)
       setFileName(null)
-      setErrorMessage('ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।')
+      setQualityReport(null)
+      setErrorMessage(t('errLoadFailed'))
     }
-  }
+  }, [onImageReady, t])
+
+  // Handle external selectedFile (e.g. from SampleGallery)
+  useEffect(() => {
+    if (selectedFile && selectedFile !== currentFileRef.current) {
+      void handleFile(selectedFile)
+    } else if (!selectedFile && currentFileRef.current) {
+      currentFileRef.current = null
+      if (currentUrlRef.current) {
+        URL.revokeObjectURL(currentUrlRef.current)
+        currentUrlRef.current = null
+      }
+      setPreviewUrl(null)
+      setErrorMessage(null)
+      setFileName(null)
+      setQualityReport(null)
+    }
+  }, [selectedFile, handleFile])
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -77,6 +119,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
   }
 
   const handleReset = () => {
+    currentFileRef.current = null
     requestIdRef.current++
     if (currentUrlRef.current) {
       URL.revokeObjectURL(currentUrlRef.current)
@@ -85,6 +128,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
     setPreviewUrl(null)
     setErrorMessage(null)
     setFileName(null)
+    setQualityReport(null)
     onClear?.()
   }
 
@@ -134,7 +178,7 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <div>
-              <p className="font-semibold">ছবি গ্রহণ করা যায়নি</p>
+              <p className="font-semibold">{t('photoRejectedTitle')}</p>
               <p className="mt-0.5 text-xs text-rose-800">{errorMessage}</p>
             </div>
           </div>
@@ -164,8 +208,8 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
                 <circle cx="12" cy="13" r="4" />
               </svg>
             </div>
-            <span className="font-bold text-slate-800">ক্যামেরা দিয়ে তুলুন</span>
-            <span className="text-xs text-slate-600">সরাসরি ধানপাতা স্ক্যান করুন</span>
+            <span className="font-bold text-slate-800">{t('cameraBtn')}</span>
+            <span className="text-xs text-slate-600">{t('cameraBtnDesc')}</span>
           </button>
 
           <button
@@ -189,8 +233,8 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
                 <polyline points="21 15 16 10 5 21" />
               </svg>
             </div>
-            <span className="font-bold text-slate-800">গ্যালারি থেকে নিন</span>
-            <span className="text-xs text-slate-600">সংরক্ষিত ছবি নির্বাচন করুন</span>
+            <span className="font-bold text-slate-800">{t('galleryBtn')}</span>
+            <span className="text-xs text-slate-600">{t('galleryBtnDesc')}</span>
           </button>
         </div>
       ) : (
@@ -199,14 +243,14 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
           <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-slate-100">
             <img
               src={previewUrl}
-              alt="নির্বাচিত ধানপাতার ছবির প্রিভিউ"
+              alt={t('previewAlt')}
               className="h-full w-full object-contain"
             />
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <span className="truncate text-xs text-slate-500" title={fileName ?? undefined}>
-              {fileName ?? 'ধানপাতার ছবি'}
+              {fileName ?? t('fallbackLeafPhoto')}
             </span>
             <button
               type="button"
@@ -226,9 +270,22 @@ export default function PhotoPicker({ onImageReady, onClear }: PhotoPickerProps)
                 <polyline points="1 4 1 10 7 10" />
                 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
               </svg>
-              <span>অন্য ছবি</span>
+              <span>{t('chooseAnotherPhoto')}</span>
             </button>
           </div>
+
+          {/* Quality Assessment Hint and Analyze Button */}
+          <QualityHint
+            report={qualityReport}
+            onAnalyze={onAnalyze}
+            isAnalyzing={isAnalyzing}
+          />
+          {!qualityReport && onAnalyze && (
+            <AnalyzeButton
+              onAnalyze={onAnalyze}
+              loading={isAnalyzing}
+            />
+          )}
         </div>
       )}
     </div>

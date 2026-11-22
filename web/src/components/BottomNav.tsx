@@ -1,4 +1,13 @@
-import { routes, normalizeHash, type RouteDef } from '../app/router'
+import { routes, matchRoute, type RouteDef } from '../app/router'
+import { useT } from '../i18n/useT'
+import type { I18nKeys } from '../i18n/bn'
+
+const navKeyMap: Record<string, I18nKeys> = {
+  home: 'navHome',
+  history: 'navHistory',
+  'how-it-works': 'navHowItWorks',
+  about: 'navAbout',
+}
 
 interface BottomNavProps {
   currentHash: string
@@ -77,7 +86,8 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
 }
 
 export default function BottomNav({ currentHash }: BottomNavProps) {
-  const activeNormalized = normalizeHash(currentHash)
+  const activeId = matchRoute(currentHash).id
+  const { t } = useT()
 
   return (
     <nav
@@ -86,8 +96,10 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
     >
       <div className="mx-auto flex max-w-xl items-center justify-around px-2 py-1">
         {routes.map((route: RouteDef) => {
-          const isActive = route.hash === activeNormalized
+          const isActive = route.id === activeId
           const href = route.hash ? route.hash : '#/'
+          const key = navKeyMap[route.id]
+          const label = key ? t(key) : route.label
 
           return (
             <a
@@ -102,7 +114,7 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
             >
               <NavIcon id={route.id} active={isActive} />
               <span className="mt-1 text-xs leading-none tracking-tight">
-                {route.label}
+                {label}
               </span>
             </a>
           )

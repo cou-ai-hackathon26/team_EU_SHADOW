@@ -126,12 +126,23 @@ export async function analyze(
   const logits = logitsTensor.data as Float32Array
   const probs = softmax(logits, meta.temperature)
 
-  // 4. Map to classes and sort descending
-  const top: ClassProb[] = meta.classes.map((classId, idx) => ({
-    classId,
-    prob: probs[idx] ?? 0,
-  }))
-  top.sort((a, b) => b.prob - a.prob)
+  // 4. Map to classes: diseases sorted desc, then not_rice (if present) appended last
+  const diseases: ClassProb[] = []
+  let notRiceEntry: ClassProb | null = null
+
+  for (let i = 0; i < meta.classes.length; i++) {
+    const classId = meta.classes[i]
+    const prob = probs[i] ?? 0
+    if (classId === 'not_rice') {
+      notRiceEntry = { classId, prob }
+    } else {
+      diseases.push({ classId, prob })
+    }
+  }
+
+  diseases.sort((a, b) => b.prob - a.prob)
+
+  const top: ClassProb[] = notRiceEntry ? [...diseases, notRiceEntry] : diseases
 
   // 5. Determine tier
   const tier = decideTier(top, meta)
