@@ -1,0 +1,153 @@
+{
+  "modelVersion": "v1-blend-p2-p3-scratch",
+  "createdAt": "2026-11-22T08:48:56Z",
+  "dataset": {
+    "name": "AgroLeaf AI unified rice leaf dataset (build v2)",
+    "url": "https://www.kaggle.com/code/mdmasumakondha/agroleaf-unified-dataset-build",
+    "license": "CC BY 4.0 (RiceLeafDiseaseBD v3, RiceLeafBD, BD5) + CC0 1.0 (BanglaRiceLeaf)",
+    "images": {
+      "train": 8863,
+      "val": 1902,
+      "test": 1901
+    }
+  },
+  "test": {
+    "n": 1901,
+    "accuracy": 0.9074171488690163,
+    "macroF1": 0.8937359620868778,
+    "perClass": [
+      {
+        "classId": "healthy",
+        "precision": 0.9281609195402298,
+        "recall": 0.96996996996997,
+        "f1": 0.9486049926578561,
+        "support": 333
+      },
+      {
+        "classId": "blast",
+        "precision": 0.9044943820224719,
+        "recall": 0.8969359331476323,
+        "f1": 0.9006993006993007,
+        "support": 359
+      },
+      {
+        "classId": "brown_spot",
+        "precision": 0.8547945205479452,
+        "recall": 0.8297872340425532,
+        "f1": 0.8421052631578947,
+        "support": 376
+      },
+      {
+        "classId": "leaf_smut",
+        "precision": 0.7777777777777778,
+        "recall": 0.7777777777777778,
+        "f1": 0.7777777777777778,
+        "support": 108
+      },
+      {
+        "classId": "tungro",
+        "precision": 0.9228915662650602,
+        "recall": 0.9341463414634147,
+        "f1": 0.9284848484848485,
+        "support": 410
+      },
+      {
+        "classId": "sheath_blight",
+        "precision": 0.9741100323624595,
+        "recall": 0.9555555555555556,
+        "f1": 0.9647435897435898,
+        "support": 315
+      }
+    ],
+    "confusionMatrix": [
+      [
+        323,
+        2,
+        5,
+        1,
+        0,
+        2
+      ],
+      [
+        6,
+        322,
+        17,
+        5,
+        7,
+        2
+      ],
+      [
+        9,
+        19,
+        312,
+        14,
+        21,
+        1
+      ],
+      [
+        2,
+        5,
+        13,
+        84,
+        3,
+        1
+      ],
+      [
+        1,
+        7,
+        15,
+        2,
+        383,
+        2
+      ],
+      [
+        7,
+        1,
+        3,
+        2,
+        1,
+        301
+      ]
+    ],
+    "classes": [
+      "healthy",
+      "blast",
+      "brown_spot",
+      "leaf_smut",
+      "tungro",
+      "sheath_blight"
+    ]
+  },
+  "calibration": {
+    "temperature": 0.9102,
+    "eceBefore": 0.03020508049514185,
+    "eceAfter": 0.02061802290201321
+  },
+  "tiers": [
+    {
+      "tier": "high",
+      "coverage": 0.9253024723829564,
+      "accuracy": 0.9437180216031836
+    },
+    {
+      "tier": "medium",
+      "coverage": 0.027880063124671225,
+      "accuracy": 0.49056603773584906
+    },
+    {
+      "tier": "low",
+      "coverage": 0.04681746449237244,
+      "accuracy": 0.43820224719101125
+    }
+  ],
+  "limitations": [
+    {
+      "en": "Trained from scratch on 8,863 Bangladesh field photos. On BD5 (detached leaves on white paper, Savar) 4-class macro-F1 is only 0.37: photos unlike field photos are unreliable.",
+      "bn": "৮,৮৬৩টি মাঠের ছবিতে শূন্য থেকে শেখানো। সাদা কাগজে রাখা ছেঁড়া পাতার ছবিতে (BD5) ফল ভালো নয়; মাঠে গাছের পাতার ছবি তুলুন।"
+    },
+    {
+      "en": "Leaf Smut images come from one source only and are most often confused with Brown Spot.",
+      "bn": "Leaf Smut-এর সব ছবি একটি উৎস থেকে; এটি প্রায়ই Brown Spot-এর সাথে গুলিয়ে যায়।"
+    }
+  ]
+}
