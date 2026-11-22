@@ -1,0 +1,14 @@
+{
+  "id": "mdmasumakondha/agroleaf-aug-ablation",
+  "title": "AgroLeaf Aug Ablation",
+  "code_file": "aug_ablation.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "kernel_sources": ["mdmasumakondha/agroleaf-unified-dataset-build"],
+  "competition_sources": [],
+  "model_sources": []
+}

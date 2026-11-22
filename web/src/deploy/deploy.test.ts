@@ -56,4 +56,9 @@ describe('M8 deploy guards', () => {
   it('hashed build assets are cached as immutable', () => {
     expect(headersFor(loadVercel(), '/assets/(.*)')['cache-control']).toContain('immutable')
   })
+
+  it('sw.js is served with must-revalidate so updates are detected immediately', () => {
+    const h = headersFor(loadVercel(), '/sw.js')
+    expect(h['cache-control']).toBe('public, max-age=0, must-revalidate')
+  })
 })
