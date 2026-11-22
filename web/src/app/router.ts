@@ -1,5 +1,6 @@
 import { createElement, type ComponentType } from 'react'
 import PhotoPicker from '../features/capture/PhotoPicker'
+import AccuracyScreen from '../features/about/AccuracyScreen'
 
 export interface RouteDef {
   id: string
@@ -7,6 +8,7 @@ export interface RouteDef {
   label: string
   title: string
   component: ComponentType
+  aliases?: string[]
 }
 
 // Placeholder screens for F1 shell. Teammates plug their screens here (e.g. Mehedi for F9, Masum for F12).
@@ -48,27 +50,6 @@ export function HistoryScreen() {
         'p',
         { className: 'mt-2 text-slate-600' },
         'আপনার ডিভাইসে সংরক্ষিত পূর্ববর্তী পরীক্ষার ফলাফল এখানে দেখা যাবে।'
-      )
-    )
-  )
-}
-
-export function HowItWorksScreen() {
-  return createElement(
-    'section',
-    { className: 'flex flex-col gap-4' },
-    createElement(
-      'div',
-      { className: 'rounded-2xl border border-leaf-800/10 bg-white p-6 shadow-xs' },
-      createElement(
-        'h1',
-        { className: 'text-2xl font-bold text-leaf-800' },
-        'কীভাবে কাজ করে'
-      ),
-      createElement(
-        'p',
-        { className: 'mt-2 text-slate-600' },
-        'ব্রাউজারে সরাসরি অন-ডিভাইস এআই মডেল ব্যবহার করে পাতার ছবি বিশ্লেষণ করা হয়। কোনো ছবি ইন্টারনেটে আপলোড হয় না।'
       )
     )
   )
@@ -117,9 +98,10 @@ export const routes: RouteDef[] = [
   {
     id: 'how-it-works',
     hash: '#/how-it-works',
+    aliases: ['#/accuracy'],
     label: 'কীভাবে কাজ করে',
     title: 'কীভাবে কাজ করে',
-    component: HowItWorksScreen,
+    component: AccuracyScreen,
   },
   {
     id: 'about',
@@ -140,6 +122,10 @@ export function normalizeHash(hash: string): string {
 
 export function matchRoute(hash: string): RouteDef {
   const normalized = normalizeHash(hash)
-  const matched = routes.find((r) => r.hash === normalized)
+  const matched = routes.find(
+    (r) =>
+      r.hash === normalized ||
+      r.aliases?.some((alias) => normalizeHash(alias) === normalized),
+  )
   return matched ?? routes[0]
 }
