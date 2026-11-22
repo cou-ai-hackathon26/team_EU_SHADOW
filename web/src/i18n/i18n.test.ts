@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { bn } from './bn'
 import { en } from './en'
-import { useT, getStoredLang, setStoredLang, resetGlobalLang, STORAGE_KEY } from './useT'
+import { useT, getStoredLang, setStoredLang, resetGlobalLang, STORAGE_KEY, LanguageToggle } from './useT'
 import Layout from '../components/Layout'
 
 describe('F5 i18n — Language Toggle and Translations', () => {
@@ -135,5 +135,58 @@ describe('F5 i18n — Language Toggle and Translations', () => {
     expect(screen.getByText('ধানপাতার রোগের প্রাথমিক স্ক্রিনিং')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /হোম/ })).toBeInTheDocument()
     expect(localStorage.getItem(STORAGE_KEY)).toBe('bn')
+  })
+
+  it('8. works in-memory when localStorage throws (bn -> en -> bn and second component sync)', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('localStorage blocked')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('localStorage blocked')
+    })
+
+    resetGlobalLang()
+
+    function TestComp() {
+      const { lang, t } = useT()
+      return createElement(
+        'div',
+        null,
+        createElement('span', { 'data-testid': 'lang-display' }, lang),
+        createElement('span', { 'data-testid': 'text-display' }, t('navHome')),
+        createElement(LanguageToggle)
+      )
+    }
+
+    function SecondComp() {
+      const { lang } = useT()
+      return createElement('span', { 'data-testid': 'second-comp-lang' }, lang)
+    }
+
+    const user = userEvent.setup()
+    const { unmount } = render(createElement(TestComp))
+
+    // Initial state: bn
+    expect(screen.getByTestId('lang-display').textContent).toBe('bn')
+    expect(screen.getByTestId('text-display').textContent).toBe('হোম')
+
+    const toggleBtn = screen.getByRole('button', { name: /ভাষা পরিবর্তন করুন|Switch Language/i })
+
+    // Click toggle 1: bn -> en
+    await user.click(toggleBtn)
+    expect(screen.getByTestId('lang-display').textContent).toBe('en')
+    expect(screen.getByTestId('text-display').textContent).toBe('Home')
+
+    // Second component mounted after the first toggle shows English
+    const { unmount: unmountSecond } = render(createElement(SecondComp))
+    expect(screen.getByTestId('second-comp-lang').textContent).toBe('en')
+    unmountSecond()
+
+    // Click toggle 2: en -> bn
+    await user.click(toggleBtn)
+    expect(screen.getByTestId('lang-display').textContent).toBe('bn')
+    expect(screen.getByTestId('text-display').textContent).toBe('হোম')
+
+    unmount()
   })
 })
