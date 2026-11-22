@@ -247,11 +247,13 @@ export default function ResultView({
         </div>
       )}
 
-      {/* Heatmap Overlay (F11) - under the result card */}
-      <HeatmapOverlay
-        prediction={prediction}
-        imageSrc={objectUrl ?? image?.src}
-      />
+      {/* Heatmap Overlay (F11) - under the result card (not rendered for not_rice) */}
+      {tier !== 'not_rice' && (
+        <HeatmapOverlay
+          prediction={prediction}
+          imageSrc={objectUrl ?? image?.src}
+        />
+      )}
 
       {/* Action Buttons: Share (F15) & Reset */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">

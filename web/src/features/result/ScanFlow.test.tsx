@@ -171,9 +171,10 @@ describe('ScanFlow integration (F4)', () => {
     const analyzeBtn = await screen.findByRole('button', { name: /Analyze|শনাক্ত/i })
     await user.click(analyzeBtn)
 
-    // Button should now be disabled and show loading text
+    // Button should now be disabled and show "বিশ্লেষণ চলছে..."
     expect(analyzeBtn).toBeDisabled()
-    expect(screen.getByText(/বিশ্লেষণ চলছে/i)).toBeInTheDocument()
+    expect(analyzeBtn).toHaveTextContent('বিশ্লেষণ চলছে...')
+    expect(screen.getByRole('button', { name: /বিশ্লেষণ চলছে\.\.\./ })).toBeDisabled()
 
     // Resolve analysis
     resolveAnalysis(mockPrediction)

@@ -155,6 +155,26 @@ describe('ResultView (F4)', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('does not render HeatmapOverlay when prediction.tier is "not_rice"', () => {
+      const notRiceWithHeatmap: Prediction = {
+        ...basePrediction,
+        tier: 'not_rice',
+        heatmap: new Float32Array(49).fill(0.5),
+        heatmapSize: 7,
+      }
+
+      render(
+        <ResultView
+          prediction={notRiceWithHeatmap}
+          imageFile={new File(['test-bytes'], 'leaf.jpg', { type: 'image/jpeg' })}
+        />,
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /কেন এই উত্তর|হিটম্যাপ/i }),
+      ).not.toBeInTheDocument()
+    })
+
     it('creates object URL on mount and revokes it on unmount', () => {
       const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-leaf-url')
       const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
