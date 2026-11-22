@@ -80,9 +80,13 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
     expect(pwaOptions.workbox!.globPatterns).toContain('samples/*.{jpg,json}')
   })
 
-  it('3c. F8 Bangla fallback MP3 audio clips are precached in workbox globPatterns', () => {
+  it('3c. globPatterns must NOT match audio/high-blast.mp3', () => {
     const patterns = pwaOptions.workbox!.globPatterns ?? []
-    expect(patterns).toContain('audio/*.mp3')
+    expect(patterns).not.toContain('audio/*.mp3')
+    for (const pattern of patterns) {
+      expect(pattern.includes('audio')).toBe(false)
+      expect(pattern.includes('mp3')).toBe(false)
+    }
   })
 
   it('4. Workbox runtimeCaching configures /model/ with NetworkFirst, agroleaf-model cache, and 5s timeout', () => {
@@ -112,6 +116,36 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
     } else if (pattern instanceof RegExp) {
       expect(pattern.test('/model/agroleaf.onnx')).toBe(true)
       expect(pattern.test('/assets/index.js')).toBe(false)
+    }
+  })
+
+  it('4b. Workbox runtimeCaching configures /audio/ with CacheFirst, agroleaf-audio, rangeRequests, and status 200', () => {
+    const workbox = pwaOptions.workbox!
+    expect(Array.isArray(workbox.runtimeCaching)).toBe(true)
+
+    const audioRule = workbox.runtimeCaching!.find(
+      (rule) =>
+        rule.options?.cacheName === 'agroleaf-audio' &&
+        rule.handler === 'CacheFirst',
+    )
+    expect(audioRule).toBeDefined()
+    expect(audioRule!.options?.rangeRequests).toBe(true)
+    expect(audioRule!.options?.cacheableResponse?.statuses).toEqual([200])
+
+    const pattern = audioRule!.urlPattern
+    if (typeof pattern === 'function') {
+      const match = pattern({
+        url: new URL('https://agroleaf.local/audio/high-blast.mp3'),
+      } as unknown as Parameters<Extract<typeof pattern, (...args: unknown[]) => boolean>>[0])
+      expect(match).toBe(true)
+
+      const nonMatch = pattern({
+        url: new URL('https://agroleaf.local/model/agroleaf.onnx'),
+      } as unknown as Parameters<Extract<typeof pattern, (...args: unknown[]) => boolean>>[0])
+      expect(nonMatch).toBe(false)
+    } else if (pattern instanceof RegExp) {
+      expect(pattern.test('/audio/high-blast.mp3')).toBe(true)
+      expect(pattern.test('/model/agroleaf.onnx')).toBe(false)
     }
   })
 
