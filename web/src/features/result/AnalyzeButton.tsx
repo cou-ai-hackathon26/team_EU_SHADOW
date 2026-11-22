@@ -21,7 +21,7 @@ export default function AnalyzeButton({
       type="button"
       onClick={onAnalyze}
       disabled={isDisabled}
-      className={`flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-leaf-800 px-5 py-3 text-sm font-bold text-white shadow-xs transition-colors hover:bg-leaf-700 active:scale-98 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      className={`flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-600 px-6 py-3.5 text-base font-extrabold text-white shadow-md transition-all duration-200 hover:from-emerald-700 hover:to-emerald-500 hover:shadow-lg active:scale-[0.98] ring-2 ring-emerald-600/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:shadow-none ${className}`}
     >
       {loading ? (
         <>

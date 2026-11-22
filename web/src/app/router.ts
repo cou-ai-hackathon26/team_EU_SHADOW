@@ -18,19 +18,32 @@ export function HomeScreen() {
   const { t } = useT()
   return createElement(
     'section',
-    { className: 'flex flex-col gap-4' },
+    { className: 'flex flex-col gap-5' },
     createElement(
       'div',
-      { className: 'rounded-2xl border border-leaf-800/10 bg-white p-6 shadow-xs' },
+      { className: 'relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-gradient-to-b from-white to-emerald-50/40 p-5 sm:p-6 shadow-sm' },
+      createElement(
+        'div',
+        { className: 'mb-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-700/20 bg-emerald-100/60 px-3 py-1 text-xs font-bold text-emerald-900' },
+        createElement('span', { className: 'h-2 w-2 rounded-full bg-emerald-600 animate-pulse' }),
+        'কৃষকদের জন্য নির্ভরযোগ্য ডিজিটাল সহযোগী'
+      ),
       createElement(
         'h1',
-        { className: 'text-2xl font-bold text-leaf-800' },
+        { className: 'text-2xl sm:text-3xl font-extrabold tracking-tight text-emerald-950 leading-snug' },
         t('homeHeroTitle')
       ),
       createElement(
         'p',
-        { className: 'mt-2 text-slate-700' },
+        { className: 'mt-2 text-sm sm:text-base leading-relaxed text-slate-700' },
         t('homeHeroDesc')
+      ),
+      createElement(
+        'div',
+        { className: 'mt-4 flex flex-wrap gap-2 pt-2 border-t border-emerald-900/10 text-xs font-semibold text-emerald-900' },
+        createElement('span', { className: 'inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 shadow-2xs border border-emerald-900/10' }, '⚡ তাৎক্ষণিক ফলাফল'),
+        createElement('span', { className: 'inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 shadow-2xs border border-emerald-900/10' }, '🔒 ছবি ডিভাইসেই প্রসেস হয়'),
+        createElement('span', { className: 'inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 shadow-2xs border border-emerald-900/10' }, '🔊 বাংলায় ভয়েস পরামর্শ')
       )
     ),
     createElement(ScanFlow, null)
@@ -43,18 +56,34 @@ export function AboutScreen() {
   const { t } = useT()
   return createElement(
     'section',
-    { className: 'flex flex-col gap-4' },
+    { className: 'flex flex-col gap-5' },
     createElement(
       'div',
-      { className: 'rounded-2xl border border-leaf-800/10 bg-white p-6 shadow-xs' },
+      { className: 'rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm' },
       createElement(
-        'h1',
-        { className: 'text-2xl font-bold text-leaf-800' },
-        t('aboutTitle')
+        'div',
+        { className: 'flex items-center gap-3 mb-2' },
+        createElement(
+          'div',
+          { className: 'flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800' },
+          createElement(
+            'svg',
+            { className: 'h-5 w-5', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2.2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            createElement('path', { d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' }),
+            createElement('circle', { cx: '9', cy: '7', r: '4' }),
+            createElement('path', { d: 'M22 21v-2a4 4 0 0 0-3-3.87' }),
+            createElement('path', { d: 'M16 3.13a4 4 0 0 1 0 7.75' })
+          )
+        ),
+        createElement(
+          'h1',
+          { className: 'text-2xl font-bold text-emerald-950' },
+          t('aboutTitle')
+        )
       ),
       createElement(
         'p',
-        { className: 'mt-2 text-slate-600' },
+        { className: 'mt-2 text-sm leading-relaxed text-slate-600' },
         t('aboutDesc')
       )
     )

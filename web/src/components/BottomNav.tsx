@@ -92,9 +92,9 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
   return (
     <nav
       aria-label="মূল নেভিগেশন"
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-md"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-emerald-900/10 bg-white/95 pb-[max(0.25rem,env(safe-area-inset-bottom))] shadow-lg backdrop-blur-md"
     >
-      <div className="mx-auto flex max-w-xl items-center justify-around px-2 py-1">
+      <div className="mx-auto flex max-w-xl items-center justify-around px-2 py-1.5">
         {routes.map((route: RouteDef) => {
           const isActive = route.id === activeId
           const href = route.hash ? route.hash : '#/'
@@ -105,15 +105,15 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
             <a
               key={route.id}
               href={href}
-              className={`flex min-h-[52px] min-w-[64px] flex-1 flex-col items-center justify-center rounded-xl px-1 py-1 text-center transition-colors ${
+              className={`flex min-h-[54px] min-w-[68px] flex-1 flex-col items-center justify-center rounded-xl px-1.5 py-1 text-center transition-all duration-200 active:scale-95 ${
                 isActive
-                  ? 'font-semibold text-leaf-800'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-emerald-100/70 font-bold text-emerald-900 shadow-2xs'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
               <NavIcon id={route.id} active={isActive} />
-              <span className="mt-1 text-xs leading-none tracking-tight">
+              <span className={`mt-1 text-[11px] leading-none tracking-tight ${isActive ? 'font-bold text-emerald-950' : 'font-medium'}`}>
                 {label}
               </span>
             </a>

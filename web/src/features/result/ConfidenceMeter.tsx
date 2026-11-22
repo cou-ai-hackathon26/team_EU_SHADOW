@@ -24,9 +24,9 @@ export default function ConfidenceMeter({
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <div className="flex items-center justify-between text-xs">
-        <span className="font-medium text-slate-700">{displayLabel}</span>
-        <span className="font-bold text-leaf-800">{percentText}</span>
+      <div className="flex items-center justify-between text-xs sm:text-sm">
+        <span className="font-bold text-slate-800">{displayLabel}</span>
+        <span className="font-extrabold text-emerald-900 text-sm sm:text-base">{percentText}</span>
       </div>
       <div
         role="progressbar"
@@ -34,10 +34,10 @@ export default function ConfidenceMeter({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={displayLabel}
-        className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 border border-slate-200/60"
+        className="h-3 w-full overflow-hidden rounded-full bg-slate-100 border border-emerald-900/10 shadow-inner"
       >
         <div
-          className="h-full rounded-full bg-leaf-800 transition-all duration-300"
+          className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-800 transition-all duration-500 shadow-xs"
           style={{ width: `${percentage}%` }}
         />
       </div>
