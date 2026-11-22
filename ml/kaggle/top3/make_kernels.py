@@ -15,9 +15,9 @@ import re
 from pathlib import Path
 
 SLUGS = {"P1": "agroleaf-top3-p1-agrofusednet-m", "P2": "agroleaf-top3-p2-mnv3l-cam",
-         "P3": "agroleaf-top3-p3-regnety-400mf"}
+         "P3": "agroleaf-top3-p3-regnety-400mf", "P3A": "agroleaf-p3a-regnety-a1-sqrtsampler"}
 TITLES = {"P1": "AgroLeaf Top3 P1 AgroFusedNet-M", "P2": "AgroLeaf Top3 P2 MNV3L-CAM",
-          "P3": "AgroLeaf Top3 P3 RegNetY-400MF"}
+          "P3": "AgroLeaf Top3 P3 RegNetY-400MF", "P3A": "AgroLeaf P3A RegNetY A1 sqrtsampler"}
 
 
 def main() -> None:

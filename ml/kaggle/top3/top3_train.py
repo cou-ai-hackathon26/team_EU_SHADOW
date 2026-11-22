@@ -57,6 +57,10 @@ PIPELINES = {
     "P1": dict(COMMON, name="AgroFusedNet-M", epochs=140, lr=2e-3, wd=0.05, drop=0.2, drop_path=0.05, ema=0.9985),
     "P2": dict(COMMON, name="MNV3L-CAM", epochs=160, lr=2e-3, wd=0.02, drop=0.2, drop_path=0.0, ema=0.999),
     "P3": dict(COMMON, name="RegNetY-400MF", epochs=140, lr=2e-3, wd=0.05, drop=0.2, drop_path=0.05, ema=0.9985),
+    # Phase 2: same RegNetY-400MF, A1 field augmentation, sqrt-frequency sampler (Leaf Smut seen ~1.6x more often,
+    # each time as a new random view). Class weights are switched off so the minority correction is not applied twice.
+    "P3A": dict(COMMON, name="RegNetY-400MF-A1-sqrtsampler", epochs=140, lr=2e-3, wd=0.05, drop=0.2, drop_path=0.05,
+                ema=0.9985, sampler="sqrt", class_weights=False, aug="A1_field_realistic"),
 }
 MAX_PARAMS, MAX_ONNX_MB = 7_500_000, 30.0  # 30 MB FP32 ONNX ceiling (Shadow, 22 Nov)
 
@@ -152,7 +156,7 @@ def build_model(pipe: str, cfg: dict) -> AgroCamNet:
         # MobileNetV3's 960 -> 1280 "efficient head" moved BEFORE pooling (+BN) so GAP -> Linear stays CAM-exact.
         pre = nn.Sequential(nn.Conv2d(960, 1280, 1, bias=False), nn.BatchNorm2d(1280), nn.Hardswish())
         return AgroCamNet(_Features(net), 1280, cfg["drop"], pre_pool=pre)
-    if pipe == "P3":
+    if pipe in ("P3", "P3A"):
         net = timm.create_model("regnety_004", pretrained=False, num_classes=0, global_pool="",
                                 drop_path_rate=cfg["drop_path"])
         return AgroCamNet(_Features(net), net.num_features, cfg["drop"])
@@ -463,7 +467,8 @@ def save_plots(hist: list, results: dict, out: Path):
 def main():
     pipe = PIPELINE
     cfg = dict(PIPELINES[pipe])
-    prof = get_profile(AUG_PROFILE)
+    aug = cfg.get("aug", AUG_PROFILE)
+    prof = get_profile(aug)
     out = OUT / f"{pipe}_{cfg['name']}_seed{SEED}"
     out.mkdir(parents=True, exist_ok=True)
     t_start = time.time()
@@ -477,7 +482,7 @@ def main():
     if SMOKE:
         cfg.update(epochs=2, warmup=1, min_epochs=0, batch=8, eval_bs=16, workers=0)
     counts = [sum(r["canonical_class"] == c for r in rows["train"]) for c in CLASS_DIRS]
-    print(f"[{pipe}] {cfg['name']} | device {DEV} | aug {AUG_PROFILE} | splits "
+    print(f"[{pipe}] {cfg['name']} | device {DEV} | aug {aug} | splits "
           f"{ {k: len(v) for k, v in rows.items()} } | train counts {counts}", flush=True)
 
     model = build_model(pipe, cfg)
@@ -490,12 +495,24 @@ def main():
     if nw > 0:
         kw["prefetch_factor"] = 4
     g = torch.Generator().manual_seed(SEED)
-    train_dl = DataLoader(LeafSet(root, rows["train"], get_transform("train", AUG_PROFILE)), cfg["batch"],
-                          shuffle=True, drop_last=True, generator=g, **kw)
+    train_set = LeafSet(root, rows["train"], get_transform("train", aug))
+    # prove online augmentation is live: two loads of the same image must differ, eval loads must not
+    x1, x2 = train_set[0][0], train_set[0][0]
+    aug_check = {"train_views_differ": bool((x1 - x2).abs().max() > 1e-3)}
+    print("augmentation check", aug, aug_check, flush=True)
+    assert aug_check["train_views_differ"], "online augmentation is not active"
+    if cfg.get("sampler") == "sqrt":
+        from torch.utils.data import WeightedRandomSampler
+        cls = torch.tensor([y for _, y in train_set.items])
+        w_img = torch.tensor(counts, dtype=torch.float64)[cls].pow(-0.5)  # p(class) ~ sqrt(n_c)
+        sampler = WeightedRandomSampler(w_img, num_samples=len(train_set), replacement=True, generator=g)
+        train_dl = DataLoader(train_set, cfg["batch"], sampler=sampler, drop_last=True, **kw)
+    else:
+        train_dl = DataLoader(train_set, cfg["batch"], shuffle=True, drop_last=True, generator=g, **kw)
     eval_dl = {s: DataLoader(LeafSet(root, rows[s], eval_transform), cfg["eval_bs"], **kw)
                for s in ("val", "test", "external_test")}
 
-    weights = class_weights_sqrt(counts).to(DEV)
+    weights = class_weights_sqrt(counts).to(DEV) if cfg.get("class_weights", True) else torch.ones(K, device=DEV)
     opt = torch.optim.AdamW(param_groups(model, cfg["wd"]), lr=cfg["lr"], betas=(0.9, 0.999))
     scaler = torch.amp.GradScaler("cuda", enabled=DEV == "cuda")
     ema = EMA(model, cfg["ema"])
@@ -513,7 +530,7 @@ def main():
         print(f"resumed at epoch {start_ep}", flush=True)
 
     with open(out / "config.json", "w") as f:
-        json.dump({"pipeline": pipe, **cfg, "aug_profile": AUG_PROFILE, "seed": SEED, "branch": BRANCH,
+        json.dump({"pipeline": pipe, **cfg, "aug_profile": aug, "seed": SEED, "branch": BRANCH,
                    "params": n_params, "pretrained": False, "train_counts": counts,
                    "class_weights_sqrt": [round(float(w), 4) for w in weights], "torch": torch.__version__,
                    "timm": timm.__version__}, f, indent=2)
@@ -581,7 +598,7 @@ def main():
     th = choose_thresholds(*lg["val"], T)
     bd5_labels = sorted(set(lg["external_test"][1].tolist()))
     results = {"pipeline": pipe, "name": cfg["name"], "params": n_params, "best_epoch": ck["epoch"],
-               "best_weights": ck["which"], "temperature": T, "thresholds": th, "aug_profile": AUG_PROFILE,
+               "best_weights": ck["which"], "temperature": T, "thresholds": th, "aug_profile": aug,
                "seed": SEED, "train_hours": round((time.time() - t_start) / 3600, 2)}
     for split, key in (("val", "val"), ("test", "internal_test"), ("external_test", "external_bd5")):
         z, y = lg[split]
