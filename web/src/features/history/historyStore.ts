@@ -17,6 +17,8 @@ export interface ScanRecord {
 
 const DB_NAME = 'agroleaf-history-db'
 const STORE_NAME = 'scans'
+const MAX_THUMBNAIL_DIMENSION = 256
+const THUMBNAIL_QUALITIES = [0.8, 0.6, 0.4] as const
 
 export function isIndexedDBSupported(): boolean {
   return typeof indexedDB !== 'undefined'
@@ -53,18 +55,48 @@ export function getApproxBytes(str: string): number {
  * Ensures the thumbnail image is under the specified max byte size (default 200 KB).
  */
 export async function compressThumbnail(
-  dataUrl: string,
+  source: HTMLImageElement | ImageBitmap | string,
   maxBytes = 200 * 1024
 ): Promise<string> {
-  if (getApproxBytes(dataUrl) <= maxBytes) {
-    return dataUrl
+  if (typeof source === 'string' && getApproxBytes(source) <= maxBytes) {
+    return source
   }
 
-  // Safe compression / truncation fallback for browser and mock/test environments
-  const header = dataUrl.includes(',') ? dataUrl.split(',')[0] + ',' : 'data:image/jpeg;base64,'
-  const raw = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl
-  const allowedBase64Chars = Math.floor((maxBytes * 4) / 3) - header.length
-  return header + raw.slice(0, Math.max(0, allowedBase64Chars))
+  const image = typeof source === 'string' ? await loadThumbnailImage(source) : source
+  const width = 'naturalWidth' in image ? image.naturalWidth : image.width
+  const height = 'naturalHeight' in image ? image.naturalHeight : image.height
+  if (!width || !height) {
+    throw new Error('Cannot compress a thumbnail with empty image dimensions')
+  }
+
+  const scale = Math.min(1, MAX_THUMBNAIL_DIMENSION / Math.max(width, height))
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.round(width * scale))
+  canvas.height = Math.max(1, Math.round(height * scale))
+
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('Cannot create a canvas context for thumbnail compression')
+  }
+  context.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+  for (const quality of THUMBNAIL_QUALITIES) {
+    const thumbnail = canvas.toDataURL('image/jpeg', quality)
+    if (getApproxBytes(thumbnail) <= maxBytes) {
+      return thumbnail
+    }
+  }
+
+  throw new Error(`Unable to compress thumbnail below ${maxBytes} bytes`)
+}
+
+function loadThumbnailImage(dataUrl: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error('Unable to load image for thumbnail compression'))
+    image.src = dataUrl
+  })
 }
 
 /**
