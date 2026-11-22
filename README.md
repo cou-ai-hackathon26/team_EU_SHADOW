@@ -2,7 +2,7 @@
 
 **CoU AI Hackathon 2026 · Team EU_SHADOW · Eastern University, Bangladesh**
 
-AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজার-ভিত্তিক (On-Device WebAssembly) কৃষকবান্ধব অ্যাপ্লিকেশন, যার মাধ্যমে মাঠপর্যায়ে একজন ধানচাষী মোবাইলে আক্রান্ত পাতার ছবি তুলেই সম্পূর্ণ ইন্টারনেট বা সার্ভার ছাড়া তৎক্ষণাৎ প্রাথমিক রোগ নির্ণয় ও সৎ পরামর্শ পেতে পারেন। 
+AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজার-ভিত্তিক (On-Device WebAssembly) কৃষকবান্ধব অ্যাপ্লিকেশন, যার মাধ্যমে মাঠপর্যায়ে একজন ধানচাষী মোবাইলে আক্রান্ত পাতার ছবি তুলেই সম্পূর্ণ ইন্টারনেট বা সার্ভার ছাড়া তৎক্ষণাৎ প্রাথমিক রোগ নির্ণয় ও সৎ পরামর্শ পেতে পারেন।
 
 অ্যাপ্লিকেশনটি নির্ণয়ের ক্ষেত্রে অতিরিক্ত আত্মবিশ্বাস না দেখিয়ে সৎ ও দায়িত্বশীল দৃষ্টিভঙ্গি বজায় রাখে: নির্ভরযোগ্য ফলাফল পেলে রোগ ও প্রতিকার জানায়, লক্ষণ অস্পষ্ট হলে শীর্ষ দুটি সম্ভাবনার কথা জানিয়ে পরিষ্কার ছবি তুলতে বলে, বিভ্রান্তিকর বা দুর্বোধ্য ক্ষেত্রে স্পষ্টভাবে **"আমি নিশ্চিত নই"** বলে এবং অনাকাঙ্ক্ষিত ছবির ক্ষেত্রে **"এটি ধানপাতা মনে হচ্ছে না"** বলে সতর্ক করে। প্রতিটি ক্ষেত্রে সার্বক্ষণিক সরকারি কৃষি কল সেন্টার **১৬১২৩**-এ যোগাযোগের রেফারেল প্রদান করা হয়।
 
@@ -12,9 +12,9 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 
 | সদস্য | ভূমিকা ও দায়িত্ব | ছাত্র আইডি |
 |---|---|:---:|
-| **Md. Masum Akondha** (Team Lead) | AI Architect & Model Track (M1–M8); ফিচার F11–F15; ফাইনাল পিচ ও সাবমিশন (S3) | `241400030` |
-| **Tanjil Shaiket** | Frontend Lead; অ্যাপ শেল, ক্যামেরা/গ্যালারি ইনপুট, ছবির কোয়ালিটি চেক, রেজাল্ট স্ক্রিন (F1–F5); ডেমো ভিডিও (S2) | `241400035` |
-| **Md. Mehedi Hasan** | Content, Safety & QA Lead; রোগ নির্ণয় কার্ড (F6), সেফটি লেয়ার ও ১৬১২৩ (F7), ভয়েস রিডআউট (F8), লোকাল হিস্ট্রি (F9), ৩৫টি এজ-কেস ও E2E টেস্ট (F10), প্রজেক্ট README ও ক্রেডিটস (S1) | `241400054` |
+| **Md. Masum Akondha** (Team Lead) | AI Architect & Model Track (M1–M8); ফিচার F11–F15; ফাইনাল পিচ ও সাবমিশন (S3) | `241400049` |
+| **Tanjil Shaiket** | Frontend Lead; অ্যাপ শেল, ক্যামেরা/গ্যালারি ইনপুট, ছবির কোয়ালিটি চেক, রেজাল্ট স্ক্রিন (F1–F5); ডেমো ভিডিও (S2) | `241400038` |
+| **Md. Mehedi Hasan** | Content, Safety & QA Lead; রোগ নির্ণয় কার্ড (F6), সেফটি লেয়ার ও ১৬১২৩ (F7), ভয়েস রিডআউট (F8), লোকাল হিস্ট্রি (F9), এজ-কেস ও E2E টেস্ট (F10), প্রজেক্ট README ও ক্রেডিটস (S1) | `241400054` |
 
 ---
 
@@ -36,7 +36,7 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 
 ## ৩. ফিচারসমূহ (Features Overview)
 
-সম্পূর্ণ লাইভ ট্র্যাকার দেখতে পড়ুন: [`docs/FEATURES.md`](docs/FEATURES.md)
+সম্পূর্ণ লাইভ ট্র্যাকার দেখতে পড়ুন: [`docs/FEATURES.md`](docs/FEATURES.md)
 
 ### আবশ্যকীয় ফিচার (MUST Features):
 - **F1 (App Shell)**: মোবাইল-ফার্স্ট রেসপন্সিভ ইন্টারফেস ও হ্যাশ রাউটিং।
@@ -45,7 +45,7 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 - **F4 (Result Screens)**: ৪টি ক্যালিব্রেটেড টিয়ারে স্বচ্ছ ও সৎ ফলাফল প্রদর্শন।
 - **F6 (Disease Cards)**: BRRI ও DAE-অনুমোদিত তথ্যসূত্রসহ রোগের বিস্তারিত বাংলা ও ইংরেজি কার্ড।
 - **F7 (Safety Layer)**: প্রাথমিক স্ক্রিনিং সতর্কতা এবং সরকারি কৃষি কল সেন্টার **১৬১২৩** সার্বক্ষণিক উপস্থিতি।
-- **F10 (QA & E2E)**: ৩৫টি বাস্তবমুখী এজ-কেস টেস্ট স্যুট এবং Playwright E2E ব্রাউজার অটোমেশন।
+- **F10 (QA & E2E)**: বাস্তবমুখী এজ-কেস টেস্ট স্যুট এবং Playwright E2E ব্রাউজার অটোমেশন।
 - **F12 (Accuracy & How It Works)**: এআই কীভাবে সিদ্ধান্ত নেয় এবং স্বচ্ছ টেস্ট রিপোর্ট।
 
 ### সুবিধা ও কৃষকবান্ধব ফিচার (SHOULD Features):
@@ -61,29 +61,39 @@ AgroLeaf AI হলো একটি সম্পূর্ণ ব্রাউজ�
 
 ## ৪. এআই কীভাবে কাজ করে (How the AI Works)
 
-1. **শূন্য থেকে মডেল প্রশিক্ষণ (Trained from Scratch)**: কোনো প্রি-ট্রেইন্ড ব্ল্যাক-বক্স মডেল নয়; RiceLeafDiseaseBD v3 ডেটাসেটে টিম কর্তৃক শূন্য থেকে MobileNetV3-Small আর্কিটেকচার Kaggle GPU-তে প্রশিক্ষিত।
-2. **মডেল এক্সপোর্ট ও ব্রাউজার রানটাইম**: PyTorch মডেলটিকে অপ্টিমাইজড FP32 ONNX মডেলে রূপান্তর করে `onnxruntime-web` (WebAssembly SIMD) দিয়ে সম্পূর্ণ ক্লায়েন্ট-সাইডে ইনফারেন্স চালানো হয়।
-3. **ক্যালিব্রেশন (Temperature Scaling)**: সফটম্যাক্স আউটপুটকে তাপমাত্রা স্কেলিং দিয়ে সংশোধন করা হয়েছে, যাতে মডেল অতি-আত্মবিশ্বাসী (over-confident) মিথ্যা দাবি না করে।
-4. **বিস্তারিত মডেল ফলাফল**: পুঙ্খানুপুঙ্খ টেস্ট মেট্রিক্স, কনফিউশন ম্যাট্রিক্স এবং ক্লাস ওয়াইজ F1-স্কোর দেখতে পড়ুন: [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md)।
-5. **এজ-কেস ও কিউএ অডিট**: প্রতিকূল পরিবেশে মডেল ও সিস্টেমের কার্যকারিতা জানতে পড়ুন: [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md)।
+1. **শূন্য থেকে মডেল প্রশিক্ষণ (Trained from Scratch)**: কোনো প্রি-ট্রেইন্ড চেকপয়েন্ট নয়; সম্পূর্ণ র্যান্ডম ইনিশিয়ালাইজেশন থেকে দুটি আর্কিটেকচার — **MobileNetV3-Large-CAM** (P2, 4.21M প্যারামিটার) এবং **RegNetY-400MF** (P3, 3.91M প্যারামিটার) — Kaggle GPU-তে প্রশিক্ষিত। ক্লাস-ভিত্তিক ওজনে দুটি মিলিয়ে একটি ব্লেন্ড (Blend P2+P3, 8.12M প্যারামিটার) তৈরি করা হয়েছে।
+2. **মডেল এক্সপোর্ট ও ব্রাউজার রানটাইম**: উভয় নেটওয়ার্ক, পার-ক্লাস ব্লেন্ড এবং not-rice গেট একটি একক ONNX ফাইলে (`agroleaf.onnx`, ~16.3 MB) রপ্তানি করা হয়েছে। ওজন FP16-এ সংরক্ষিত, গণনা FP32-এ — `onnxruntime-web` (WebAssembly SIMD) দিয়ে সম্পূর্ণ ক্লায়েন্ট-সাইডে ইনফারেন্স চালানো হয়।
+3. **not-rice গেট (M3)**: একটি আলাদা ৮০K-প্যারামিটার CNN একই ONNX গ্রাফে যুক্ত করা হয়েছে। ছবিতে ধানপাতা না থাকলে (`p_nr ≥ 0.9471`) অ্যাপ **"এটি ধানপাতা মনে হচ্ছে না"** দেখায়। val-এ ৯১.৭% এবং test-এ ৯০.৬% not-rice ছবি সঠিকভাবে প্রত্যাখ্যান করে; rice ভুলভাবে প্রত্যাখ্যান হওয়ার হার internal test-এ মাত্র ০.৪২%।
+4. **ক্যালিব্রেশন (Temperature Scaling)**: ব্লেন্ড আউটপুট টেম্পারেচার T = 0.910 দিয়ে গ্রাফের ভেতরেই ক্যালিব্রেট করা হয়; মডেল অতি-আত্মবিশ্বাসী মিথ্যা দাবি করে না। Test ECE = 0.021।
+5. **পারফরম্যান্স**: Internal test macro-F1 = **0.894**। বিস্তারিত মেট্রিক্স, কনফিউশন ম্যাট্রিক্স ও ক্লাস-ওয়াইজ F1-স্কোর দেখতে পড়ুন: [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md)।
 
 ---
 
 ## ৫. প্রযুক্তি কাঠামো (Tech Stack)
 
-- **ফ্রন্টএন্ড**: React 19, Vite 6, TypeScript, Tailwind CSS v4, vite-plugin-pwa (PWA Service Worker)।
+- **ফ্রন্টএন্ড**: React 19, **Vite 8**, TypeScript, Tailwind CSS v4, vite-plugin-pwa (PWA Service Worker)।
 - **অন-ডিভাইস এআই**: ONNX Runtime Web (WASM SIMD), Canvas Image Processing।
-- **মেশিন লার্নিং**: PyTorch, timm (random initialisation), Albumentations, ONNX।
-- **টেস্টিং ও কিউএ**: Vitest (৩০টি টেস্ট ফাইল, ১৫৬+ টেস্ট), Playwright E2E, Testing Library, oxlint।
-- **ডিপ্লয়মেন্ট**: Vercel (Production CI/CD), অফলাইন লোকাল ডেমো সার্ভার।
-- **আর্কিটেকচারাল সিদ্ধান্ত**: বিস্তারিত জানতে পড়ুন: [`docs/DECISIONS.md`](docs/DECISIONS.md)।
+- **মেশিন লার্নিং**: PyTorch, timm (random initialisation), ONNX।
+- **টেস্টিং ও কিউএ**: Vitest, Playwright E2E, Testing Library, oxlint।
+- **ডিপ্লয়মেন্ট**: Vercel (Production CI/CD); প্রথম লোডে ইন্টারনেট লাগে, তারপর সম্পূর্ণ অফলাইনে কাজ করে (PWA)। অফলাইন লোকাল ডেমো সার্ভার (`npm run demo`)।
+- **আর্কিটেকচারাল সিদ্ধান্ত**: বিস্তারিত জানতে পড়ুন: [`docs/DECISIONS.md`](docs/DECISIONS.md)।
 
 ---
 
 ## ৬. গবেষণার ডেটাসেট (Datasets)
 
-- **RiceLeafDiseaseBD v3**: Munna MMH et al., Mendeley Data 2026, CC BY 4.0, [DOI: 10.17632/86s4jzj2m4.3](https://doi.org/10.17632/86s4jzj2m4.3)।
-- **BanglaRiceLeaf Dataset**: Harvard Dataverse, CC0 1.0 Public Domain, [DOI: 10.7910/DVN/XAOBYW](https://doi.org/10.7910/DVN/XAOBYW)।
+সকল ডেটাসেট যাচাইকৃত চেকসাম সহ তাদের অফিসিয়াল রিপোজিটরি থেকে ডাউনলোড করা হয়েছে:
+
+| ডেটাসেট | লাইসেন্স | লিংক |
+|---|---|---|
+| **RiceLeafDiseaseBD v3** (Gazipur, 2025) | CC BY 4.0 | [DOI: 10.17632/86s4jzj2m4.3](https://doi.org/10.17632/86s4jzj2m4.3) |
+| **BanglaRiceLeaf** (BRRI Gazipur) | CC0 1.0 Public Domain | [DOI: 10.7910/DVN/XAOBYW](https://doi.org/10.7910/DVN/XAOBYW) |
+| **RiceLeafBD real-field** (Sylhet/Dhaka) | CC BY 4.0 | [DOI: 10.17632/kx9rx8p2mz.1](https://doi.org/10.17632/kx9rx8p2mz.1) |
+| **RiceLeafDisease-BD5 v2** (Savar, 2024) — external test only | CC BY 4.0 | [DOI: 10.17632/sjkptpgv79.2](https://doi.org/10.17632/sjkptpgv79.2) |
+| **PlantDoc** (not-rice gate, other crops) | CC BY 4.0 | [github.com/pratikkayal/PlantDoc-Dataset](https://github.com/pratikkayal/PlantDoc-Dataset) |
+| **COCO 2017** (not-rice gate, non-leaf images) | CC BY 2.0 / US Gov Work | [cocodataset.org](https://cocodataset.org) |
+
+বিস্তারিত স্প্লিট প্রোটোকল, ক্লাস কাউন্ট ও লাইসেন্স মানিফেস্ট দেখুন: [`ml/data/README.md`](ml/data/README.md)।
 
 ---
 
@@ -126,8 +136,8 @@ npm run demo
 
 ## ৯. লাইভ লিংক ও ডেমো ভিডিও (Live Links)
 
-- **লাইভ ওয়েব অ্যাপ (Vercel)**: [https://agroleaf-web.vercel.app](https://agroleaf-web.vercel.app)
-- **ডেমো ভিডিও (৩ মিনিট)**: [ভিডিও লিংক ও স্ক্রিপ্ট দেখুন](docs/specs/S2.md)
+- **লাইভ ওয়েব অ্যাপ (Vercel)**: [https://agroleaf-ai-olive.vercel.app](https://agroleaf-ai-olive.vercel.app)
+- **ডেমো ভিডিও (৩ মিনিট)**: শীঘ্রই যোগ হবে (S2)
 - **পিচ প্রেজেন্টেশন ও জাজ প্রশ্নোত্তর**: [`docs/PITCH.md`](docs/PITCH.md)
 - **চূড়ান্ত সাবমিশন বিবরণী**: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
 
