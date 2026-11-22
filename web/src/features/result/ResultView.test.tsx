@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResultView from './ResultView'
 import type { Prediction } from '../../ai/types'
 
@@ -16,6 +16,14 @@ const basePrediction: Prediction = {
 }
 
 describe('ResultView (F4)', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('renders high tier with disease name, Mehedi card (F6), and Disclaimer (F7)', () => {
     const highPred: Prediction = {
       ...basePrediction,
@@ -115,5 +123,88 @@ describe('ResultView (F4)', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: /মডেল চালাতে সমস্যা হয়েছে/i })).toBeInTheDocument()
     expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
+  })
+
+  // === NEW TESTS FOR WIRING F11, F15, F7 ===
+
+  describe('F11 HeatmapOverlay wiring', () => {
+    it('shows heatmap toggle when prediction.heatmap exists and hides it when absent', () => {
+      const predWithHeatmap: Prediction = {
+        ...basePrediction,
+        heatmap: new Float32Array(49).fill(0.5),
+        heatmapSize: 7,
+      }
+
+      const { unmount } = render(
+        <ResultView
+          prediction={predWithHeatmap}
+          imageFile={new File(['test-bytes'], 'leaf.jpg', { type: 'image/jpeg' })}
+        />,
+      )
+
+      expect(
+        screen.getByRole('button', { name: /কেন এই উত্তর|হিটম্যাপ/i }),
+      ).toBeInTheDocument()
+
+      unmount()
+
+      // When heatmap is not in prediction
+      render(<ResultView prediction={basePrediction} />)
+      expect(
+        screen.queryByRole('button', { name: /কেন এই উত্তর|হিটম্যাপ/i }),
+      ).not.toBeInTheDocument()
+    })
+
+    it('creates object URL on mount and revokes it on unmount', () => {
+      const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-leaf-url')
+      const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+
+      const testFile = new File(['test-bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+      const { unmount } = render(
+        <ResultView prediction={basePrediction} imageFile={testFile} />,
+      )
+
+      expect(createObjectURLSpy).toHaveBeenCalledWith(testFile)
+
+      unmount()
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-leaf-url')
+    })
+  })
+
+  describe('F15 ShareButton wiring', () => {
+    const tiers: Prediction['tier'][] = ['high', 'medium', 'low', 'not_rice']
+
+    it.each(tiers)('renders ShareButton for tier "%s"', (tier) => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier,
+      }
+
+      render(<ResultView prediction={pred} />)
+      expect(screen.getByRole('button', { name: /শেয়ার/i })).toBeInTheDocument()
+    })
+  })
+
+  describe('F7 HelpCall wiring', () => {
+    const tiers: Prediction['tier'][] = ['high', 'medium', 'low', 'not_rice']
+
+    it.each(tiers)('renders HelpCall 16123 tel link next to disclaimer for tier "%s"', (tier) => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier,
+      }
+
+      render(<ResultView prediction={pred} />)
+      const link = screen.getByRole('link', { name: /১৬১২৩/ })
+      expect(link).toHaveAttribute('href', 'tel:16123')
+      expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
+    })
+
+    it('renders HelpCall 16123 tel link in error state', () => {
+      render(<ResultView error={new Error('Engine crash')} />)
+      const link = screen.getByRole('link', { name: /১৬১২৩/ })
+      expect(link).toHaveAttribute('href', 'tel:16123')
+      expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
+    })
   })
 })

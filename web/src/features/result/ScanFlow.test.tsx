@@ -43,6 +43,19 @@ describe('ScanFlow integration (F4)', () => {
     latencyMs: 85,
   }
 
+  const sampleList = [
+    {
+      id: 'sample-blast-1',
+      classId: 'blast',
+      file: 'blast.jpg',
+      split: 'test',
+      credit: 'Rice Leaf Dataset',
+      source: { name: 'Mendeley', doi: '10.17632', url: 'https://example.com', licence: 'CC BY 4.0' },
+      originalFile: 'blast_01.jpg',
+      changes: 'center crop',
+    },
+  ]
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(engine.loadModel).mockResolvedValue({
@@ -53,12 +66,35 @@ describe('ScanFlow integration (F4)', () => {
       thresholds: { high: 0.85, medium: 0.5 },
     } as any)
     vi.mocked(engine.analyze).mockResolvedValue(mockPrediction)
+
+    // Mock fetch for SampleGallery samples.json and image fetch
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation((url: string) => {
+        if (url.includes('samples.json')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: () => Promise.resolve(sampleList),
+          })
+        }
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          headers: new Headers({ 'content-type': 'image/jpeg' }),
+          arrayBuffer: () => Promise.resolve(new ArrayBuffer(10)),
+        })
+      }),
+    )
   })
 
-  it('renders initial PhotoPicker state with upload triggers', () => {
+  it('renders initial PhotoPicker state with upload triggers and SampleGallery below', async () => {
     render(<ScanFlow />)
     expect(screen.getByRole('button', { name: /ক্যামেরা/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /গ্যালারি/i })).toBeInTheDocument()
+
+    // SampleGallery heading should be present
+    expect(await screen.findByRole('heading', { name: /নমুনা ছবি দিয়ে চেষ্টা করুন/i })).toBeInTheDocument()
   })
 
   it('runs analysis when image is selected and Analyze button is clicked', async () => {
@@ -94,6 +130,57 @@ describe('ScanFlow integration (F4)', () => {
 
     // Should return to picker
     expect(screen.getByRole('button', { name: /ক্যামেরা/i })).toBeInTheDocument()
+  })
+
+  it('clicks a sample tile -> preview shows it -> Analyze runs the mocked analyze() with that image', async () => {
+    const user = userEvent.setup()
+    render(<ScanFlow />)
+
+    // Find and click the sample tile
+    const sampleBtn = await screen.findByRole('button', { name: /নমুনা ছবি: ব্লাস্ট/i })
+    expect(sampleBtn).toBeInTheDocument()
+    await user.click(sampleBtn)
+
+    // Preview shows it with the Analyze button
+    const analyzeBtn = await screen.findByRole('button', { name: /Analyze|শনাক্ত/i })
+    expect(analyzeBtn).toBeInTheDocument()
+
+    // Click Analyze
+    await user.click(analyzeBtn)
+
+    expect(engine.analyze).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
+    })
+  })
+
+  it('shows loading state on AnalyzeButton while analyzing', async () => {
+    const user = userEvent.setup()
+    let resolveAnalysis: (val: Prediction) => void = () => {}
+    const analysisPromise = new Promise<Prediction>((resolve) => {
+      resolveAnalysis = resolve
+    })
+    vi.mocked(engine.analyze).mockReturnValue(analysisPromise)
+
+    const { container } = render(<ScanFlow />)
+
+    const file = new File(['fake image bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
+    await user.upload(fileInput, file)
+
+    const analyzeBtn = await screen.findByRole('button', { name: /Analyze|শনাক্ত/i })
+    await user.click(analyzeBtn)
+
+    // Button should now be disabled and show loading text
+    expect(analyzeBtn).toBeDisabled()
+    expect(screen.getByText(/বিশ্লেষণ চলছে/i)).toBeInTheDocument()
+
+    // Resolve analysis
+    resolveAnalysis(mockPrediction)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
+    })
   })
 
   it('handles engine errors gracefully by rendering Bengali error view without crashing', async () => {
