@@ -87,4 +87,12 @@ describe('S1: README and Documentation Rule 10 Compliance (s1.test.ts)', () => {
       }
     }
   })
+
+  it('5. README does not contain unsourced claims and clarifies history privacy', () => {
+    const content = fs.readFileSync(readmePath, 'utf8')
+    expect(content).not.toMatch(/১০%\s*থেকে\s*৩০%/)
+    expect(content).not.toMatch(/প্রচলিত বিভিন্ন অ্যাপ/)
+    expect(content).toMatch(/শুধু আপনার ডিভাইসে/)
+    expect(content).toMatch(/সার্ভারে পাঠানো হয় না/)
+  })
 })

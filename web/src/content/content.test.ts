@@ -109,6 +109,18 @@ describe('F6: Disease Cards Content & Logic', () => {
     }
   })
 
+  it('no source url in diseases.json may be a bare home page (url path must not be empty or "/")', () => {
+    for (const card of cards) {
+      for (const s of card.sources) {
+        const parsed = new URL(s.url)
+        expect(
+          parsed.pathname !== '' && parsed.pathname !== '/',
+          `Source URL "${s.url}" in card "${card.id}" must not be a bare home page`
+        ).toBe(true)
+      }
+    }
+  })
+
   it('flags dose units with English and Bangla numbers', () => {
     const doseSamples = ['10 লিটার', '১০ গ্রাম', '৫ মিলি', '2 kg', '20ml']
     for (const sample of doseSamples) {
