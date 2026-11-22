@@ -1,6 +1,7 @@
 import { createElement, type ComponentType } from 'react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
+import HistoryScreen from '../features/history/HistoryScreen'
 import { useT } from '../i18n/useT'
 
 export interface RouteDef {
@@ -49,41 +50,7 @@ export function HomeScreen() {
   )
 }
 
-export function HistoryScreen() {
-  const { t } = useT()
-  return createElement(
-    'section',
-    { className: 'flex flex-col gap-5' },
-    createElement(
-      'div',
-      { className: 'rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm' },
-      createElement(
-        'div',
-        { className: 'flex items-center gap-3 mb-2' },
-        createElement(
-          'div',
-          { className: 'flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800' },
-          createElement(
-            'svg',
-            { className: 'h-5 w-5', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2.2', strokeLinecap: 'round', strokeLinejoin: 'round' },
-            createElement('circle', { cx: '12', cy: '12', r: '10' }),
-            createElement('polyline', { points: '12 6 12 12 16 14' })
-          )
-        ),
-        createElement(
-          'h1',
-          { className: 'text-2xl font-bold text-emerald-950' },
-          t('historyTitle')
-        )
-      ),
-      createElement(
-        'p',
-        { className: 'mt-2 text-sm leading-relaxed text-slate-600' },
-        t('historyDesc')
-      )
-    )
-  )
-}
+export { HistoryScreen } from '../features/history/HistoryScreen'
 
 export function AboutScreen() {
   const { t } = useT()
