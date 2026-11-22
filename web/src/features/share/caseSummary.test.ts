@@ -147,4 +147,18 @@ describe('F15 Case Summary', () => {
       'ক্যানভাস থেকে ছবি তৈরি করা যায়নি',
     )
   })
+
+  it('6. includes severity line in text summary when severity estimate is provided', () => {
+    const inputWithSeverity: CaseSummaryInput = {
+      ...sampleInput,
+      severity: { share: 0.25, band: 'medium' },
+    }
+    const text = generateCaseSummaryText(inputWithSeverity)
+    expect(text).toContain('আক্রান্ত এলাকা (আনুমানিক, হিটম্যাপ থেকে): মাঝারি অংশে')
+  })
+
+  it('7. omits severity line in text summary when severity is not provided', () => {
+    const text = generateCaseSummaryText(sampleInput)
+    expect(text).not.toContain('আক্রান্ত এলাকা')
+  })
 })

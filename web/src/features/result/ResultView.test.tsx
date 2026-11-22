@@ -272,4 +272,21 @@ describe('ResultView (F4)', () => {
     expect(callLink).toHaveAttribute('href', 'tel:16123')
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
   })
+
+  it('disclaimer and HelpCall still render when urgent call-out shows', () => {
+    const highActPred: Prediction = {
+      ...basePrediction,
+      tier: 'high',
+      top: [
+        { classId: 'blast', prob: 0.95 },
+      ],
+      heatmap: new Float32Array(49).fill(0.8),
+      heatmapSize: 7,
+    }
+    render(<ResultView prediction={highActPred} />)
+
+    expect(screen.getByText(/আজই ১৬১২৩ নম্বরে কল করুন/)).toBeInTheDocument()
+    expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
+    expect(screen.getByText(/সরাসরি সরকারি কৃষি কর্মকর্তার তাৎক্ষণিক পরামর্শের জন্য/)).toBeInTheDocument()
+  })
 })
