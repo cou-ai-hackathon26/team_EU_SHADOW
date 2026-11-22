@@ -141,6 +141,48 @@ describe('F8: ListenButton component', () => {
     expect(cancelMock).toHaveBeenCalled()
   })
 
+  it('4b. passes secondCard prop through to spoken text in medium tier', () => {
+    const secondCard: DiseaseCard = getCard('brown_spot')
+    const speakMock = vi.fn()
+    const getVoicesMock = vi.fn().mockReturnValue([
+      { name: 'Bangla BD', lang: 'bn-BD' } as SpeechSynthesisVoice,
+    ])
+
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: {
+        cancel: vi.fn(),
+        speak: speakMock,
+        getVoices: getVoicesMock,
+        speaking: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    })
+
+    let spokenUtteranceText = ''
+    vi.stubGlobal(
+      'SpeechSynthesisUtterance',
+      vi.fn().mockImplementation(function (text: string) {
+        spokenUtteranceText = text
+        return { text, lang: '', voice: null }
+      })
+    )
+
+    render(
+      <ListenButton card={blastCard} tier="medium" secondCard={secondCard} />
+    )
+
+    const button = screen.getByRole('button', { name: /শুনুন/i }) as HTMLButtonElement
+    fireEvent.click(button)
+
+    expect(spokenUtteranceText).toContain(blastCard.name.bn)
+    expect(spokenUtteranceText).toContain(secondCard.name.bn)
+    expect(spokenUtteranceText).toContain('পরিষ্কার ছবি')
+    expect(speakMock).toHaveBeenCalled()
+  })
+
   it('5. disables button and shows "এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন" when no bn voice is installed', () => {
     Object.defineProperty(window, 'speechSynthesis', {
       value: {
