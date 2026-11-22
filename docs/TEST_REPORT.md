@@ -2,6 +2,7 @@
 
 **Author:** Md. Mehedi Hasan (`EnergiousNPC`), Team `EU_SHADOW`  
 **Run date:** 23 November 2026  
+**Model tested:** `v1-blend-p2-p3-scratch` (before the M3 not-rice gate). `main` now ships `v2-blend-p2-p3-scratch-gate`, so the real-photo and not-rice observations below must be re-run on v2.  
 **Scope:** Synthetic unit rules and real-browser inference on the six licensed sample images. This is not a report of 35 real-photo checks.
 
 ## How to read this report
