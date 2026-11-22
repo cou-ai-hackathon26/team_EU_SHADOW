@@ -88,8 +88,8 @@ export default function ResultView({
           )}
         </div>
 
-        <HelpCall lang={lang} />
         <Disclaimer lang={lang} />
+        <HelpCall lang={lang} />
       </section>
     )
   }
@@ -148,7 +148,9 @@ export default function ResultView({
         <div className="flex flex-col gap-4">
           <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-xs sm:p-5">
             <span className="inline-block rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-900">
-              {isBn ? 'দুটো সম্ভাবনা (মাঝারি নিশ্চয়তা)' : 'Moderate Confidence (Two Possibilities)'}
+              {isBn
+                ? (top2 ? 'দুটো সম্ভাবনা (মাঝারি নিশ্চয়তা)' : 'মাঝারি নিশ্চয়তা')
+                : (top2 ? 'Moderate Confidence (Two Possibilities)' : 'Moderate Confidence')}
             </span>
             <h2 id="result-heading" className="mt-2 text-lg font-bold text-slate-900">
               {isBn ? 'সম্ভাব্য রোগের লক্ষণ' : 'Possible Conditions'}
@@ -166,17 +168,17 @@ export default function ResultView({
               </p>
             </div>
 
-            {/* 2 Options */}
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {/* Options */}
+            <div className={`mt-4 grid grid-cols-1 gap-3 ${top2 && top2Card ? 'sm:grid-cols-2' : ''}`}>
               <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-xs">
                 <span className="text-xs font-semibold text-slate-500">
-                  {isBn ? 'সম্ভাবনা ১' : 'Option 1'}
+                  {isBn ? (top2 ? 'সম্ভাবনা ১' : 'সম্ভাব্য রোগ') : (top2 ? 'Option 1' : 'Possible Condition')}
                 </span>
                 <p className="text-base font-bold text-slate-900">{top1Card.name[lang]}</p>
                 <ConfidenceMeter prob={top1.prob} className="mt-2" />
               </div>
 
-              {top2Card && (
+              {top2 && top2Card && (
                 <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-xs">
                   <span className="text-xs font-semibold text-slate-500">
                     {isBn ? 'সম্ভাবনা ২' : 'Option 2'}
@@ -189,7 +191,7 @@ export default function ResultView({
           </div>
 
           <DiseaseCardView card={top1Card} lang={lang} />
-          {top2Card && <DiseaseCardView card={top2Card} lang={lang} />}
+          {top2 && top2Card && <DiseaseCardView card={top2Card} lang={lang} />}
         </div>
       )}
 
@@ -209,8 +211,6 @@ export default function ResultView({
                 : 'The model could not identify any disease with certainty. Please seek human expert advice.'}
             </p>
           </div>
-
-          <DiseaseCardView card={getCard('not_sure')} lang={lang} />
         </div>
       )}
 
@@ -289,11 +289,9 @@ export default function ResultView({
         )}
       </div>
 
-      {/* Safety HelpCall (16123) & Disclaimer (F7) included in all tiers */}
-      <div className="flex flex-col gap-3 pt-2">
-        <HelpCall lang={lang} />
-        <Disclaimer lang={lang} />
-      </div>
+      {/* Safety Disclaimer (F7) included in all tiers */}
+      <Disclaimer lang={lang} />
+      <HelpCall lang={lang} />
     </section>
   )
 }

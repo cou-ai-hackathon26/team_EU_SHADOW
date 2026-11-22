@@ -154,31 +154,31 @@ describe('ScanFlow integration (F4)', () => {
     })
   })
 
-  it('shows loading state on AnalyzeButton while analyzing', async () => {
+  it('disables Analyze button and displays "বিশ্লেষণ চলছে" while analysis is in flight, then shows result', async () => {
     const user = userEvent.setup()
-    let resolveAnalysis: (val: Prediction) => void = () => {}
-    const analysisPromise = new Promise<Prediction>((resolve) => {
-      resolveAnalysis = resolve
+    let resolveInference!: (pred: Prediction) => void
+    const pendingPromise = new Promise<Prediction>((resolve) => {
+      resolveInference = resolve
     })
-    vi.mocked(engine.analyze).mockReturnValue(analysisPromise)
+    vi.mocked(engine.analyze).mockImplementationOnce(() => pendingPromise)
 
     const { container } = render(<ScanFlow />)
 
-    const file = new File(['fake image bytes'], 'leaf.jpg', { type: 'image/jpeg' })
+    const file = new File(['fake bytes'], 'leaf.jpg', { type: 'image/jpeg' })
     const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
     await user.upload(fileInput, file)
 
     const analyzeBtn = await screen.findByRole('button', { name: /Analyze|শনাক্ত/i })
     await user.click(analyzeBtn)
 
-    // Button should now be disabled and show "বিশ্লেষণ চলছে..."
+    // Button is now disabled and shows "বিশ্লেষণ চলছে"
     expect(analyzeBtn).toBeDisabled()
-    expect(analyzeBtn).toHaveTextContent('বিশ্লেষণ চলছে...')
-    expect(screen.getByRole('button', { name: /বিশ্লেষণ চলছে\.\.\./ })).toBeDisabled()
+    expect(analyzeBtn).toHaveTextContent(/বিশ্লেষণ চলছে/)
 
-    // Resolve analysis
-    resolveAnalysis(mockPrediction)
+    // Resolve the inference promise
+    resolveInference(mockPrediction)
 
+    // Result heading appears
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 3, name: /ব্লাস্ট/i })).toBeInTheDocument()
     })

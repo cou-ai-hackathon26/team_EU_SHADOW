@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResultView from './ResultView'
-import type { Prediction } from '../../ai/types'
+import type { Prediction, ConfidenceTier } from '../../ai/types'
 
 const basePrediction: Prediction = {
   tier: 'high',
@@ -64,6 +64,21 @@ describe('ResultView (F4)', () => {
     expect(screen.getByText(/পরিষ্কার ছবির অনুরোধ/i)).toBeInTheDocument()
     // Disclaimer is present
     expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders medium tier with only one top entry: disease name and clearer photo banner still show', () => {
+    const singleMediumPred: Prediction = {
+      ...basePrediction,
+      tier: 'medium',
+      top: [
+        { classId: 'blast', prob: 0.65 },
+      ],
+    }
+
+    render(<ResultView prediction={singleMediumPred} />)
+
+    expect(screen.getAllByText(/ব্লাস্ট/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText(/পরিষ্কার ছবির অনুরোধ/i)).toBeInTheDocument()
   })
 
   it('renders low tier with "আমি নিশ্চিত নই" and Disclaimer', () => {
@@ -230,5 +245,31 @@ describe('ResultView (F4)', () => {
       expect(telLink).toHaveAttribute('href', 'tel:16123')
       expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
     })
+  })
+
+  const tiers: ConfidenceTier[] = ['high', 'medium', 'low', 'not_rice']
+
+  it.each(tiers)('renders HelpCall (tel:16123) and Disclaimer for %s tier', (tier) => {
+    const pred: Prediction = {
+      ...basePrediction,
+      tier,
+      top: tier === 'not_rice'
+        ? [{ classId: 'not_rice', prob: 0.9 }]
+        : [{ classId: 'blast', prob: 0.8 }, { classId: 'brown_spot', prob: 0.15 }],
+    }
+
+    render(<ResultView prediction={pred} />)
+
+    const callLink = screen.getByRole('link', { name: /১৬১২৩/ })
+    expect(callLink).toHaveAttribute('href', 'tel:16123')
+    expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
+  })
+
+  it('renders HelpCall (tel:16123) and Disclaimer for error state', () => {
+    render(<ResultView error={new Error('Engine error')} />)
+
+    const callLink = screen.getByRole('link', { name: /১৬১২৩/ })
+    expect(callLink).toHaveAttribute('href', 'tel:16123')
+    expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
   })
 })
