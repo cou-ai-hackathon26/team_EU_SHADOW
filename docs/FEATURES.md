@@ -33,7 +33,7 @@ Every item: Understand → Plan → **Tests first** → Implement → PR → Rev
 | F13 | নমুনা ছবি gallery (judges-দের জন্য) | SHOULD | CP3 | `feat/F13-sample-gallery` | merged (#20) |
 | F14 | Offline PWA (install করা যায়) | SHOULD | CP3 | `feat/F14-offline-pwa` | merged (#9) |
 | F15 | কৃষি কর্মকর্তার জন্য case summary | SHOULD | CP3 | `feat/F15-case-summary` | merged (#10) |
-| F16 | আবহাওয়া-ভিত্তিক রোগ-ঝুঁকি সতর্কতা | SHOULD | CP3 | `feat/F16-weather-risk` | in-review |
+| F16 | আবহাওয়া-ভিত্তিক রোগ-ঝুঁকি সতর্কতা | SHOULD | CP3 | `feat/F16-weather-tab-gps` | in-review |
 | S3 | Pitch ও final submission | MUST | CP4 | `docs/S3-pitch-submission` | merged (#12) |
 
 ## Tanjil Shaiket

@@ -1,48 +1,68 @@
-import type { HourlyData } from './openMeteo'
-import type { RiskAssessment } from './risk'
+import { roundCoord } from './location'
+import { assessDiseases, type AssessmentOutput, type HourlyData } from './diseaseRisk'
 
-export const WEATHER_CACHE_KEY = 'agroleaf-weather-v1'
-export const DIVISION_STORAGE_KEY = 'agroleaf-weather-division'
+export const WEATHER_CACHE_KEY_V2 = 'agroleaf-weather-v2'
+export const LEGACY_WEATHER_CACHE_KEY = 'agroleaf-weather-v1'
+export const WEATHER_MODE_KEY = 'agroleaf-weather-mode'
+export const WEATHER_DIVISION_KEY = 'agroleaf-weather-division'
 export const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000 // 24 hours
 
-export interface CachedWeather {
-  divisionId: string
+export interface CachedWeatherV2 {
+  mode: 'gps' | 'division'
+  lat: number
+  lon: number
+  label: string
   hourly: HourlyData
-  assessment: RiskAssessment
   fetchedAt: number
 }
 
-export interface CachedWeatherResult {
-  cached: CachedWeather
+export interface CachedWeatherV2Result {
+  cached: CachedWeatherV2
+  assessment: AssessmentOutput
   isStale: boolean
 }
 
-export function saveWeatherCache(entry: CachedWeather): void {
+export function saveWeatherCache(entry: CachedWeatherV2): void {
   try {
-    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(entry))
+    const sanitized: CachedWeatherV2 = {
+      ...entry,
+      lat: roundCoord(entry.lat),
+      lon: roundCoord(entry.lon),
+    }
+    localStorage.setItem(WEATHER_CACHE_KEY_V2, JSON.stringify(sanitized))
   } catch {
-    // localStorage full or disabled, silently fail
+    // localStorage full or disabled
   }
 }
 
-export function loadWeatherCache(now = Date.now()): CachedWeatherResult | null {
+export function loadWeatherCache(now = Date.now()): CachedWeatherV2Result | null {
   try {
-    const raw = localStorage.getItem(WEATHER_CACHE_KEY)
+    // Ignore and remove legacy cache if present
+    if (localStorage.getItem(LEGACY_WEATHER_CACHE_KEY)) {
+      localStorage.removeItem(LEGACY_WEATHER_CACHE_KEY)
+    }
+
+    const raw = localStorage.getItem(WEATHER_CACHE_KEY_V2)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as CachedWeather
+
+    const parsed = JSON.parse(raw) as CachedWeatherV2
     if (
       !parsed ||
       typeof parsed !== 'object' ||
-      typeof parsed.divisionId !== 'string' ||
+      typeof parsed.lat !== 'number' ||
+      typeof parsed.lon !== 'number' ||
       typeof parsed.fetchedAt !== 'number' ||
-      !parsed.assessment
+      !parsed.hourly
     ) {
       return null
     }
 
-    const isStale = (now - parsed.fetchedAt) >= STALE_THRESHOLD_MS
+    const isStale = now - parsed.fetchedAt >= STALE_THRESHOLD_MS
+    const assessment = assessDiseases(parsed.hourly)
+
     return {
       cached: parsed,
+      assessment,
       isStale,
     }
   } catch {
@@ -52,23 +72,8 @@ export function loadWeatherCache(now = Date.now()): CachedWeatherResult | null {
 
 export function clearWeatherCache(): void {
   try {
-    localStorage.removeItem(WEATHER_CACHE_KEY)
-  } catch {
-    // ignore
-  }
-}
-
-export function getStoredDivision(): string | null {
-  try {
-    return localStorage.getItem(DIVISION_STORAGE_KEY)
-  } catch {
-    return null
-  }
-}
-
-export function setStoredDivision(divisionId: string): void {
-  try {
-    localStorage.setItem(DIVISION_STORAGE_KEY, divisionId)
+    localStorage.removeItem(WEATHER_CACHE_KEY_V2)
+    localStorage.removeItem(LEGACY_WEATHER_CACHE_KEY)
   } catch {
     // ignore
   }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import WeatherScreen from './WeatherScreen'
 import { saveWeatherCache, WEATHER_CACHE_KEY_V2 } from './weatherCache'
@@ -120,7 +120,7 @@ describe('F16: WeatherScreen Component', () => {
 
     // GPS must not be called when mode is division
     expect(geoSpy).not.toHaveBeenCalled()
-    expect(screen.getByText('ঢাকা')).toBeInTheDocument()
+    expect(screen.getByText('ঢাকা', { selector: 'p' })).toBeInTheDocument()
   })
 
   it('offline + fresh cache: shows cached list with "ইন্টারনেট নেই — শেষ আপডেট:"', async () => {

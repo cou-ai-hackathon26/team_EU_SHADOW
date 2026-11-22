@@ -10,6 +10,7 @@ export const en: Record<I18nKeys, string> = {
 
   // Navigation
   navHome: 'Home',
+  navWeather: 'Weather',
   navHistory: 'History',
   navHowItWorks: 'How it works',
   navAbout: 'About',
