@@ -13,9 +13,11 @@ interface ShareButtonProps {
 
 export function ShareButton({ input, className = '' }: ShareButtonProps) {
   const [isSharing, setIsSharing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleShareOrDownload = async () => {
     setIsSharing(true)
+    setError(null)
     try {
       const text = generateCaseSummaryText(input)
       const blob = await generateCaseSummaryBlob(input)
@@ -56,12 +58,15 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
       document.body.appendChild(anchor)
       anchor.click()
       document.body.removeChild(anchor)
+    } catch {
+      setError('শেয়ার করা যায়নি — আবার চেষ্টা করুন')
     } finally {
       setIsSharing(false)
     }
   }
 
   return (
+    <>
     <button
       type="button"
       onClick={handleShareOrDownload}
@@ -87,5 +92,11 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
       </svg>
       <span>{isSharing ? 'প্রস্তুত হচ্ছে…' : 'শেয়ার করুন'}</span>
     </button>
+    {error && (
+      <p role="alert" className="mt-2 text-sm text-red-700">
+        {error}
+      </p>
+    )}
+    </>
   )
 }

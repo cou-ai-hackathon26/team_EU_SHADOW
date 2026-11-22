@@ -175,7 +175,8 @@ export async function generateCaseSummaryCanvas(
 
   ctx.fillStyle = '#166534'
   ctx.font = `bold 26px ${fontFam}`
-  ctx.fillText(summaryLine, 60, cardY + 50)
+  // maxWidth keeps long two-disease lines inside the card
+  ctx.fillText(summaryLine, 60, cardY + 50, imgW - 40)
 
   ctx.fillStyle = '#334155'
   ctx.font = `20px ${fontFam}`
