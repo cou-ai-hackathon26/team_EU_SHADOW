@@ -103,6 +103,12 @@ describe('F8: ListenButton component', () => {
     vi.clearAllMocks()
     FakeAudio.instances = []
     window.Audio = FakeAudio as unknown as typeof Audio
+    vi.stubGlobal(
+      'SpeechSynthesisUtterance',
+      vi.fn().mockImplementation(function (text: string) {
+        return { text, lang: '', voice: null }
+      })
+    )
   })
 
   afterEach(() => {
@@ -196,9 +202,10 @@ describe('F8: ListenButton component', () => {
 
     // Re-trigger and unmount
     fireEvent.click(screen.getByRole('button', { name: /শুনুন/i }))
-    expect(audioInstance.paused).toBe(false)
+    const secondAudio = FakeAudio.instances[1]
+    expect(secondAudio.paused).toBe(false)
     unmount()
-    expect(audioInstance.paused).toBe(true)
+    expect(secondAudio.paused).toBe(true)
   })
 
   it('6. Bangla voice present + clip exists: still plays MP3, and speechSynthesis.speak is NOT called', () => {

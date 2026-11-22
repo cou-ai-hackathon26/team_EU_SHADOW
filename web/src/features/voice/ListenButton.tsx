@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { DiseaseCard } from '../../content/types'
 import type { ConfidenceTier } from '../../ai/types'
 import { buildSpokenText, speakText, stopSpeaking, useBanglaVoice } from './speak'
+import { clipKeyFor, clipUrl, hasClip, playClip } from './voiceClips'
 
 export interface ListenButtonProps {
   card: DiseaseCard
@@ -12,34 +13,94 @@ export interface ListenButtonProps {
 
 export function ListenButton({ card, tier, secondCard, className = '' }: ListenButtonProps) {
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [errorNote, setErrorNote] = useState<string | null>(null)
   const { supported, voice, hasBanglaVoice } = useBanglaVoice()
+  const playClipRef = useRef<{ cancel(): void } | null>(null)
 
-  // Requirement 4: Screen বদলালে কথা থেমে যায়
+  // Stop both speech synthesis and audio clips on unmount
   useEffect(() => {
     return () => {
       stopSpeaking()
+      playClipRef.current?.cancel()
+      playClipRef.current = null
     }
   }, [])
 
-  const handleToggle = () => {
-    if (!supported || !hasBanglaVoice) return
+  const hasAudioSupport = typeof Audio !== 'undefined'
 
+  const stopAll = () => {
+    stopSpeaking()
+    playClipRef.current?.cancel()
+    playClipRef.current = null
+    setIsSpeaking(false)
+  }
+
+  const handleToggle = () => {
     if (isSpeaking) {
-      stopSpeaking()
-      setIsSpeaking(false)
-    } else {
-      const text = buildSpokenText(card, tier, secondCard)
+      stopAll()
+      return
+    }
+
+    setErrorNote(null)
+
+    // Determine playback mechanism according to required source order:
+    // (1) hasClip(exact key) -> MP3 via playClip
+    // (2) else if hasBanglaVoice -> existing speakText
+    // (3) else if key is 'medium-pair' path -> MP3 'medium-pair'
+    // (4) else disabled state
+    const exactKey = secondCard ? undefined : clipKeyFor(card, tier)
+
+    const startSpeechFallback = () => {
+      if (hasBanglaVoice) {
+        const text = buildSpokenText(card, tier, secondCard)
+        setIsSpeaking(true)
+        speakText(text, {
+          voice,
+          onStart: () => setIsSpeaking(true),
+          onEnd: () => setIsSpeaking(false),
+          onError: () => setIsSpeaking(false),
+        })
+      } else {
+        stopAll()
+        setErrorNote('অডিও চালানো যায়নি — লেখাটি পড়ে দেখুন')
+      }
+    }
+
+    const startClip = (key: string) => {
+      if (!hasAudioSupport) {
+        startSpeechFallback()
+        return
+      }
+
       setIsSpeaking(true)
-      speakText(text, {
-        voice,
+      const url = clipUrl(key)
+      playClipRef.current = playClip(url, {
         onStart: () => setIsSpeaking(true),
-        onEnd: () => setIsSpeaking(false),
-        onError: () => setIsSpeaking(false),
+        onEnd: () => {
+          playClipRef.current = null
+          setIsSpeaking(false)
+        },
+        onError: () => {
+          playClipRef.current = null
+          startSpeechFallback()
+        },
       })
+    }
+
+    if (exactKey && hasClip(exactKey)) {
+      startClip(exactKey)
+    } else if (hasBanglaVoice) {
+      startSpeechFallback()
+    } else if (secondCard && hasClip('medium-pair')) {
+      startClip('medium-pair')
+    } else {
+      // Cannot play
+      stopAll()
     }
   }
 
-  if (!supported) {
+  // Disabled condition: ONLY when no MP3 can be used AND there is no Bangla voice
+  if (!hasAudioSupport && !supported) {
     return (
       <div className={`inline-flex flex-col items-start gap-1 ${className}`}>
         <button
@@ -71,7 +132,7 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
     )
   }
 
-  if (!hasBanglaVoice) {
+  if (!hasAudioSupport && !hasBanglaVoice) {
     return (
       <div className={`inline-flex flex-col items-start gap-1 ${className}`}>
         <button
@@ -103,7 +164,7 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
     )
   }
 
-  return (
+  const buttonElement = (
     <button
       type="button"
       onClick={handleToggle}
@@ -113,7 +174,7 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
         isSpeaking
           ? 'border-2 border-amber-400 bg-amber-50 text-amber-950 shadow-amber-200/50 hover:bg-amber-100'
           : 'border-2 border-emerald-600/30 bg-gradient-to-r from-emerald-50 to-emerald-100/60 text-emerald-950 hover:border-emerald-600 hover:bg-emerald-100'
-      } ${className}`}
+      } ${errorNote ? '' : className}`}
     >
       {isSpeaking ? (
         <>
@@ -160,4 +221,15 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
       )}
     </button>
   )
+
+  if (errorNote) {
+    return (
+      <div className={`inline-flex flex-col items-start gap-1 ${className}`}>
+        {buttonElement}
+        <span className="text-[11px] text-slate-500">{errorNote}</span>
+      </div>
+    )
+  }
+
+  return buttonElement
 }

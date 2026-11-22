@@ -36,7 +36,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     ],
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}', 'samples/*.{jpg,json}'],
+    globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}', 'samples/*.{jpg,json}', 'audio/*.mp3'],
     maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
     runtimeCaching: [
       {
