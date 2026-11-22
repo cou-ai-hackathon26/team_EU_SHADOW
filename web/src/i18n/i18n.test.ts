@@ -1,8 +1,11 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { bn } from './bn'
 import { en } from './en'
-import { useT, getStoredLang, setStoredLang, STORAGE_KEY } from './useT'
+import { useT, getStoredLang, setStoredLang, resetGlobalLang, STORAGE_KEY } from './useT'
+import Layout from '../components/Layout'
 
 describe('F5 i18n — Language Toggle and Translations', () => {
   beforeEach(() => {
@@ -11,6 +14,7 @@ describe('F5 i18n — Language Toggle and Translations', () => {
     } catch {
       // ignore
     }
+    resetGlobalLang()
   })
 
   afterEach(() => {
@@ -95,5 +99,41 @@ describe('F5 i18n — Language Toggle and Translations', () => {
     })
     expect(result.current.lang).toBe('en')
     expect(result.current.t('navHome')).toBe('Home')
+  })
+
+  it('6. key parity in reverse: every key in en exists in bn', () => {
+    const bnKeys = Object.keys(bn)
+    const enKeys = Object.keys(en)
+    expect(enKeys.sort()).toEqual(bnKeys.sort())
+  })
+
+  it('7. LanguageToggle in Layout switches header and bottom nav between Bengali and English', async () => {
+    const user = userEvent.setup()
+    render(
+      createElement(
+        Layout,
+        { currentHash: '#/' },
+        createElement('div', null, 'Screen Body')
+      )
+    )
+
+    // Initial state is Bengali
+    expect(screen.getByText('ধানপাতার রোগের প্রাথমিক স্ক্রিনিং')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /হোম/ })).toBeInTheDocument()
+
+    // Find and click language toggle button
+    const toggleBtn = screen.getByRole('button', { name: /ভাষা পরিবর্তন করুন|Switch Language/i })
+    await user.click(toggleBtn)
+
+    // Switched to English
+    expect(screen.getByText('Rice Leaf Disease Early Screening')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Home/ })).toBeInTheDocument()
+    expect(localStorage.getItem(STORAGE_KEY)).toBe('en')
+
+    // Click again to toggle back to Bengali
+    await user.click(toggleBtn)
+    expect(screen.getByText('ধানপাতার রোগের প্রাথমিক স্ক্রিনিং')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /হোম/ })).toBeInTheDocument()
+    expect(localStorage.getItem(STORAGE_KEY)).toBe('bn')
   })
 })
