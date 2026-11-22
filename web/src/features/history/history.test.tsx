@@ -96,6 +96,11 @@ describe('F9: Scan History Store (historyStore.ts)', () => {
       naturalWidth: { value: 1024 },
       naturalHeight: { value: 512 },
     })
+    const largeDataUrl = `data:image/png;base64,${'A'.repeat(300 * 1024)}`
+    const imageConstructor = vi.spyOn(window, 'Image').mockImplementation(function MockImage() {
+      queueMicrotask(() => source.onload?.(new Event('load')))
+      return source
+    })
     const context = { drawImage: vi.fn() } as unknown as CanvasRenderingContext2D
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context)
     const oversizedJpeg = `data:image/jpeg;base64,${'A'.repeat(300 * 1024)}`
@@ -104,8 +109,9 @@ describe('F9: Scan History Store (historyStore.ts)', () => {
       .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
       .mockImplementation((_type, quality) => (quality === 0.4 ? smallJpeg : oversizedJpeg))
 
-    const thumbnail = await compressThumbnail(source, 200 * 1024)
+    const thumbnail = await compressThumbnail(largeDataUrl, 200 * 1024)
 
+    expect(imageConstructor).toHaveBeenCalledOnce()
     expect(thumbnail.startsWith('data:image/jpeg;base64,')).toBe(true)
     expect(Math.ceil((thumbnail.split(',')[1].length * 3) / 4)).toBeLessThanOrEqual(200 * 1024)
     expect(toDataURL.mock.calls).toEqual([
