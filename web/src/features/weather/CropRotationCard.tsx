@@ -8,6 +8,8 @@ import { recommendRotation } from './cropRotation'
 export interface CropRotationCardProps {
   /** Division id (from the selector, or nearest to GPS). Null falls back to central Bangladesh. */
   divisionId: string | null
+  /** Exact area name from auto-location (e.g. "মিরপুর, ঢাকা"); shown instead of the division name. */
+  placeName?: string | null
   /** Forecast summary; null when offline or unavailable (season-only advice is shown). */
   summary: WeatherSummary | null
   /** Injected for tests; defaults to today. */
@@ -15,13 +17,13 @@ export interface CropRotationCardProps {
 }
 
 /** ফসল চক্র পরামর্শ: season + region + live weather based rotation crops after rice. Works offline. */
-export function CropRotationCard({ divisionId, summary, now }: CropRotationCardProps) {
+export function CropRotationCard({ divisionId, placeName, summary, now }: CropRotationCardProps) {
   const { lang } = useT()
   const [today] = useState(() => now ?? new Date())
   const isBn = lang === 'bn'
   const advice = recommendRotation(today.getMonth() + 1, divisionId, summary)
   const div = divisionId ? getDivisionById(divisionId) : undefined
-  const place = div ? (isBn ? div.nameBn : div.nameEn) : isBn ? 'বাংলাদেশ (সাধারণ)' : 'Bangladesh (general)'
+  const place = placeName || (div ? (isBn ? div.nameBn : div.nameEn) : isBn ? 'বাংলাদেশ (সাধারণ)' : 'Bangladesh (general)')
 
   return (
     <section
