@@ -1,46 +1,61 @@
 import { Camera, Crop, Cpu, Scale, Layers, ShieldCheck } from 'lucide-react'
+import { useT } from '../../i18n/useT'
 
 export default function HowItWorks() {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
   const steps = [
     {
       icon: <Camera className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />,
-      title: 'ছবি তোলা',
-      desc: 'কৃষক আক্রান্ত ধানপাতার একটি স্পষ্ট ও আলোকিত ছবি ক্যামেরা দিয়ে তোলেন বা ফোন গ্যালারি থেকে নির্বাচন করেন।',
+      title: isBn ? 'ছবি তোলা' : 'Take a photo',
+      desc: isBn
+        ? 'কৃষক আক্রান্ত ধানপাতার একটি স্পষ্ট ও আলোকিত ছবি ক্যামেরা দিয়ে তোলেন বা ফোন গ্যালারি থেকে নির্বাচন করেন।'
+        : 'The farmer takes a clear, well-lit photo of the affected rice leaf with the camera, or picks one from the phone gallery.',
     },
     {
       icon: <Crop className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />,
-      title: 'প্রিপ্রসেসিং (২২৪×২২৪)',
-      desc: 'মডেলের মান অনুযায়ী ছবিটি স্বয়ংক্রিয়ভাবে ক্রপ ও রিসাইজ করে ২২৪×২২৪ পিক্সেলে এবং স্ট্যান্ডার্ড স্বাভাবিকীকরণে রূপান্তর করা হয়।',
+      title: isBn ? 'প্রিপ্রসেসিং (২২৪×২২৪)' : 'Preprocessing (224×224)',
+      desc: isBn
+        ? 'মডেলের মান অনুযায়ী ছবিটি স্বয়ংক্রিয়ভাবে ক্রপ ও রিসাইজ করে ২২৪×২২৪ পিক্সেলে এবং স্ট্যান্ডার্ড স্বাভাবিকীকরণে রূপান্তর করা হয়।'
+        : 'The photo is automatically cropped and resized to 224×224 pixels and normalised exactly as the model expects.',
     },
     {
       icon: <Cpu className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />,
-      title: 'ব্রাউজারে মডেল রান',
-      desc: 'ওয়েব অ্যাসেম্বলি (WASM) প্রযুক্তি ব্যবহার করে এআই মডেল সরাসরি ফোনের ব্রাউজারে রান হয়। কোনো ক্লাউড সার্ভারের প্রয়োজন পড়ে না।',
+      title: isBn ? 'ব্রাউজারে মডেল রান' : 'Model runs in the browser',
+      desc: isBn
+        ? 'ওয়েব অ্যাসেম্বলি (WASM) প্রযুক্তি ব্যবহার করে এআই মডেল সরাসরি ফোনের ব্রাউজারে রান হয়। কোনো ক্লাউড সার্ভারের প্রয়োজন পড়ে না।'
+        : 'Using WebAssembly (WASM), the AI model runs directly in the phone’s browser. No cloud server is needed.',
     },
     {
       icon: <Scale className="h-5 w-5 text-[#B45309]" strokeWidth={2.2} />,
-      title: 'ক্যালিব্রেটেড কনফিডেন্স',
-      desc: 'মডেলের মাত্রাতিরিক্ত আত্মবিশ্বাস ঠেকাতে টেম্পারেচার স্কেলিং প্রয়োগ করে প্রতিটি রোগের সম্ভাব্যতার সৎ ও নির্ভরযোগ্য পরিমাপ করা হয়।',
+      title: isBn ? 'ক্যালিব্রেটেড কনফিডেন্স' : 'Calibrated confidence',
+      desc: isBn
+        ? 'মডেলের মাত্রাতিরিক্ত আত্মবিশ্বাস ঠেকাতে টেম্পারেচার স্কেলিং প্রয়োগ করে প্রতিটি রোগের সম্ভাব্যতার সৎ ও নির্ভরযোগ্য পরিমাপ করা হয়।'
+        : 'Temperature scaling stops the model from being over-confident, so each disease probability is an honest, reliable measure.',
     },
     {
       icon: <Layers className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />,
-      title: '৪টি স্তর বা টিয়ার',
-      desc: 'ফলাফল চারটি স্তরে বিভক্ত: নিশ্চিত (একক রোগ), দুটি সম্ভাবনা (টপ-২ অপশন), আমি নিশ্চিত নই (অস্পষ্ট ছবি), এবং ধানপাতা নয়।',
+      title: isBn ? '৪টি স্তর বা টিয়ার' : '4 result tiers',
+      desc: isBn
+        ? 'ফলাফল চারটি স্তরে বিভক্ত: নিশ্চিত (একক রোগ), দুটি সম্ভাবনা (টপ-২ অপশন), আমি নিশ্চিত নই (অস্পষ্ট ছবি), এবং ধানপাতা নয়।'
+        : 'Results fall into four tiers: confident (one disease), two possibilities (top-2), I’m not sure (unclear photo), and not a rice leaf.',
     },
     {
       icon: <ShieldCheck className="h-5 w-5 text-[#15803D]" strokeWidth={2.2} />,
-      title: 'সম্পূর্ণ গোপনীয়তা ও সুরক্ষা',
-      desc: 'সমস্ত ডেটা ও ছবি প্রসেসিং লোকাল ডিভাইসেই হয়। ছবি কখনো ফোন থেকে বাইরে যায় না, কোনো লগইন বা ইন্টারনেট ডেটা খরচের বাধ্যবাধকতা নেই।',
+      title: isBn ? 'সম্পূর্ণ গোপনীয়তা ও সুরক্ষা' : 'Full privacy and safety',
+      desc: isBn
+        ? 'সমস্ত ডেটা ও ছবি প্রসেসিং লোকাল ডিভাইসেই হয়। ছবি কখনো ফোন থেকে বাইরে যায় না, কোনো লগইন বা ইন্টারনেট ডেটা খরচের বাধ্যবাধকতা নেই।'
+        : 'All processing happens on the device. Photos never leave the phone, and there is no login or mandatory data use.',
     },
   ]
 
   return (
     <section className="rounded-3xl border border-[#E3E8DC] bg-white p-6 shadow-sm">
       <h2 className="text-xl sm:text-2xl font-black text-[#0E1F16] tracking-tight">
-        AI কীভাবে কাজ করে — পর্দার পেছনের প্রযুক্তি
+        {isBn ? 'AI কীভাবে কাজ করে — পর্দার পেছনের প্রযুক্তি' : 'How the AI works — the technology behind the scenes'}
       </h2>
       <p className="mt-1 text-[16px] text-[#4A5F52]">
-        কৃষকের হাতে স্বচ্ছ ও নির্ভরযোগ্য প্রযুক্তি পৌঁছে দেওয়াই আমাদের লক্ষ্য।
+        {isBn ? 'কৃষকের হাতে স্বচ্ছ ও নির্ভরযোগ্য প্রযুক্তি পৌঁছে দেওয়াই আমাদের লক্ষ্য।' : 'Our goal is to put transparent, reliable technology in farmers’ hands.'}
       </p>
 
       <div className="mt-5 grid gap-3.5 sm:grid-cols-2">
@@ -66,7 +81,8 @@ export default function HowItWorks() {
       </div>
 
       <p className="mt-4 rounded-xl border border-emerald-900/10 bg-emerald-50/50 p-3 text-xs text-slate-600 leading-relaxed">
-        <strong>সততা ও স্বচ্ছতা:</strong> হিটম্যাপ ও আক্রান্ত এলাকার বিস্তার মডেলের মনোযোগের আনুমানিক ধারণা (coarse activation), কোনো ল্যাবরেটরিতে মাপা নিখুঁত ক্ষতের পরিমাণ নয়।
+        <strong>{isBn ? 'সততা ও স্বচ্ছতা:' : 'Honesty and transparency:'}</strong>{' '}
+        {isBn ? 'হিটম্যাপ ও আক্রান্ত এলাকার বিস্তার মডেলের মনোযোগের আনুমানিক ধারণা (coarse activation), কোনো ল্যাবরেটরিতে মাপা নিখুঁত ক্ষতের পরিমাণ নয়।' : 'The heat map and affected-area spread are a rough view of where the model looked (coarse activation), not a lab-measured lesion size.'}
       </p>
     </section>
   )

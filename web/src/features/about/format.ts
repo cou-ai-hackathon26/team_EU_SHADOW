@@ -47,3 +47,40 @@ export const tierLabelBn: Record<ConfidenceTier, string> = {
 export function getTierLabelBn(tier: ConfidenceTier): string {
   return tierLabelBn[tier] ?? tier
 }
+
+/* ── Language-aware helpers (বাং ↔ EN) ─────────────────────────────────── */
+export type UiLang = 'bn' | 'en'
+
+export function num(n: number | string, lang: UiLang): string {
+  return lang === 'bn' ? toBanglaDigits(n) : String(n)
+}
+
+export function pct(value: number, lang: UiLang, decimals: number = 1): string {
+  const percent = (value * 100).toFixed(decimals)
+  return `${num(percent, lang)}%`
+}
+
+export const classLabelEn: Record<ClassId, string> = {
+  healthy: 'Healthy',
+  blast: 'Blast',
+  brown_spot: 'Brown spot',
+  leaf_smut: 'Leaf smut',
+  tungro: 'Tungro',
+  sheath_blight: 'Sheath blight',
+  not_rice: 'Not a rice leaf',
+}
+
+export function classLabel(classId: string, lang: UiLang): string {
+  return (lang === 'bn' ? classLabelBn : classLabelEn)[classId as ClassId] ?? classId
+}
+
+export const tierLabelEn: Record<ConfidenceTier, string> = {
+  high: 'Confident',
+  medium: 'Two possibilities',
+  low: "I'm not sure",
+  not_rice: 'Not a rice leaf',
+}
+
+export function tierLabel(tier: ConfidenceTier, lang: UiLang): string {
+  return (lang === 'bn' ? tierLabelBn : tierLabelEn)[tier] ?? tier
+}

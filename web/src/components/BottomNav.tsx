@@ -47,7 +47,7 @@ export default function BottomNav({ currentHash, isInsideMobileFrame = false }: 
 
   return (
     <nav
-      aria-label="মূল নেভিগেশন"
+      aria-label={t('mainNavAria')}
       className={
         isInsideMobileFrame
           ? 'w-full bg-white/95 py-1 backdrop-blur-md'
