@@ -1,4 +1,5 @@
-import { createElement, useEffect, useState, type ComponentType } from 'react'
+import { createElement, type ComponentType } from 'react'
+import { scanSession, useScanSession } from './scanSession'
 import { HomeLanding } from '../features/home/HomeLanding'
 import { Info, ShieldCheck, Sprout } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
@@ -20,20 +21,17 @@ export interface RouteDef {
 
 export function HomeScreen() {
   const { t } = useT()
-  const { isScanActive, registerLanding } = useScanState()
-  const [showScanner, setShowScanner] = useState(false)
-
-  useEffect(() => {
-    if (showScanner) return
-    return registerLanding()
-  }, [showScanner, registerLanding])
+  const { isScanActive } = useScanState()
+  // Shared across Web view and Mobile preview, and mirrored in the URL (#/scan/rice).
+  const { crop } = useScanSession()
+  const showScanner = crop !== null
 
   if (!showScanner) {
     return createElement(
       'div',
       { className: 'flex flex-col gap-3 sm:gap-4 w-full' },
       createElement('h1', { className: 'sr-only' }, 'AgroLeaf AI'),
-      createElement(HomeLanding, { onStartRice: () => setShowScanner(true) })
+      createElement(HomeLanding, { onStartRice: () => scanSession.openCrop('rice') })
     )
   }
 
@@ -45,7 +43,7 @@ export function HomeScreen() {
       'button',
       {
         type: 'button',
-        onClick: () => setShowScanner(false),
+        onClick: () => scanSession.reset(),
         className:
           'inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-4 py-1.5 text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95',
       },
@@ -215,6 +213,8 @@ export function normalizeHash(hash: string): string {
 
 export function matchRoute(hash: string): RouteDef {
   const normalized = normalizeHash(hash)
+  // The rice scanner workspace and its result live on the Home route (#/scan/rice, #/scan/rice/result).
+  if (normalized.startsWith('#/scan')) return routes[0]
   const matched = routes.find(
     (r) =>
       r.hash === normalized ||

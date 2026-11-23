@@ -45,6 +45,7 @@ Every item: Understand → Plan → **Tests first** → Implement → PR → Rev
 | F3 | ছবির মান যাচাই (অন্ধকার / ঝাপসা) | MUST | CP2 | `feat/F3-photo-quality` | merged (#6, via #22) |
 | F4 | Analyze flow ও ফলাফলের screen (৪টি tier) | MUST | CP2 | `feat/F4-result-screens` | merged (#13, via #22) |
 | F5 | বাংলা / English toggle | SHOULD | CP3 | `feat/F5-language-toggle` | merged (#28) |
+| F17 | করণীয় রোডম্যাপ (পরবর্তী ৭ দিন) | SHOULD | CP3 | `feat/F17-action-roadmap` | in-review |
 | S2 | ৩ মিনিটের demo video | MUST | CP4 | `docs/S2-demo-video` | in-progress |
 
 ## Md. Mehedi Hasan

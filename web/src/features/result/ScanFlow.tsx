@@ -1,91 +1,77 @@
-import { useState, useEffect } from 'react'
-import type { Prediction, QualityReport } from '../../ai/types'
+import type { QualityReport } from '../../ai/types'
 import { loadModel, analyze } from '../../ai/engine'
 import { useT } from '../../i18n/useT'
-import { useScanState } from '../../app/scanStateContext'
+import { scanSession, useScanSession } from '../../app/scanSession'
 import PhotoPicker from '../capture/PhotoPicker'
 import SampleGallery from '../capture/SampleGallery'
 import ResultView from './ResultView'
 import { saveScanFromPrediction } from '../history/historyStore'
 
+/**
+ * Scanner workspace → result. All state lives in the shared scan session, so the Web view and the
+ * Mobile preview show the same step, and switching between them never loses the photo or result.
+ */
 export default function ScanFlow() {
   const { lang } = useT()
-  const { setIsScanActive } = useScanState()
-  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [prediction, setPrediction] = useState<Prediction | null>(null)
-  const [analysisError, setAnalysisError] = useState<Error | null>(null)
+  const { image, file, prediction, error, isAnalyzing, notice } = useScanSession()
 
-  useEffect(() => {
-    setIsScanActive(Boolean(selectedImage || prediction || analysisError))
-    return () => {
-      setIsScanActive(false)
-    }
-  }, [selectedImage, prediction, analysisError, setIsScanActive])
-
-  const handleImageReady = (image: HTMLImageElement, file: File, _report?: QualityReport) => {
-    setSelectedImage(image)
-    setSelectedFile(file)
-    setPrediction(null)
-    setAnalysisError(null)
+  const handleImageReady = (img: HTMLImageElement, f: File, _report?: QualityReport) => {
+    scanSession.setImage(img, f)
   }
 
-  const handleClear = () => {
-    setSelectedImage(null)
-    setSelectedFile(null)
-    setPrediction(null)
-    setAnalysisError(null)
-    setIsAnalyzing(false)
-  }
+  const handleClear = () => scanSession.clearPhoto()
 
   const handleAnalyze = async () => {
-    if (!selectedImage || isAnalyzing) {
-      return
-    }
+    const current = scanSession.get()
+    if (!current.image || current.isAnalyzing) return
+    const img = current.image
 
-    setIsAnalyzing(true)
-    setAnalysisError(null)
-
+    scanSession.setAnalyzing(true)
     try {
       await loadModel()
-      const result = await analyze(selectedImage)
-      setPrediction(result)
+      const result = await analyze(img)
+      scanSession.setResult(result, null)
       // F9: keep a small thumbnail on this device only; a failed save must not block the result
-      saveScanFromPrediction(result, selectedImage).catch(() => {})
+      saveScanFromPrediction(result, img).catch(() => {})
     } catch (err) {
-      setAnalysisError(err instanceof Error ? err : new Error('মডেল চালাতে সমস্যা হয়েছে'))
-    } finally {
-      setIsAnalyzing(false)
+      scanSession.setResult(null, err instanceof Error ? err : new Error('মডেল চালাতে সমস্যা হয়েছে'))
     }
   }
 
   return (
     <div className="w-full">
-      {prediction || analysisError ? (
+      {prediction || error ? (
         <ResultView
           prediction={prediction}
-          error={analysisError}
+          error={error}
           onReset={handleClear}
-          image={selectedImage}
-          imageFile={selectedFile}
+          image={image}
+          imageFile={file}
           lang={lang}
         />
       ) : (
         <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4.5 w-full">
+          {notice && (
+            <p
+              role="status"
+              className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+            >
+              {notice}
+            </p>
+          )}
           {/* Top Hero Scan Zone: Primary Camera & Gallery Upload */}
           <div className="w-full">
             <PhotoPicker
               onImageReady={handleImageReady}
               onClear={handleClear}
-              onAnalyze={selectedImage ? handleAnalyze : undefined}
+              onAnalyze={image ? handleAnalyze : undefined}
               isAnalyzing={isAnalyzing}
-              selectedFile={selectedFile}
+              selectedFile={file}
             />
           </div>
 
           {/* Sample Leaf Gallery: Full width below hero */}
-          {!selectedImage && (
+          {!image && (
             <div className="w-full">
               <SampleGallery onImageReady={handleImageReady} />
             </div>

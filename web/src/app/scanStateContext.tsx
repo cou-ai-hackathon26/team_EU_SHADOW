@@ -1,53 +1,47 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { isScanActiveIn, useScanSession } from './scanSession'
 
 export interface ScanStateContextType {
+  /** A photo, result or error is on screen. */
   isScanActive: boolean
-  setIsScanActive: (active: boolean) => void
-  /** True while a Home landing (hero + crop selector) is on screen. Layout uses it for the dark canvas. */
+  /** The Home hero + crop selector is on screen. Layout uses it for the dark canvas. */
   isLandingView: boolean
-  /**
-   * A mounted Home landing calls this and the returned function on unmount.
-   * It is a counter, not a boolean: in Mobile Preview two Home screens are mounted (phone frame +
-   * hidden standard view). With a boolean, the one that unmounts when you switch back to Web
-   * turned the flag off while the other was still showing, leaving white text on the mint background.
-   */
-  registerLanding: () => () => void
 }
 
 const ScanStateContext = createContext<ScanStateContextType>({
   isScanActive: false,
-  setIsScanActive: () => {},
   isLandingView: false,
-  registerLanding: () => () => {},
 })
 
-function opensOnHome(): boolean {
-  if (typeof window === 'undefined') return false
-  const h = window.location.hash
+function readHash(): string {
+  return typeof window === 'undefined' ? '' : window.location.hash
+}
+
+function isHomeHash(h: string): boolean {
   return h === '' || h === '#' || h === '#/'
 }
 
+/**
+ * Derived view of the shared scan session (see scanSession.ts) plus the current route.
+ * Both are global, so every mounted copy of a screen (Web view, Mobile preview frame) agrees,
+ * and the very first render on Home is already dark (no light flash).
+ */
 export function ScanStateProvider({ children }: { children: ReactNode }) {
-  const [isScanActive, setIsScanActive] = useState(false)
-  const [landingCount, setLandingCount] = useState(0)
-  // Until the first Home landing registers, assume dark if the app opened on Home,
-  // so the very first paint already uses the dark canvas (no light flash).
-  const [registeredOnce, setRegisteredOnce] = useState(false)
-  const [initialHome] = useState(opensOnHome)
+  const session = useScanSession()
+  const [hash, setHash] = useState(readHash)
 
-  const registerLanding = useCallback(() => {
-    setRegisteredOnce(true)
-    setLandingCount((c) => c + 1)
-    return () => setLandingCount((c) => Math.max(0, c - 1))
+  useEffect(() => {
+    const onHash = () => setHash(readHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
-  const isLandingView = landingCount > 0 || (!registeredOnce && initialHome)
+  const value: ScanStateContextType = {
+    isScanActive: isScanActiveIn(session),
+    isLandingView: isHomeHash(hash) && !session.crop,
+  }
 
-  return (
-    <ScanStateContext.Provider value={{ isScanActive, setIsScanActive, isLandingView, registerLanding }}>
-      {children}
-    </ScanStateContext.Provider>
-  )
+  return <ScanStateContext.Provider value={value}>{children}</ScanStateContext.Provider>
 }
 
 /* eslint-disable react-refresh/only-export-components */
