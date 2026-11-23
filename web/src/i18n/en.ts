@@ -141,6 +141,8 @@ export const en: Record<I18nKeys, string> = {
   cropPotato: 'Potato',
   cropTomato: 'Tomato',
   cropChili: 'Chili',
+  cropScanHint: 'Click to Scan →',
+  cropTapHint: 'Tap to Scan →',
   cropActive: 'Active',
   cropUpcoming: 'Upcoming',
   cropUpcomingToast: 'Only rice disease screening is active right now — other crops will come in a later update',

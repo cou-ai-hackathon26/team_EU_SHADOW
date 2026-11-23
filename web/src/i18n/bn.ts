@@ -139,6 +139,8 @@ export const bn = {
   cropPotato: 'আলু',
   cropTomato: 'টমেটো',
   cropChili: 'মরিচ',
+  cropScanHint: 'স্ক্যান শুরু করুন →',
+  cropTapHint: 'ট্যাপ করুন →',
   cropActive: 'সক্রিয়',
   cropUpcoming: 'শীঘ্রই আসছে',
   cropUpcomingToast: 'বর্তমানে শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয় আছে — অন্যান্য ফসল পরবর্তী আপডেটে যুক্ত হবে',

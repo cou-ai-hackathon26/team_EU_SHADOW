@@ -66,11 +66,11 @@ export default function Layout({ children, currentHash }: LayoutProps) {
     <div className={`flex min-h-screen w-full flex-col bg-gradient-to-br from-[#A7F3D0] via-[#BBF7D0] to-[#86EFAC] text-[#0E1F16] antialiased font-sans ${canvas}`}>
       {/* 1. Desktop Top Navbar: Sleek h-12 (48px) Ultra-Modern Emerald Bar */}
       <header
-        className={`sticky top-0 z-40 h-12 shrink-0 border-b border-[#0B5D3B]/40 bg-[#0F5132]/95 px-4 shadow-[0_4px_20px_-4px_rgba(15,81,50,0.3)] backdrop-blur-md ${
+        className={`sticky top-0 z-40 h-12 shrink-0 border-b border-[#0B5D3B]/40 bg-[#0F5132]/95 px-4 lg:px-6 shadow-[0_4px_20px_-4px_rgba(15,81,50,0.3)] backdrop-blur-md ${
           isMobilePreview ? 'lg:hidden' : ''
         }`}
       >
-        <div className="mx-auto flex h-full w-full max-w-xl lg:max-w-6xl items-center justify-between">
+        <div className="mx-auto flex h-full w-full max-w-xl items-center justify-between lg:max-w-none lg:px-2">
           {/* Left: Brand Logo & Title with Subtitle */}
           <a href="#/" className="flex items-center gap-2 select-none">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/15 text-emerald-300 border border-white/20 shadow-xs">

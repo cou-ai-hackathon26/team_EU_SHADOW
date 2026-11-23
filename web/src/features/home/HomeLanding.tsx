@@ -30,9 +30,10 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
   // Inside the laptop phone frame, always use the mobile layout.
   const desk = inFrame ? 'hidden' : 'hidden lg:block'
   const mob = inFrame ? 'block' : 'block lg:hidden'
-  // Mobile: rice spans the full row, the 4 upcoming crops sit in a 2x2 grid. Desktop: 5 columns.
+  // Mobile: one uniform 2-column grid. Desktop: 5 equal columns.
   const gridCols = inFrame ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-5'
-  const riceSpan = inFrame ? 'col-span-2' : 'col-span-2 lg:col-span-1'
+  const desktopOnlyText = 'hidden lg:inline'
+  const mobileOnlyText = 'lg:hidden'
   // Desktop-only (lg:) classes; dropped inside the phone frame, which always uses the mobile look.
   const D = (cls: string) => (inFrame ? '' : cls)
 
@@ -59,18 +60,18 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
             <p className="max-w-md text-base leading-relaxed text-emerald-100/85">{t('landingSubtitle')}</p>
           </div>
 
-          <div className="relative mx-auto h-[430px] w-[300px]">
+          <div className="relative mx-auto h-[470px] w-[360px]">
             <img
               src={`${BASE}${HERO_PHOTO}`}
               alt={t('landingHeroPhotoAlt')}
               width={478}
               height={560}
               fetchPriority="high"
-              className="h-full w-full rounded-[2rem] object-cover shadow-2xl ring-1 ring-white/10 [mask-image:radial-gradient(ellipse_70%_75%_at_50%_50%,black_60%,transparent_100%)]"
+              className="h-full w-full object-cover [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black_40%,transparent_98%)]"
             />
-            <Callout side="left" className="right-[62%] top-[14%]" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
-            <Callout side="left" className="right-[52%] top-[47%]" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
-            <Callout side="left" className="right-[58%] bottom-[12%]" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
+            <Callout side="left" className="right-[66%] top-[20%]" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
+            <Callout side="left" className="right-[58%] top-[47%]" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
+            <Callout side="left" className="right-[64%] bottom-[18%]" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
           </div>
 
           <div className="flex flex-col gap-3">
@@ -97,22 +98,26 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
       {/* Mobile hero */}
       <section
         aria-labelledby="landing-mobile-title"
-        className={`${mob} relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#ECFDF5] to-[#D1FAE5] px-5 pt-5 pb-3 shadow-md ring-1 ring-emerald-900/10`}
+        className={`${mob} relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B3B24] via-[#0F5132] to-[#14532D] p-4 text-white shadow-lg`}
       >
-        <h2 id="landing-mobile-title" className="text-center text-2xl font-extrabold leading-snug text-[#0B3B24]">
-          {t('landingMobileTitle')}
-        </h2>
-        <img
-          src={`${BASE}${HERO_PHOTO}`}
-          alt={t('landingHeroPhotoAlt')}
-          width={478}
-          height={560}
-          className="mt-3 h-40 w-full rounded-2xl object-cover object-[50%_35%] shadow-md"
-        />
-        <p className="mt-1 text-center text-xs text-[#14532D]">
-          <Languages className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
-          {t('landingBadgeClasses')} • {t('landingBadgeVoice')}
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 id="landing-mobile-title" className="text-xl font-extrabold leading-snug">
+              {t('landingMobileTitle')}
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-emerald-100/85">
+              <Languages className="mr-1 inline h-3.5 w-3.5 text-emerald-300" aria-hidden="true" />
+              {t('landingBadgeClasses')} • {t('landingBadgeVoice')}
+            </p>
+          </div>
+          <img
+            src={`${BASE}${CROPS[0].photo}`}
+            alt={t('landingHeroPhotoAlt')}
+            width={300}
+            height={300}
+            className="h-24 w-24 shrink-0 rounded-2xl object-cover shadow-md ring-1 ring-white/15"
+          />
+        </div>
       </section>
 
       {/* Crop selector: light & colourful on mobile, glass cards on the dark desktop canvas */}
@@ -122,7 +127,7 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
         </h2>
         <ul className={`grid ${gridCols} gap-3 lg:gap-4`}>
           {CROPS.map((c) => (
-            <li key={c.id} className={c.active ? riceSpan : undefined}>
+            <li key={c.id}>
               <button
                 type="button"
                 data-crop={c.id}
@@ -130,8 +135,8 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                 onClick={c.active ? onStartRice : showUpcoming}
                 className={
                   c.active
-                    ? `group relative flex h-full w-full flex-col items-center gap-1 rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-400 to-emerald-600 p-4 text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 ${D('lg:bg-none lg:bg-emerald-500/25 lg:border-emerald-400 lg:shadow-emerald-950/50 lg:hover:bg-emerald-500/35')}`
-                    : `relative flex h-full w-full cursor-help flex-col items-center gap-1 rounded-2xl border border-emerald-900/10 bg-white/85 p-4 shadow-sm backdrop-blur-sm transition duration-200 hover:bg-white ${D('lg:bg-white/[0.06] lg:hover:bg-white/[0.10] lg:border-white/15 lg:backdrop-blur-md lg:shadow-none')}`
+                    ? `group relative flex h-full w-full flex-col items-center gap-1 rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-400 to-emerald-600 p-3 text-white shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-400 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 lg:p-4 ${D('lg:bg-none lg:bg-emerald-500/25 lg:border-emerald-400 lg:ring-0 lg:shadow-emerald-950/50 lg:hover:bg-emerald-500/35')}`
+                    : `group relative flex h-full w-full cursor-help flex-col items-center gap-1 rounded-2xl border border-emerald-900/10 bg-white/85 p-3 shadow-sm backdrop-blur-sm transition duration-200 hover:bg-white lg:p-4 ${D('lg:bg-white/[0.06] lg:hover:bg-white/[0.10] lg:border-white/15 lg:backdrop-blur-md lg:shadow-none')}`
                 }
               >
                 <span
@@ -143,20 +148,37 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                 >
                   {c.active ? t('cropActive') : t('cropUpcoming')}
                 </span>
-                <img
-                  src={`${BASE}${c.photo}`}
-                  alt=""
-                  width={300}
-                  height={300}
-                  loading="lazy"
-                  className={`mt-5 h-24 w-full rounded-xl object-cover shadow-md ${c.active ? 'ring-2 ring-white/70' : 'opacity-80'} ${c.active ? '' : D('lg:ring-1 lg:ring-white/10')}`}
-                />
+                {/* Photo in a dark-emerald frame with a soft vignette; zooms gently on hover */}
+                <span className="relative mt-5 block h-24 w-full overflow-hidden rounded-xl bg-[#0B3B24] shadow-md ring-1 ring-[#0B3B24]/60">
+                  <img
+                    src={`${BASE}${c.photo}`}
+                    alt=""
+                    width={300}
+                    height={300}
+                    loading="lazy"
+                    className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 ${c.active ? '' : 'opacity-80'}`}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(7,42,25,0.55)_100%)] shadow-[inset_0_0_0_2px_rgba(11,59,36,0.45)]"
+                  />
+                </span>
                 <span className={`text-lg font-extrabold ${c.active ? 'text-white' : `text-[#0E1F16] ${D('lg:text-white')}`}`}>
                   {t(c.labelKey)}
                 </span>
                 <span className={`text-xs italic ${c.active ? 'text-emerald-50' : `text-emerald-800/80 ${D('lg:text-emerald-200')}`}`}>
                   ({c.scientific})
                 </span>
+                {c.active && (
+                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-sm font-bold text-white ring-1 ring-white/30 transition group-hover:bg-white/30">
+                    {inFrame ? t('cropTapHint') : (
+                      <>
+                        <span className={desktopOnlyText}>{t('cropScanHint')}</span>
+                        <span className={mobileOnlyText}>{t('cropTapHint')}</span>
+                      </>
+                    )}
+                  </span>
+                )}
               </button>
             </li>
           ))}

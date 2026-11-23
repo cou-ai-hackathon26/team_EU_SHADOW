@@ -141,4 +141,19 @@ describe('Home landing and crop selector', () => {
     expect(screen.getByText('ছবির সূত্র ও লাইসেন্স')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'IRRI Images' })).toHaveAttribute('href', expect.stringContaining('commons.wikimedia.org'))
   })
+
+  it('only the active rice card shows a scan hint', () => {
+    renderHome()
+    expect(cropButton('rice')).toHaveTextContent('স্ক্যান শুরু করুন →')
+    expect(cropButton('rice')).toHaveTextContent('ট্যাপ করুন →')
+    for (const id of ['potato', 'brinjal', 'tomato', 'chili']) expect(cropButton(id)).not.toHaveTextContent('→')
+  })
+
+  it('inside the phone frame the rice card shows only the tap hint and all crops share one 2-column grid', () => {
+    renderHome(true)
+    expect(cropButton('rice')).toHaveTextContent('ট্যাপ করুন →')
+    expect(cropButton('rice')).not.toHaveTextContent('স্ক্যান শুরু করুন')
+    expect(cropButton('rice').closest('li')?.className ?? '').not.toMatch(/col-span/)
+    expect(cropButton('rice').closest('ul')?.className).toMatch(/grid-cols-2/)
+  })
 })
