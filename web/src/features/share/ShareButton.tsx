@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Share2, Loader2 } from 'lucide-react'
 import {
   generateCaseSummaryCanvas,
   generateCaseSummaryBlob,
@@ -67,36 +68,25 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
 
   return (
     <>
-    <button
-      type="button"
-      onClick={handleShareOrDownload}
-      disabled={isSharing}
-      aria-label="কেস সামারি শেয়ার করুন"
-      className={`flex items-center justify-center gap-2 rounded-xl bg-leaf-800 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-leaf-700 focus:outline-none focus:ring-2 focus:ring-leaf-800/40 disabled:opacity-50 ${className}`}
-    >
-      <svg
-        className="h-4 w-4 shrink-0 text-white"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
+      <button
+        type="button"
+        onClick={handleShareOrDownload}
+        disabled={isSharing}
+        aria-label="কেস সামারি শেয়ার করুন"
+        className={`flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-[#0B5D3B]/20 bg-white px-6 py-3.5 text-[16px] font-bold text-[#0E1F16] shadow-sm transition-all hover:bg-[#E6F4ED]/50 hover:border-[#0B5D3B]/40 active:scale-95 focus:outline-none focus-visible:ring-3 focus-visible:ring-emerald-700/50 disabled:opacity-50 select-none ${className}`}
       >
-        <circle cx="18" cy="5" r="3" />
-        <circle cx="6" cy="12" r="3" />
-        <circle cx="18" cy="19" r="3" />
-        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-      </svg>
-      <span>{isSharing ? 'প্রস্তুত হচ্ছে…' : 'শেয়ার করুন'}</span>
-    </button>
-    {error && (
-      <p role="alert" className="mt-2 text-sm text-red-700">
-        {error}
-      </p>
-    )}
+        {isSharing ? (
+          <Loader2 className="h-5 w-5 animate-spin text-[#0B5D3B]" />
+        ) : (
+          <Share2 className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />
+        )}
+        <span>{isSharing ? 'প্রস্তুত হচ্ছে…' : 'শেয়ার করুন'}</span>
+      </button>
+      {error && (
+        <p role="alert" className="mt-2 text-sm text-rose-700">
+          {error}
+        </p>
+      )}
     </>
   )
 }

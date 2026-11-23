@@ -1,3 +1,4 @@
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import type { QualityReport } from '../../ai/types'
 import { useT } from '../../i18n/useT'
 import AnalyzeButton from '../result/AnalyzeButton'
@@ -30,36 +31,36 @@ export default function QualityHint({ report, onAnalyze, isAnalyzing = false }: 
   const hasWarnings = warnings.length > 0
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-2xs">
+    <div className="flex flex-col gap-3 rounded-2xl border border-[#E3E8DC] bg-white p-4 shadow-2xs">
       {hasWarnings ? (
         <div
           role="status"
           aria-live="polite"
-          className="rounded-2xl border border-amber-300 bg-amber-50/95 p-4 text-xs sm:text-sm text-amber-950 shadow-2xs"
+          className="rounded-2xl border border-[#FDE68A] bg-[#FFFBEB] p-4 text-[15px] text-[#0E1F16] shadow-2xs"
         >
           <div className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-xs">
-              ⚠️
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#FEF3C7] text-[#B45309]">
+              <AlertTriangle className="h-4 w-4" strokeWidth={2.4} />
             </span>
             <div className="flex flex-col gap-1">
-              <span className="font-bold text-amber-950">{t('qualityWarningTitle')}</span>
-              <ul className="list-inside list-disc space-y-1 text-amber-900">
+              <span className="font-bold text-[#B45309]">{t('qualityWarningTitle')}</span>
+              <ul className="list-inside list-disc space-y-1 text-[#0E1F16]">
                 {warnings.map((msg, idx) => (
                   <li key={idx} className="leading-snug">{msg}</li>
                 ))}
               </ul>
-              <span className="mt-1 text-xs text-amber-800 font-medium">
+              <span className="mt-1 text-[14px] text-[#B45309] font-medium">
                 {t('qualityCanProceed')}
               </span>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-emerald-50/90 px-4 py-3 text-xs sm:text-sm text-emerald-950 shadow-2xs">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold">
-            ✓
+        <div className="flex items-center gap-2.5 rounded-2xl border border-[#BBF7D0] bg-[#F0FDF4] px-4 py-3 text-[15px] text-[#15803D] shadow-2xs">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-xl bg-[#15803D] text-white">
+            <CheckCircle2 className="h-4 w-4" strokeWidth={2.4} />
           </span>
-          <span className="font-semibold">{t('qualityGood')}</span>
+          <span className="font-bold">{t('qualityGood')}</span>
         </div>
       )}
 

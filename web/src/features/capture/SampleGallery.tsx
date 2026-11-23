@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Sparkles } from 'lucide-react'
 import type { DiseaseClassId } from '../../ai/classes'
 import { getCard } from '../../content/getCard'
 import { loadImage } from './loadImage'
+import { useT } from '../../i18n/useT'
 
-/** One entry of public/samples/samples.json. Every image comes from the internal TEST split (never train). */
 export interface SampleEntry {
   id: string
   classId: DiseaseClassId
@@ -16,7 +18,6 @@ export interface SampleEntry {
 }
 
 export interface SampleGalleryProps {
-  /** Same signature as F2's PhotoPicker, so a sample follows the exact same preview/analyse path. */
   onImageReady: (image: HTMLImageElement, file: File) => void
   samplesUrl?: string
 }
@@ -27,6 +28,8 @@ export default function SampleGallery({
   onImageReady,
   samplesUrl = `${BASE}/samples/samples.json`,
 }: SampleGalleryProps) {
+  const { lang, t } = useT()
+  const isBn = lang === 'bn'
   const [samples, setSamples] = useState<SampleEntry[]>([])
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -42,12 +45,14 @@ export default function SampleGallery({
         if (!cancelled) setSamples(list)
       })
       .catch(() => {
-        if (!cancelled) setError('নমুনা ছবি লোড করা যায়নি।')
+        if (!cancelled) {
+          setError(isBn ? 'নমুনা ছবি লোড করা যায়নি।' : 'Failed to load sample images.')
+        }
       })
     return () => {
       cancelled = true
     }
-  }, [samplesUrl])
+  }, [samplesUrl, isBn])
 
   const pick = async (s: SampleEntry) => {
     setLoadingId(s.id)
@@ -55,14 +60,13 @@ export default function SampleGallery({
     try {
       const res = await fetch(`${BASE}/samples/${s.file}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      // arrayBuffer (not blob) keeps File construction portable across browsers and test runtimes
       const bytes = await res.arrayBuffer()
       const type = res.headers.get('content-type') || 'image/jpeg'
       const file = new File([bytes], s.file, { type })
       const img = await loadImage(file)
       onImageReady(img, file)
     } catch {
-      setError('নমুনা ছবি লোড করা যায়নি।')
+      setError(isBn ? 'নমুনা ছবি লোড করা যায়নি।' : 'Failed to load sample image.')
     } finally {
       setLoadingId(null)
     }
@@ -71,67 +75,98 @@ export default function SampleGallery({
   if (samples.length === 0 && !error) return null
 
   return (
-    <section aria-labelledby="sample-gallery-title" className="flex flex-col gap-3.5">
-      <div className="flex flex-col gap-1">
-        <h2 id="sample-gallery-title" className="text-lg font-bold text-emerald-950">
-          নমুনা ছবি দিয়ে চেষ্টা করুন
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-          পরীক্ষা করার জন্য নিচের নমুনা ছবিতে ট্যাপ করুন — তাৎক্ষণিক ডেমো রোগ নির্ণয় দেখুন।
-        </p>
+    <section aria-labelledby="sample-gallery-title" className="flex flex-col gap-2 sm:gap-2.5 max-w-5xl mx-auto w-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 id="sample-gallery-title" className="text-sm sm:text-base font-extrabold text-[#0E1F16] tracking-tight">
+            {t('sampleHeading')}
+          </h2>
+          <p className="text-xs sm:text-[13px] text-[#4A5F52] mt-0.5">
+            {t('sampleSubtitle')}
+          </p>
+        </div>
       </div>
 
-      <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-6">
+      {/* 2 columns on mobile, 3 columns on tablet, 6 horizontal columns on desktop */}
+      <ul className="sample-gallery-grid grid grid-cols-2 gap-2 sm:gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
         {samples.map((s) => {
-          const name = getCard(s.classId).name.bn
+          const card = getCard(s.classId)
+          const name = card.name[lang] || card.name.bn
+          const isLoading = loadingId === s.id
+
           return (
             <li key={s.id}>
-              <button
+              <motion.button
                 type="button"
-                aria-label={`নমুনা ছবি: ${name}`}
+                whileTap={{ scale: 0.96 }}
+                aria-label={isBn ? `নমুনা ছবি: ${name}` : `Sample Leaf: ${name}`}
                 disabled={loadingId !== null}
                 onClick={() => void pick(s)}
-                className="group flex w-full flex-col overflow-hidden rounded-2xl border border-emerald-900/15 bg-white text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-600 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/40 active:scale-95 disabled:opacity-60"
+                className="group relative flex w-full flex-col overflow-hidden rounded-xl sm:rounded-2xl border-2 border-emerald-300/80 bg-white/92 text-left shadow-md backdrop-blur-sm transition-all hover:border-emerald-500 hover:shadow-lg hover:ring-2 hover:ring-emerald-400/40 focus:outline-none focus-visible:ring-3 focus-visible:ring-emerald-600 disabled:opacity-60 cursor-pointer"
               >
-                <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-[16/11] w-full overflow-hidden bg-slate-100">
                   <img
                     src={`${BASE}/samples/${s.file}`}
                     alt=""
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <span className="absolute bottom-1 right-1 rounded-md bg-black/60 px-1 py-0.5 text-[9px] font-semibold text-white backdrop-blur-xs">
-                    ট্যাপ করুন
+                  <div className="absolute top-1 right-1 flex items-center gap-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-white backdrop-blur-xs shadow-xs">
+                    <Sparkles className="h-2.5 w-2.5 text-emerald-400" />
+                    <span>{t('sampleTapToTest')}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col p-1.5 sm:p-2">
+                  <span
+                    title={name}
+                    className="line-clamp-1 text-xs sm:text-[13px] font-bold text-[#0E1F16] leading-tight group-hover:text-[#064E3B]"
+                  >
+                    {isLoading ? (isBn ? 'লোড হচ্ছে…' : 'Loading…') : name}
                   </span>
                 </div>
-                <span className="truncate px-2 py-1.5 text-xs font-bold text-slate-800 group-hover:text-emerald-900">
-                  {loadingId === s.id ? 'লোড হচ্ছে…' : name}
-                </span>
-              </button>
+              </motion.button>
             </li>
           )
         })}
       </ul>
 
       {error && (
-        <p role="alert" className="text-xs font-semibold text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+        <p role="alert" className="text-xs sm:text-[13px] font-bold text-rose-800 bg-rose-50 p-2.5 rounded-xl border border-rose-200">
           {error}
         </p>
       )}
 
-      <details className="text-xs text-slate-500 rounded-xl border border-emerald-900/10 bg-emerald-50/40 p-2.5">
-        <summary className="cursor-pointer font-medium text-slate-700 hover:text-emerald-800">ছবির সূত্র ও লাইসেন্স (গবেষণা ডেটাসেট)</summary>
-        <p className="mt-1 text-[11px] text-slate-500">ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া; মডেল ট্রেনিংয়ে আলাদা রাখা হয়েছে।</p>
-        <ul className="mt-2 flex flex-col gap-1 text-[11px]">
-          {samples.map((s) => (
-            <li key={s.id}>
-              {getCard(s.classId).name.bn}: {s.credit} ·{' '}
-              <a href={s.source.url} target="_blank" rel="noreferrer" className="underline hover:text-emerald-800">
-                {s.source.name}
-              </a>{' '}
-              · {s.source.licence} · {s.changes}
-            </li>
-          ))}
+      {/* Attribution & dataset disclaimer — sleek minimal pill to ensure full desktop 100vh fit */}
+      <details className="text-[11px] text-[#4A5F52] rounded-xl border border-emerald-300/80 bg-white/85 px-2.5 py-1 shadow-xs backdrop-blur-sm transition-all">
+        <summary className="cursor-pointer text-[11px] font-semibold text-[#0E1F16] hover:text-[#064E3B] flex items-center justify-between">
+          <span>{isBn ? 'ছবির সূত্র ও লাইসেন্স (গবেষণা ডেটাসেট)' : 'Image Source & License (Research Dataset)'}</span>
+          <a
+            href="#/about"
+            onClick={(e) => e.stopPropagation()}
+            className="text-[10.5px] font-bold text-[#064E3B] underline hover:text-[#043327] ml-2"
+          >
+            {isBn ? 'সম্পর্কে পৃষ্ঠায় বিস্তারিত →' : 'Details in About →'}
+          </a>
+        </summary>
+        <p className="mt-1 text-[11px] text-[#4A5F52]">
+          {isBn
+            ? 'ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া; মডেল ট্রেনিংয়ে আলাদা রাখা হয়েছে।'
+            : 'Images are selected from our test split; kept isolated from model training.'}
+        </p>
+        <ul className="mt-1 flex flex-col gap-0.5 text-[11px]">
+          {samples.map((s) => {
+            const cardName = getCard(s.classId).name[lang] || getCard(s.classId).name.bn
+            return (
+              <li key={s.id}>
+                {cardName}: {s.credit} ·{' '}
+                <a href={s.source.url} target="_blank" rel="noreferrer" className="underline hover:text-[#0B5D3B]">
+                  {s.source.name}
+                </a>{' '}
+                · {s.source.licence} · {s.changes}
+              </li>
+            )
+          })}
         </ul>
       </details>
     </section>

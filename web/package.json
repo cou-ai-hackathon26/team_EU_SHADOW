@@ -13,6 +13,9 @@
     "demo": "npm run build && vite preview --port 4173 --host"
   },
   "dependencies": {
+    "framer-motion": "^14.14.0",
+    "lucide-react": "^1.77.0",
+    "maplibre-gl": "^6.19.0",
     "onnxruntime-web": "^1.31.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

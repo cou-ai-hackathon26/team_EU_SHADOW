@@ -6,17 +6,18 @@ export const en: Record<I18nKeys, string> = {
   appSubtitle: 'Rice Leaf Disease Early Screening',
   krishiCallCenter: 'Krishi Call Center 16123',
   callCenterShort: 'Call Center',
-  screeningDisclaimerShort: 'Preliminary screening only, not a prescription. Call 16123 for agricultural guidance.',
+  screeningDisclaimerShort: 'Preliminary screening, not a prescription. For emergencies, contact 16123.',
 
   // Navigation
   navHome: 'Home',
+  navWeather: 'Weather',
   navHistory: 'History',
   navHowItWorks: 'How it works',
   navAbout: 'About',
 
   // Home Hero
   homeHeroTitle: 'AgroLeaf AI — Rice Leaf Disease Screening',
-  homeHeroDesc: 'Take a clear photo of an affected rice leaf or choose one from your gallery. The on-device AI model will assist in instant disease screening.',
+  homeHeroDesc: 'Take a clear photo of the affected rice leaf or choose from gallery — our AI model will instantly screen the disease and provide guidance.',
 
   // History & About Placeholder screens
   historyTitle: 'Scan History',
@@ -31,56 +32,95 @@ export const en: Record<I18nKeys, string> = {
   galleryBtnDesc: 'Select saved leaf photo',
   chooseAnotherPhoto: 'Change Photo',
   previewAlt: 'Selected rice leaf photo',
-  photoRejectedTitle: 'Could not accept photo',
+  photoRejectedTitle: 'Photo Rejected',
   fallbackLeafPhoto: 'Rice leaf photo',
-  errInvalidFormat: 'Only JPG, PNG, or WebP images are supported.',
-  errFileTooLarge: 'Image size cannot exceed 10 MB.',
+  errInvalidFormat: 'Only JPG, PNG or WebP images are supported.',
+  errFileTooLarge: 'Image file size must not exceed 10 MB.',
   errLoadFailed: 'Failed to process image. Please choose another photo.',
+
+  // 3-Step Micro Guide
+  guideStep1: '1. Focus Close',
+  guideStep2: '2. Good Light',
+  guideStep3: '3. Audio Advice',
 
   // Sample Gallery
   sampleGalleryTitle: 'Or test with sample photos:',
+  sampleHeading: 'Try Sample Leaf Photos',
+  sampleSubtitle: 'Tap any sample photo below to test instant AI disease diagnosis',
+  sampleTapToTest: 'Tap to Test',
+
+  // Weather & Risk Module
+  weatherTitle: 'Local Weather, Crop & Disease Risk',
+  weatherSubtitle: 'Real-time weather epidemiology & 3D agronomic map for rice cultivation',
+  weatherSelectDistrict: 'Select District:',
+  weatherAutoLocate: 'Auto GPS Detect',
+  weatherLocating: 'Locating...',
+  weatherSelectedPrefix: 'Selected:',
+  weatherCurrentTitle: 'Current Field Weather',
+  weatherHumidity: 'Humidity',
+  weatherRainProb: 'Rain Probability',
+  weatherWind: 'Wind Speed',
+  weatherRiskMeterTitle: 'Rice Disease Risk Meter',
+  weatherRiskBRRI: 'BRRI Epidemiology',
+  weatherCropRotationTitle: 'Crop Rotation & Soil Care',
+  weatherMap3DTitle: '3D Field Map',
+  weatherAdviceLabel: 'Advice:',
+
+  // Menu Drawer
+  menuBtn: 'Menu',
+  menuTitle: 'Feature Menu',
+  menuHomeScan: 'Home & Scan',
+  menuHistory: 'Scan History',
+  menuWeather: 'Weather & Disease Risk',
+  menuHowItWorks: 'How It Works',
+  menuAbout: 'About Project',
+  menuHelpline: 'Krishi Call Center 16123',
+  menuClose: 'Close',
+  viewModeWeb: 'Web View',
+  viewModeMobile: 'Mobile View',
+  backToWebView: 'Back to Web View',
 
   // Quality Hints (F3)
   qualityWarningTitle: 'Image Quality Warning:',
-  qualityTooDark: 'The photo is too dark. Retake with more ambient light or flash.',
-  qualityTooBright: 'The photo is overexposed. Avoid harsh direct sunlight or glare.',
-  qualityTooBlurry: 'The photo appears blurry. Keep the camera steady for a sharper leaf photo.',
-  qualityCanProceed: '(You can still proceed with this photo if you wish)',
-  qualityGood: 'Photo lighting and sharpness are optimal for analysis.',
+  qualityTooDark: 'Photo is too dark. Capture in better light or use flash.',
+  qualityTooBright: 'Photo has excessive brightness or glare. Avoid harsh direct sun.',
+  qualityTooBlurry: 'Photo appears blurry. Hold camera steady and focus on leaf lesions.',
+  qualityCanProceed: '(You can still proceed with this photo if needed)',
+  qualityGood: 'Photo lighting and clarity are optimal for disease analysis.',
 
   // Analyze Button (F4)
-  analyzeBtn: 'Analyze Leaf (রোগ শনাক্ত)',
+  analyzeBtn: 'Analyze Disease',
   analyzingText: 'Analyzing...',
 
   // Result Tiers (F4)
   highConfidenceBadge: 'High Confidence',
-  mediumConfidenceBadge: 'Moderate Confidence (Two Possibilities)',
+  mediumConfidenceBadge: 'Two Possibilities (Moderate Confidence)',
   mediumConfidenceSingleBadge: 'Moderate Confidence',
   lowConfidenceBadge: 'Uncertain',
-  lowConfidenceTitle: 'I am not sure',
-  lowConfidenceDesc: 'The model could not identify any disease with certainty. Please seek direct guidance from a local agriculture extension officer.',
-  notRiceTitle: 'Not a Rice Leaf',
-  notRiceDesc: 'The uploaded image does not appear to be a rice leaf. Please upload a clear photo of an affected rice leaf.',
+  lowConfidenceTitle: 'Not Sure',
+  lowConfidenceDesc: 'The model could not identify a specific disease with sufficient confidence. Consult your local agriculture extension officer.',
+  notRiceTitle: 'Not Rice Leaf',
+  notRiceDesc: 'The uploaded image does not appear to be a rice leaf. Please upload a clear photo of an infected rice leaf.',
 
-  clearerPhotoRequestTitle: 'Clearer Photo Requested:',
-  clearerPhotoRequestDesc: 'The model is inconclusive. Please retake a clearer photo in good lighting for a conclusive screening.',
+  clearerPhotoRequestTitle: 'Clearer Photo Recommended:',
+  clearerPhotoRequestDesc: 'The model is partially uncertain. For reliable screening, please take a sharper photo in daylight.',
 
-  option1Label: 'Option 1',
-  option2Label: 'Option 2',
-  possibleConditionLabel: 'Possible Condition',
-  possibleConditionsHeading: 'Possible Conditions',
+  option1Label: 'Possibility 1',
+  option2Label: 'Possibility 2',
+  possibleConditionLabel: 'Potential Condition',
+  possibleConditionsHeading: 'Key Symptoms to Verify',
 
   confidenceLabel: 'Model Confidence',
   scanAnotherLeafBtn: 'Scan Another Leaf',
   pretrainedBadge: 'Temporary Prototype — Pretrained Model',
 
   // Error State (F4)
-  errorTitle: 'Analysis Error',
-  errorDesc: 'An error occurred while processing the image. Please try again or provide a different photo.',
+  errorTitle: 'Analysis Engine Error',
+  errorDesc: 'An error occurred while processing the leaf image. Please try again or select another image.',
   tryAgainBtn: 'Try Again',
 
   // Language Toggle
   langToggleBn: 'বাংলা',
   langToggleEn: 'English',
-  langToggleAria: 'Switch Language (ভাষা পরিবর্তন করুন)',
+  langToggleAria: 'Switch Language',
 }

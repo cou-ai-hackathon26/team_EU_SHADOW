@@ -1,18 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Prediction, QualityReport } from '../../ai/types'
 import { loadModel, analyze } from '../../ai/engine'
 import { useT } from '../../i18n/useT'
+import { useScanState } from '../../app/scanStateContext'
 import PhotoPicker from '../capture/PhotoPicker'
 import SampleGallery from '../capture/SampleGallery'
 import ResultView from './ResultView'
 
 export default function ScanFlow() {
   const { lang } = useT()
+  const { setIsScanActive } = useScanState()
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [prediction, setPrediction] = useState<Prediction | null>(null)
   const [analysisError, setAnalysisError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    setIsScanActive(Boolean(selectedImage || prediction || analysisError))
+    return () => {
+      setIsScanActive(false)
+    }
+  }, [selectedImage, prediction, analysisError, setIsScanActive])
 
   const handleImageReady = (image: HTMLImageElement, file: File, _report?: QualityReport) => {
     setSelectedImage(image)
@@ -49,7 +58,7 @@ export default function ScanFlow() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="w-full">
       {prediction || analysisError ? (
         <ResultView
           prediction={prediction}
@@ -60,18 +69,25 @@ export default function ScanFlow() {
           lang={lang}
         />
       ) : (
-        <>
-          <PhotoPicker
-            onImageReady={handleImageReady}
-            onClear={handleClear}
-            onAnalyze={selectedImage ? handleAnalyze : undefined}
-            isAnalyzing={isAnalyzing}
-            selectedFile={selectedFile}
-          />
+        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4.5 w-full">
+          {/* Top Hero Scan Zone: Primary Camera & Gallery Upload */}
+          <div className="w-full">
+            <PhotoPicker
+              onImageReady={handleImageReady}
+              onClear={handleClear}
+              onAnalyze={selectedImage ? handleAnalyze : undefined}
+              isAnalyzing={isAnalyzing}
+              selectedFile={selectedFile}
+            />
+          </div>
+
+          {/* Sample Leaf Gallery: Full width below hero */}
           {!selectedImage && (
-            <SampleGallery onImageReady={handleImageReady} />
+            <div className="w-full">
+              <SampleGallery onImageReady={handleImageReady} />
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )
