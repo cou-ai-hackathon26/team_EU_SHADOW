@@ -150,4 +150,21 @@ export const en: Record<I18nKeys, string> = {
   backToCrops: '← Back to Crops',
   landingHeroPhotoAlt: 'Photo of green and golden rice plants',
   landingPhotoCredits: 'Photo credits and licences',
+
+  // Roadmap (F17)
+  roadmapHeading: 'Next 7 Days Action Roadmap',
+  roadmapMutedAdvice: 'This is general advice. Consult an agricultural extension officer to be certain.',
+  roadmapStepToday: 'Today',
+  roadmapStepThisWeek: 'This Week',
+  roadmapStep7Days: 'After 7 Days',
+  roadmapStepCallExpert: 'When to Call',
+  roadmapTodayDiseaseIntro: 'Examine affected leaves and surrounding plants closely',
+  roadmapTodayHealthyIntro: 'Inspect the field regularly (1–2 times a week)',
+  roadmapMediumClearPhoto: 'First take a clearer photo in good lighting',
+  roadmap7DaysIntro: 'Retake photo of leaves from the same plot to check if lesions are spreading',
+  roadmapRescanBtn: 'Scan Again',
+  roadmapHistoryNote: 'View History to compare with previous results',
+  roadmapHistoryLink: 'History',
+  roadmapCall16123: 'Call 16123',
+  roadmapMediumCallExpert: 'If symptoms are unclear or in doubt, consult an agricultural officer or dial 16123.',
 }

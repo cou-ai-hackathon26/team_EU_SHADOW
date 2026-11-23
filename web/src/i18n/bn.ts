@@ -148,6 +148,23 @@ export const bn = {
   backToCrops: '← ফসল নির্বাচন',
   landingHeroPhotoAlt: 'সবুজ-সোনালি ধানগাছের আসল ছবি',
   landingPhotoCredits: 'ছবির সূত্র ও লাইসেন্স',
+
+  // Roadmap (F17)
+  roadmapHeading: 'পরবর্তী ৭ দিনের করণীয়',
+  roadmapMutedAdvice: 'এটি সাধারণ পরামর্শ। নিশ্চিত হতে কৃষি কর্মকর্তার সঙ্গে কথা বলুন।',
+  roadmapStepToday: 'আজই',
+  roadmapStepThisWeek: 'এই সপ্তাহে',
+  roadmapStep7Days: '৭ দিন পর',
+  roadmapStepCallExpert: 'কখন কল করবেন',
+  roadmapTodayDiseaseIntro: 'আক্রান্ত পাতা ও আশেপাশের গাছ ভালো করে দেখুন',
+  roadmapTodayHealthyIntro: 'নিয়মিত (সপ্তাহে ১–২ বার) জমি দেখুন',
+  roadmapMediumClearPhoto: 'আগে ভালো আলোতে আরও স্পষ্ট ছবি তুলুন',
+  roadmap7DaysIntro: 'একই জমির পাতার আবার ছবি তুলে পরীক্ষা করুন, দাগ বাড়ছে কি না দেখুন',
+  roadmapRescanBtn: 'আবার স্ক্যান করুন',
+  roadmapHistoryNote: 'আগের ফলাফলের সাথে তুলনা করতে ইতিহাস দেখুন',
+  roadmapHistoryLink: 'ইতিহাস',
+  roadmapCall16123: '১৬১২৩ নম্বরে কল করুন',
+  roadmapMediumCallExpert: 'লক্ষণ স্পষ্ট না হলে বা সন্দেহ থাকলে কৃষি কর্মকর্তা বা ১৬১২৩ নম্বরে পরামর্শ নিন।',
 } as const
 
 export type I18nKeys = keyof typeof bn

@@ -13,6 +13,7 @@ import { ShareButton } from '../share/ShareButton'
 import { ListenButton } from '../voice/ListenButton'
 import { SeverityChip } from '../../ui/SeverityChip'
 import { ProgressBar } from '../../ui/ProgressBar'
+import { RoadmapTimeline } from '../roadmap/RoadmapTimeline'
 
 export interface ResultViewProps {
   prediction?: Prediction | null
@@ -212,6 +213,12 @@ export default function ResultView({
 
           {/* Detailed Disease Care Card */}
           <DiseaseCardView card={top1Card} lang={lang} />
+          <RoadmapTimeline
+            prediction={prediction}
+            card={top1Card}
+            lang={lang}
+            onReset={onReset}
+          />
         </div>
       )}
 
@@ -277,6 +284,12 @@ export default function ResultView({
 
           <DiseaseCardView card={top1Card} lang={lang} />
           {top2 && top2Card && <DiseaseCardView card={top2Card} lang={lang} />}
+          <RoadmapTimeline
+            prediction={prediction}
+            card={top1Card}
+            lang={lang}
+            onReset={onReset}
+          />
         </div>
       )}
 
