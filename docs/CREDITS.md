@@ -61,6 +61,7 @@ AgroLeaf AI is made possible by open-source technologies, publicly available agr
 - **Playwright** ([microsoft/playwright](https://github.com/microsoft/playwright)) — Microsoft (Apache License 2.0), E2E tests
 - **oxlint** ([oxc-project/oxc](https://github.com/oxc-project/oxc)) — Oxc contributors (MIT License)
 - **jsdom** and **fake-indexeddb** — test environment (MIT / Apache-2.0)
+- **Open-Meteo** ([open-meteo.com](https://open-meteo.com)) — Open-source weather forecast API for division-level disease risk estimation (Creative Commons Attribution 4.0 International, CC BY 4.0)
 
 ---
 

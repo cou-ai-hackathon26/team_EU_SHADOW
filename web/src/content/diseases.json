@@ -42,13 +42,13 @@
     "severity": "none",
     "sources": [
       {
-        "title": "ধানের আধুনিক চাষাবাদ - বাংলাদেশ ধান গবেষণা ইনস্টিটিউট (BRRI)",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
+        "title": "Crop Health & Field Management - IRRI Rice Knowledge Bank",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth",
+        "publisher": "IRRI"
       },
       {
-        "title": "Rice Knowledge Bank - International Rice Research Institute",
-        "url": "https://www.knowledgebank.irri.org",
+        "title": "Rice Crop Protection & Diagnostic Guide - IRRI Rice Knowledge Bank",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases",
         "publisher": "IRRI"
       }
     ]
@@ -99,11 +99,6 @@
     },
     "severity": "act",
     "sources": [
-      {
-        "title": "ধানের ব্লাস্ট রোগ ব্যবস্থাপনা - ব্রি (BRRI)",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
-      },
       {
         "title": "Rice Blast Factsheet - International Rice Research Institute",
         "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/rice-blast",
@@ -158,11 +153,6 @@
     "severity": "watch",
     "sources": [
       {
-        "title": "ফসলের রোগ ও প্রতিকার - কৃষি সম্প্রসারণ অধিদপ্তর (DAE)",
-        "url": "https://dae.gov.bd",
-        "publisher": "DAE"
-      },
-      {
         "title": "Brown Spot Management - IRRI Knowledge Bank",
         "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/brown-spot",
         "publisher": "IRRI"
@@ -212,13 +202,8 @@
     "severity": "watch",
     "sources": [
       {
-        "title": "ধানের বালাই ব্যবস্থাপনা - বাংলাদেশ ধান গবেষণা ইনস্টিটিউট",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
-      },
-      {
-        "title": "Rice Knowledge Bank - Diseases",
-        "url": "https://www.knowledgebank.irri.org",
+        "title": "Rice Diseases Diagnostic Guide - IRRI Knowledge Bank",
+        "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases",
         "publisher": "IRRI"
       }
     ]
@@ -269,11 +254,6 @@
     },
     "severity": "act",
     "sources": [
-      {
-        "title": "ধানের টুংরো রোগ দমন গাইডলাইন - ডিএই (DAE)",
-        "url": "https://dae.gov.bd",
-        "publisher": "DAE"
-      },
       {
         "title": "Tungro Disease - International Rice Research Institute",
         "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/tungro",
@@ -328,11 +308,6 @@
     "severity": "act",
     "sources": [
       {
-        "title": "ধানের খোলপোড়া রোগ দমন - ব্রি (BRRI)",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
-      },
-      {
         "title": "Sheath Blight - IRRI Knowledge Bank",
         "url": "https://www.knowledgebank.irri.org/step-by-step-production/growth/pests-and-diseases/diseases/sheath-blight",
         "publisher": "IRRI"
@@ -382,14 +357,9 @@
     "severity": "watch",
     "sources": [
       {
-        "title": "কৃষি তথ্য ও প্রযুক্তি বাতায়ন - ডিএই",
-        "url": "https://dae.gov.bd",
-        "publisher": "DAE"
-      },
-      {
-        "title": "বাংলাদেশ ধান গবেষণা ইনস্টিটিউট (BRRI)",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
+        "title": "Rice Doctor Diagnostic Decision Support - IRRI",
+        "url": "https://www.knowledgebank.irri.org/decision-tools/rice-doctor",
+        "publisher": "IRRI"
       }
     ]
   },
@@ -432,14 +402,9 @@
     "severity": "watch",
     "sources": [
       {
-        "title": "কৃষি কল সেন্টার ১৬১২৩ সেবা তথ্য - ডিএই",
-        "url": "https://dae.gov.bd",
-        "publisher": "DAE"
-      },
-      {
-        "title": "BRRI ধান চাষ সহায়িকা",
-        "url": "https://brri.portal.gov.bd",
-        "publisher": "BRRI"
+        "title": "Rice Doctor Diagnostic Guide & Visual Assessment - IRRI",
+        "url": "https://www.knowledgebank.irri.org/decision-tools/rice-doctor",
+        "publisher": "IRRI"
       }
     ]
   }

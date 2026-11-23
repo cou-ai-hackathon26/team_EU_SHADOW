@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Layout from './components/Layout'
 import { matchRoute } from './app/router'
 import { UpdatePrompt } from './pwa/UpdatePrompt'
+import { ScanStateProvider } from './app/scanStateContext'
 
 export default function App() {
   const [currentHash, setCurrentHash] = useState(() =>
@@ -23,9 +24,11 @@ export default function App() {
   const CurrentComponent = currentRoute.component
 
   return (
-    <Layout currentHash={currentHash}>
-      <UpdatePrompt />
-      <CurrentComponent />
-    </Layout>
+    <ScanStateProvider>
+      <Layout currentHash={currentHash}>
+        <UpdatePrompt />
+        <CurrentComponent />
+      </Layout>
+    </ScanStateProvider>
   )
 }

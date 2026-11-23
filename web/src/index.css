@@ -1,15 +1,28 @@
-@import "tailwindcss";
+  @import "tailwindcss";
 
-/* Design tokens for AgroLeaf AI: Modern, trustworthy AgriTech system. */
+/* Design tokens for AgroLeaf AI — "সোনার শিষ" (Shonar Shish / Morning Paddy) */
 @theme {
-  --font-sans: "Hind Siliguri", "Noto Sans Bengali", system-ui, -apple-system, sans-serif;
-  --color-leaf-50: #f8faf8;
-  --color-leaf-100: #e8f5ea;
+  --font-sans: "Hind Siliguri", "Inter", "Noto Sans Bengali", system-ui, -apple-system, sans-serif;
+  --color-paddy-900: #073823;
+  --color-paddy-800: #0b5d3b;
+  --color-paddy-700: #0e7446;
+  --color-paddy-600: #15803d;
+  --color-paddy-100: #e6f4ed;
+  --color-paddy-50: #f0f8f4;
+  --color-leaf-accent: #22c55e;
+  --color-harvest-gold: #f59e0b;
+  --color-harvest-text: #b45309;
+  --color-cream-bg: #f8f9f5;
+  --color-ink: #0e1f16;
+  --color-ink-muted: #4a5f52;
+  --color-card-border: #e3e8dc;
+  --color-leaf-50: #f8f9f5;
+  --color-leaf-100: #e6f4ed;
   --color-leaf-200: #cbe7cf;
   --color-leaf-600: #16a34a;
   --color-leaf-700: #15803d;
-  --color-leaf-800: #0f5132;
-  --color-leaf-900: #0a3622;
+  --color-leaf-800: #0b5d3b;
+  --color-leaf-900: #073823;
   --color-harvest-50: #fffbeb;
   --color-harvest-100: #fef3c7;
   --color-harvest-500: #d97706;
@@ -22,11 +35,35 @@ html, body, #root {
   min-height: 100%;
   width: 100%;
   overflow-x: clip;
-  background-color: var(--color-leaf-50);
+  /* Dark emerald under everything: matches index.html's inline style, so there is never a white flash. */
+  background-color: #072a19;
+  color: #0e1f16;
 }
 
 body {
-  @apply bg-leaf-50 text-slate-900 antialiased font-sans;
+  /* Each screen paints its own background in Layout; the body stays dark emerald. */
+  background: #072a19;
+  color: #0e1f16;
+  font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure minimum label text size is at least 15px across the app */
+button, input, select, textarea, label {
+  font-size: 15px;
+}
+
+/* Mobile Preview Frame Enforcement: Prevents viewport-level media queries from breaking 1-column mobile layout */
+.mobile-preview-frame [class*="lg:grid-cols-"],
+.mobile-preview-frame [class*="lg:col-span-"],
+.mobile-preview-frame [class*="lg:flex-row"] {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  grid-column: span 1 / span 1 !important;
+  flex-direction: column !important;
+}
+
+.mobile-preview-frame .sample-gallery-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }

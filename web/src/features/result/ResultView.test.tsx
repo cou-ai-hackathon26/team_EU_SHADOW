@@ -274,7 +274,7 @@ describe('ResultView (F4)', () => {
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
   })
 
-  it('disclaimer and HelpCall still render when urgent call-out shows', () => {
+  it('disclaimer and the 16123 call button still render when urgent call-out shows', () => {
     const highActPred: Prediction = {
       ...basePrediction,
       tier: 'high',
@@ -288,6 +288,9 @@ describe('ResultView (F4)', () => {
 
     expect(screen.getByText(/আজই ১৬১২৩ নম্বরে কল করুন/)).toBeInTheDocument()
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
-    expect(screen.getByText(/সরাসরি সরকারি কৃষি কর্মকর্তার তাৎক্ষণিক পরামর্শের জন্য/)).toBeInTheDocument()
+    // The redesigned result screen has its own call button (HelpCall was replaced on main);
+    // the page must offer tel:16123 besides the urgent call-out's own link.
+    const callLinks = screen.getAllByRole('link').filter((a) => a.getAttribute('href') === 'tel:16123')
+    expect(callLinks.length).toBeGreaterThanOrEqual(2)
   })
 })

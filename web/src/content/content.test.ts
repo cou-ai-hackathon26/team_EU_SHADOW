@@ -14,7 +14,7 @@ const EXPECTED_IDS = [
   'not_sure',
 ] as const
 
-const BANNED_PATTERNS = [
+export const BANNED_PATTERNS = [
   /carbendazim/i,
   /tricyclazole/i,
   /mancozeb/i,
@@ -105,6 +105,18 @@ describe('F6: Disease Cards Content & Logic', () => {
       for (const s of card.sources) {
         expect(s.url.startsWith('https://')).toBe(true)
         expect(s.title.trim().length).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('no source url in diseases.json may be a bare home page (url path must not be empty or "/")', () => {
+    for (const card of cards) {
+      for (const s of card.sources) {
+        const parsed = new URL(s.url)
+        expect(
+          parsed.pathname !== '' && parsed.pathname !== '/',
+          `Source URL "${s.url}" in card "${card.id}" must not be a bare home page`
+        ).toBe(true)
       }
     }
   })
