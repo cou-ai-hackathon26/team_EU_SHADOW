@@ -35,13 +35,14 @@ html, body, #root {
   min-height: 100%;
   width: 100%;
   overflow-x: clip;
-  background-color: #a7f3d0;
+  /* Dark emerald under everything: matches index.html's inline style, so there is never a white flash. */
+  background-color: #072a19;
   color: #0e1f16;
 }
 
 body {
-  background: linear-gradient(135deg, #a7f3d0 0%, #bbf7d0 50%, #86efac 100%);
-  background-attachment: fixed;
+  /* Each screen paints its own background in Layout; the body stays dark emerald. */
+  background: #072a19;
   color: #0e1f16;
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;

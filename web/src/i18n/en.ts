@@ -130,7 +130,7 @@ export const en: Record<I18nKeys, string> = {
   landingBadgeSpecies: 'Rice • Oryza sativa',
   landingBadgeClasses: '5 diseases + healthy leaf',
   landingBadgeVoice: 'Voice advice in Bangla',
-  landingGuideTitle: 'For a good photo',
+  landingGuideTitle: 'For best photo results',
   landingGuide1: '1. Get close to the affected leaf',
   landingGuide2: '2. Use good light',
   landingGuide3: '3. One clear leaf per photo',

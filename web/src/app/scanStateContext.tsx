@@ -17,7 +17,13 @@ const ScanStateContext = createContext<ScanStateContextType>({
 
 export function ScanStateProvider({ children }: { children: ReactNode }) {
   const [isScanActive, setIsScanActive] = useState(false)
-  const [isLandingView, setIsLandingView] = useState(false)
+  // Start true when the app opens on Home, so the very first paint already uses the dark landing canvas
+  // (no light flash while waiting for HomeScreen's effect).
+  const [isLandingView, setIsLandingView] = useState(() => {
+    if (typeof window === 'undefined') return false
+    const h = window.location.hash
+    return h === '' || h === '#' || h === '#/'
+  })
   return (
     <ScanStateContext.Provider value={{ isScanActive, setIsScanActive, isLandingView, setIsLandingView }}>
       {children}

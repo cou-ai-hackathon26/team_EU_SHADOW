@@ -75,11 +75,11 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">{t('landingGuideTitle')}</p>
+            <p data-testid="photo-guide-title" className="text-sm font-semibold tracking-wide text-emerald-200">{t('landingGuideTitle')}</p>
             <ul className="flex flex-col gap-2">
               {(['landingGuide1', 'landingGuide2', 'landingGuide3'] as const).map((k, i) => (
-                <li key={k} className="flex items-center gap-2 rounded-xl bg-white/8 px-3 py-2 text-sm ring-1 ring-white/10">
-                  {i === 1 ? <Sun className="h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" /> : <Camera className="h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />}
+                <li key={k} data-testid="photo-guide-step" className="flex items-center gap-2.5 rounded-xl border border-emerald-300/30 bg-white/12 px-4 py-3 text-sm font-medium text-white shadow-sm md:text-[15px]">
+                  {i === 1 ? <Sun className="h-5 w-5 shrink-0 text-amber-300" aria-hidden="true" /> : <Camera className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden="true" />}
                   <span>{t(k)}</span>
                 </li>
               ))}
