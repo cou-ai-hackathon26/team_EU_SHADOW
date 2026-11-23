@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowRight, Camera, CheckCircle2, Languages, Leaf, Sun, Volume2 } from 'lucide-react'
 import { useT } from '../../i18n/useT'
-import { CROPS } from './crops'
+import { CROPS, HERO_PHOTO } from './crops'
 import { useInPhoneFrame } from '../../app/viewportFrame'
-import { RicePlantArt } from './RicePlantArt'
+
+const BASE = import.meta.env.BASE_URL
 
 interface HomeLandingProps {
   onStartRice: () => void
@@ -59,9 +60,16 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
           </div>
 
           <div className="relative mx-auto h-[430px] w-[300px]">
-            <RicePlantArt className="h-full w-full drop-shadow-[0_25px_35px_rgba(0,0,0,0.45)]" />
+            <img
+              src={`${BASE}${HERO_PHOTO}`}
+              alt={t('landingHeroPhotoAlt')}
+              width={478}
+              height={560}
+              fetchPriority="high"
+              className="h-full w-full rounded-[2rem] object-cover shadow-2xl ring-1 ring-white/10 [mask-image:radial-gradient(ellipse_70%_75%_at_50%_50%,black_60%,transparent_100%)]"
+            />
             <Callout side="left" className="right-[62%] top-[14%]" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
-            <Callout side="right" className="left-[62%] top-[44%]" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
+            <Callout side="left" className="right-[52%] top-[47%]" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
             <Callout side="left" className="right-[58%] bottom-[12%]" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
           </div>
 
@@ -94,11 +102,13 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
         <h2 id="landing-mobile-title" className="text-center text-2xl font-extrabold leading-snug text-[#0B3B24]">
           {t('landingMobileTitle')}
         </h2>
-        <div className="mt-1 flex items-end justify-center gap-3">
-          <RicePlantArt className="h-32 w-28" />
-          <RicePlantArt className="h-24 w-20 opacity-80" />
-          <RicePlantArt className="h-28 w-24" />
-        </div>
+        <img
+          src={`${BASE}${HERO_PHOTO}`}
+          alt={t('landingHeroPhotoAlt')}
+          width={478}
+          height={560}
+          className="mt-3 h-40 w-full rounded-2xl object-cover object-[50%_35%] shadow-md"
+        />
         <p className="mt-1 text-center text-xs text-[#14532D]">
           <Languages className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
           {t('landingBadgeClasses')} • {t('landingBadgeVoice')}
@@ -133,13 +143,14 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                 >
                   {c.active ? t('cropActive') : t('cropUpcoming')}
                 </span>
-                {c.active ? (
-                  <RicePlantArt className="mt-1 h-[72px] w-16 drop-shadow-[0_4px_10px_rgba(250,204,21,0.35)]" />
-                ) : (
-                  <span className="mt-3 text-5xl leading-none opacity-80" aria-hidden="true">
-                    {c.emoji}
-                  </span>
-                )}
+                <img
+                  src={`${BASE}${c.photo}`}
+                  alt=""
+                  width={300}
+                  height={300}
+                  loading="lazy"
+                  className={`mt-5 h-24 w-full rounded-xl object-cover shadow-md ${c.active ? 'ring-2 ring-white/70' : 'opacity-80'} ${c.active ? '' : D('lg:ring-1 lg:ring-white/10')}`}
+                />
                 <span className={`text-lg font-extrabold ${c.active ? 'text-white' : `text-[#0E1F16] ${D('lg:text-white')}`}`}>
                   {t(c.labelKey)}
                 </span>
@@ -150,6 +161,20 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
             </li>
           ))}
         </ul>
+        <details className={`text-xs text-emerald-900/70 ${D('lg:text-emerald-100/60')}`}>
+          <summary className="cursor-pointer select-none">{t('landingPhotoCredits')}</summary>
+          <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+            {CROPS.map((c) => (
+              <li key={c.id}>
+                {t(c.labelKey)}:{' '}
+                <a href={c.credit.url} target="_blank" rel="noreferrer" className="underline">
+                  {c.credit.author}
+                </a>{' '}
+                ({c.credit.licence})
+              </li>
+            ))}
+          </ul>
+        </details>
         {toast && (
           <p
             role="status"

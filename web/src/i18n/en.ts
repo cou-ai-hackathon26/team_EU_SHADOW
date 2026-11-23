@@ -145,4 +145,6 @@ export const en: Record<I18nKeys, string> = {
   cropUpcoming: 'Upcoming',
   cropUpcomingToast: 'Only rice disease screening is active right now — other crops will come in a later update',
   backToCrops: '← Back to Crops',
+  landingHeroPhotoAlt: 'Photo of green and golden rice plants',
+  landingPhotoCredits: 'Photo credits and licences',
 }

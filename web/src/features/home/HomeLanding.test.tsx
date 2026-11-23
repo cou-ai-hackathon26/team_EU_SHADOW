@@ -129,4 +129,16 @@ describe('Home landing and crop selector', () => {
     await user.click(screen.getByRole('button', { name: /ফসল নির্বাচন/ }))
     expect(root()).toContain('lg:from-[#072A19]')
   })
+
+  it('every crop card shows a bundled local photo (no hotlinks) and credits are listed', () => {
+    renderHome()
+    for (const id of ['rice', 'potato', 'brinjal', 'tomato', 'chili']) {
+      const img = cropButton(id).querySelector('img') as HTMLImageElement
+      const src = img.getAttribute('src') ?? ''
+      expect(src.endsWith(`crops/${id}.webp`)).toBe(true)
+      expect(src).not.toMatch(/^https?:/)
+    }
+    expect(screen.getByText('ছবির সূত্র ও লাইসেন্স')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'IRRI Images' })).toHaveAttribute('href', expect.stringContaining('commons.wikimedia.org'))
+  })
 })
