@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { Fragment, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import BottomNav from './BottomNav'
 import { LanguageToggle, useT } from '../i18n/useT'
 import { Disclaimer } from './Disclaimer'
@@ -41,6 +41,26 @@ export default function Layout({ children, currentHash }: LayoutProps) {
   })
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Bumping this remounts the current screen, clearing any photo, result or error state.
+  const [resetKey, setResetKey] = useState(0)
+  const frameScrollRef = useRef<HTMLDivElement>(null)
+
+  /** Logo / "Home" action: reset scan state, close the menu, go to Home and scroll to the top. */
+  const goHome = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    setIsMenuOpen(false)
+    setResetKey((k) => k + 1)
+    if (typeof window !== 'undefined') {
+      const h = window.location.hash
+      if (h !== '' && h !== '#' && h !== '#/') window.location.hash = '#/'
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch {
+        // jsdom and very old browsers
+      }
+      frameScrollRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' })
+    }
+  }
 
   const handleSetViewport = (mode: ViewportMode) => {
     setViewportMode(mode)
@@ -72,7 +92,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
       >
         <div className="mx-auto flex h-full w-full max-w-xl items-center justify-between lg:max-w-none lg:px-2">
           {/* Left: Brand Logo & Title with Subtitle */}
-          <a href="#/" className="flex items-center gap-2 select-none">
+          <a href="#/" onClick={goHome} aria-label={t('logoHomeAria')} className="flex cursor-pointer items-center gap-2 select-none">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/15 text-emerald-300 border border-white/20 shadow-xs">
               <Sprout className="h-3.5 w-3.5" strokeWidth={2.4} />
             </div>
@@ -154,7 +174,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
 
                   <a
                     href="#/"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={goHome}
                     className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 transition-colors"
                   >
                     <Home className="h-4 w-4 text-emerald-700" />
@@ -239,7 +259,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
 
             {/* Slim Mobile Top Bar inside Frame — Sleek h-12 */}
             <div className="shrink-0 border-b border-[#0B5D3B]/40 bg-[#0F5132]/95 px-3 py-1.5 flex items-center justify-between shadow-2xs backdrop-blur-md h-12">
-              <a href="#/" className="flex items-center gap-2 select-none whitespace-nowrap">
+              <a href="#/" onClick={goHome} aria-label={t('logoHomeAria')} className="flex cursor-pointer items-center gap-2 select-none whitespace-nowrap">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white/15 text-emerald-300 border border-white/20 shadow-xs">
                   <Sprout className="h-3.5 w-3.5" />
                 </div>
@@ -262,9 +282,9 @@ export default function Layout({ children, currentHash }: LayoutProps) {
             </div>
 
             {/* Phone Frame Content Body (Scrollable inside phone always) */}
-            <div className="flex-1 overflow-y-auto p-3 pb-6 w-full scrollbar-thin">
+            <div ref={frameScrollRef} className="flex-1 overflow-y-auto p-3 pb-6 w-full scrollbar-thin">
               <main className="mx-auto flex w-full max-w-xl flex-1 flex-col">
-                <PhoneFrameProvider value={true}>{children}</PhoneFrameProvider>
+                <PhoneFrameProvider value={true}><Fragment key={resetKey}>{children}</Fragment></PhoneFrameProvider>
                 <Disclaimer lang={lang} compact={true} className="mt-3" />
               </main>
             </div>
@@ -286,7 +306,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
               : 'justify-start py-4 sm:py-6'
           } px-4 pb-20 lg:pb-6`}
         >
-          {children}
+          <Fragment key={resetKey}>{children}</Fragment>
           <Disclaimer
             lang={lang}
             compact={isCompactHome}

@@ -146,6 +146,7 @@ export const en: Record<I18nKeys, string> = {
   cropActive: 'Active',
   cropUpcoming: 'Upcoming',
   cropUpcomingToast: 'Only rice disease screening is active right now — other crops will come in a later update',
+  logoHomeAria: 'AgroLeaf AI — back to start page',
   backToCrops: '← Back to Crops',
   landingHeroPhotoAlt: 'Photo of green and golden rice plants',
   landingPhotoCredits: 'Photo credits and licences',
