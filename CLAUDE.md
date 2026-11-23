@@ -28,7 +28,7 @@ Roles in the proposal are flexible: model training and deployment belong to the 
 - Tiers: **high** → disease + Bangla card; **medium** → top-2 + ask for a clearer photo; **low** → "আমি নিশ্চিত নই"; **not_rice** → "এটি ধানপাতা মনে হচ্ছে না".
 - No pesticide/chemical product names and no doses anywhere (a test enforces it).
 - Every result shows the screening disclaimer and Krishi Call Centre **16123**.
-- No login, no location, images processed in memory only; history (if any) stays in the user's own browser.
+- No login, no location for leaf scanning; the optional Weather tab may use opt-in browser location rounded to ~1 km, sent only to Open-Meteo, images processed in memory only; history (if any) stays in the user's own browser.
 - A pretrained model may only be a backup and must be labelled **"Temporary Prototype — Pretrained Model"** in UI, README and pitch (`trainedFromScratch: false`).
 
 ## 5. Competition rules (disqualification risks)

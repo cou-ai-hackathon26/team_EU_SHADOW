@@ -10,18 +10,19 @@ describe('F16: Open-Meteo API Client (openMeteo.ts)', () => {
     vi.unstubAllGlobals()
   })
 
-  it('builds the exact URL (no other parameters)', async () => {
-    const lat = 23.81
-    const lon = 90.41
-    const expectedUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=relative_humidity_2m,temperature_2m,precipitation&forecast_days=3&timezone=Asia%2FDhaka`
+  it('builds the exact URL with rounded coords and forecast_hours=72', async () => {
+    const lat = 23.8123
+    const lon = 90.4149
+    const expectedUrl =
+      'https://api.open-meteo.com/v1/forecast?latitude=23.81&longitude=90.41&hourly=temperature_2m,relative_humidity_2m,precipitation&forecast_hours=72&timezone=Asia%2FDhaka'
 
     const mockResponse = {
       ok: true,
       json: async () => ({
         hourly: {
           time: Array(72).fill('2026-11-23T00:00'),
-          relative_humidity_2m: Array(72).fill(80),
           temperature_2m: Array(72).fill(25),
+          relative_humidity_2m: Array(72).fill(80),
           precipitation: Array(72).fill(0),
         },
       }),

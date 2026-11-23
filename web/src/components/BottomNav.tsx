@@ -4,6 +4,7 @@ import type { I18nKeys } from '../i18n/bn'
 
 const navKeyMap: Record<string, I18nKeys> = {
   home: 'navHome',
+  weather: 'navWeather',
   history: 'navHistory',
   'how-it-works': 'navHowItWorks',
   about: 'navAbout',
@@ -30,6 +31,25 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
         >
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      )
+    case 'weather':
+      return (
+        <svg
+          className={`h-6 w-6 transition-colors ${strokeClass}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 2v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="M20 12h2" />
+          <path d="m19.07 4.93-1.41 1.41" />
+          <path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" />
+          <path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z" />
         </svg>
       )
     case 'history':
@@ -105,7 +125,7 @@ export default function BottomNav({ currentHash }: BottomNavProps) {
             <a
               key={route.id}
               href={href}
-              className={`flex min-h-[54px] min-w-[68px] flex-1 flex-col items-center justify-center rounded-xl px-1.5 py-1 text-center transition-all duration-200 active:scale-95 ${
+              className={`flex min-h-[54px] min-w-[56px] sm:min-w-[68px] flex-1 flex-col items-center justify-center rounded-xl px-1 py-1 text-center transition-all duration-200 active:scale-95 ${
                 isActive
                   ? 'bg-emerald-100/70 font-bold text-emerald-900 shadow-2xs'
                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'

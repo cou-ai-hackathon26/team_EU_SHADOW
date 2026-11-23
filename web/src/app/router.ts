@@ -2,7 +2,7 @@ import { createElement, type ComponentType } from 'react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
-import WeatherRiskCard from '../features/weather/WeatherRiskCard'
+import WeatherScreen from '../features/weather/WeatherScreen'
 import { useT } from '../i18n/useT'
 
 export interface RouteDef {
@@ -47,7 +47,6 @@ export function HomeScreen() {
         createElement('span', { className: 'inline-flex items-center gap-1 rounded-lg bg-white/80 px-2.5 py-1 shadow-2xs border border-emerald-900/10' }, '🔊 বাংলায় ভয়েস পরামর্শ')
       )
     ),
-    createElement(WeatherRiskCard, null),
     createElement(ScanFlow, null)
   )
 }
@@ -103,6 +102,13 @@ export const routes: RouteDef[] = [
     label: 'হোম',
     title: 'AgroLeaf AI — ধানপাতার রোগ নির্ণয়',
     component: HomeScreen,
+  },
+  {
+    id: 'weather',
+    hash: '#/weather',
+    label: 'আবহাওয়া',
+    title: 'আবহাওয়া ও রোগ-ঝুঁকি',
+    component: WeatherScreen,
   },
   {
     id: 'history',

@@ -17,5 +17,5 @@ Lead re-checks this before every merge to main and before submission. Last full 
 | 11 | Public deployment, stays live | Vercel (root `web`) + local fallback `npm run demo` + offline PWA | ☑ |
 | 12 | Final submission: ≤150-word description, repo link, live link, AI disclosure, optional ≤3-min video | `docs/SUBMISSION.md` (147-word description, checked by `web/src/docs/s3.test.ts`) | ☑ |
 | 13 | Submit at least 10 minutes early | Leader submits by 12:40 PM on 24 Nov | ☐ |
-| Privacy | Zero Location / No GPS Tracking (F16) | Farmer picks division from dropdown; only fixed headquarters coordinates sent to Open-Meteo; choice stored in localStorage on device only | ☑ |
+| Privacy | Leaf scanning uses no location; Weather tab uses opt-in GPS rounded to ~1 km (F16 v2) | Scanning has zero location; Weather tab asks for opt-in browser location rounded to 2 decimals (~1 km), sent only to Open-Meteo, stored only in localStorage with division fallback | ☑ |
 | Organiser notice | Fully working prototype that runs locally before arriving | `npm run demo` rehearsal without internet | ☐ |
