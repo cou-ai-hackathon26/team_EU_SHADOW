@@ -18,6 +18,8 @@ import {
 import { getCard } from '../../content/getCard'
 import { CropRotationCard } from './CropRotationCard'
 import { nearestDivisionId } from './cropRotation'
+import { reverseGeocode } from './reverseGeocode'
+import { getStoredLang } from '../../i18n/useT'
 
 const WEEKDAYS_BN = [
   'রবিবার',
@@ -119,6 +121,8 @@ export default function WeatherScreen() {
   const [gpsError, setGpsError] = useState<string | null>(null)
   // Division used for crop-rotation advice: nearest to GPS, or the selected one.
   const [gpsDivisionId, setGpsDivisionId] = useState<string | null>(null)
+  // Area name for the GPS position (e.g. "মিরপুর, ঢাকা"); null until resolved or when offline.
+  const [placeName, setPlaceName] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   // Fetch forecast for lat/lon
@@ -195,7 +199,16 @@ export default function WeatherScreen() {
     getPosition()
       .then((coords) => {
         setGpsDivisionId(nearestDivisionId(coords.lat, coords.lon))
-        return fetchAndAssess(coords.lat, coords.lon, 'আপনার অবস্থান', 'gps')
+        setPlaceName(null)
+        // Weather first; the area name arrives in parallel and never blocks the forecast.
+        const weather = fetchAndAssess(coords.lat, coords.lon, 'আপনার অবস্থান', 'gps')
+        void reverseGeocode(coords.lat, coords.lon, getStoredLang()).then((name) => {
+          if (!name) return
+          setPlaceName(name)
+          const loaded = loadWeatherCache()
+          if (loaded && loaded.cached.mode === 'gps') saveWeatherCache({ ...loaded.cached, label: name })
+        })
+        return weather
       })
       .catch(() => {
         setGpsError('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')
@@ -246,6 +259,7 @@ export default function WeatherScreen() {
     if (!div) return
 
     setSelectedDivision(divId)
+    setPlaceName(null)
     setMode('division')
     setGpsError(null)
     safeSet(WEATHER_MODE_KEY, 'division')
@@ -270,10 +284,17 @@ export default function WeatherScreen() {
               <h1 className="text-xl font-extrabold text-slate-900">
                 আবহাওয়া ও রোগ-ঝুঁকি
               </h1>
-              {label && (
-                <p className="text-xs font-semibold text-emerald-800">
-                  {label}
+              {mode === 'gps' && (placeName || label) ? (
+                <p className="text-xs font-semibold text-emerald-800" data-testid="current-place">
+                  <span className="font-medium text-slate-600">বর্তমান অবস্থান: </span>
+                  <span>{placeName || label}</span>
                 </p>
+              ) : (
+                label && (
+                  <p className="text-xs font-semibold text-emerald-800">
+                    {label}
+                  </p>
+                )
               )}
             </div>
           </div>
@@ -307,7 +328,7 @@ export default function WeatherScreen() {
               onClick={requestGps}
               className="inline-flex items-center gap-1 rounded-xl border border-emerald-800/20 bg-emerald-100/60 px-3 py-1.5 text-xs font-bold text-emerald-900 hover:bg-emerald-100 active:scale-95 transition-all"
             >
-              📍 আমার অবস্থান ব্যবহার করুন
+              📍 অটো লোকেশন (আমার অবস্থান)
             </button>
 
             <div className="flex items-center gap-1.5">
@@ -433,7 +454,11 @@ export default function WeatherScreen() {
       )}
 
       {/* ফসল চক্র পরামর্শ: always shown; falls back to season + region when weather is unavailable */}
-      <CropRotationCard divisionId={rotationDivisionId} summary={assessmentOutput?.summary ?? null} />
+      <CropRotationCard
+        divisionId={rotationDivisionId}
+        placeName={mode === 'gps' ? placeName : null}
+        summary={assessmentOutput?.summary ?? null}
+      />
 
       {/* Footer Disclaimer & Credits */}
       <footer className="rounded-2xl border border-slate-200 bg-white/70 p-4 text-center text-xs text-slate-500 shadow-2xs space-y-1">
@@ -447,6 +472,17 @@ export default function WeatherScreen() {
             className="underline hover:text-emerald-900 font-medium"
           >
             Open-Meteo.com (CC BY 4.0)
+          </a>
+        </p>
+        <p>
+          এলাকার নাম:{' '}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-emerald-900 font-medium"
+          >
+            © OpenStreetMap contributors (Nominatim)
           </a>
         </p>
       </footer>

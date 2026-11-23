@@ -39,16 +39,43 @@ export function HomeScreen() {
     'div',
     { className: 'flex flex-col gap-3 sm:gap-4 w-full' },
     createElement('h1', { className: 'sr-only' }, 'AgroLeaf AI'),
-    createElement(
-      'button',
-      {
-        type: 'button',
-        onClick: () => scanSession.reset(),
-        className:
-          'inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-4 py-1.5 text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95',
-      },
-      t('backToCrops')
-    ),
+    // Two-level back: with a photo or result on screen, the main Back clears it and stays in this
+    // crop's camera & gallery workspace; "ফসল নির্বাচন করুন" (or the logo) goes all the way Home.
+    isScanActive
+      ? createElement(
+          'div',
+          { className: 'flex flex-wrap items-center gap-2' },
+          createElement(
+            'button',
+            {
+              type: 'button',
+              onClick: () => scanSession.clearPhoto(),
+              'data-testid': 'back-to-scanner',
+              className:
+                'inline-flex w-fit items-center gap-1.5 rounded-full bg-[#0B5D3B] px-4 py-1.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0F5132] active:scale-95',
+            },
+            t('backToScanner')
+          ),
+          createElement(
+            'button',
+            {
+              type: 'button',
+              onClick: () => scanSession.reset(),
+              'data-testid': 'change-crop',
+              className: 'inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-4 py-1.5 text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95',
+            },
+            t('changeCrop')
+          )
+        )
+      : createElement(
+          'button',
+          {
+            type: 'button',
+            onClick: () => scanSession.reset(),
+            className: 'inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-4 py-1.5 text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95',
+          },
+          t('backToCrops')
+        ),
     !isScanActive
       ? createElement(
           'section',
