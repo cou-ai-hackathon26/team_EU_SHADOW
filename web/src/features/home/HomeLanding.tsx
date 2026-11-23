@@ -32,20 +32,22 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
   // Mobile: rice spans the full row, the 4 upcoming crops sit in a 2x2 grid. Desktop: 5 columns.
   const gridCols = inFrame ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-5'
   const riceSpan = inFrame ? 'col-span-2' : 'col-span-2 lg:col-span-1'
+  // Desktop-only (lg:) classes; dropped inside the phone frame, which always uses the mobile look.
+  const D = (cls: string) => (inFrame ? '' : cls)
 
   return (
     <div className="flex w-full flex-col gap-4 lg:gap-6">
       {/* Desktop hero: full-bleed, edge to edge under the navbar */}
       <section
         aria-labelledby="landing-headline"
-        className={`${desk} relative left-1/2 w-screen -translate-x-1/2 -mt-4 overflow-hidden bg-[radial-gradient(ellipse_at_50%_60%,#1B6B42_0%,#0F5132_38%,#0B3B24_75%,#072A19_100%)] text-white`}
+        className={`${desk} relative left-1/2 w-screen -translate-x-1/2 -mt-4 overflow-hidden bg-[radial-gradient(ellipse_at_50%_55%,rgba(34,160,96,0.40)_0%,rgba(15,81,50,0.15)_45%,transparent_72%)] text-white`}
       >
         {/* subtle leaf-vein texture */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:repeating-linear-gradient(115deg,#fff_0_1px,transparent_1px_22px)]"
         />
-        <div className="relative mx-auto grid min-h-[520px] max-w-7xl grid-cols-[1fr_1.45fr_0.9fr] items-center gap-8 px-10 py-12">
+        <div className="relative mx-auto grid min-h-[500px] max-w-6xl grid-cols-[1fr_1.45fr_0.9fr] items-center gap-8 px-10 py-12">
           <div className="flex flex-col gap-5">
             <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-white/15">
               <Leaf className="h-3.5 w-3.5" aria-hidden="true" /> AgroLeaf AI
@@ -103,9 +105,11 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
         </p>
       </section>
 
-      {/* Crop selector */}
-      <section aria-labelledby="crops-title" className="flex flex-col gap-3">
-        <h2 id="crops-title" className="text-lg font-bold text-[#0B3B24]">{t('landingCropsTitle')}</h2>
+      {/* Crop selector: light & colourful on mobile, glass cards on the dark desktop canvas */}
+      <section aria-labelledby="crops-title" className="flex flex-col gap-3 lg:gap-4">
+        <h2 id="crops-title" className={`text-lg font-bold text-[#0B3B24] ${D('lg:text-xl lg:text-white')}`}>
+          {t('landingCropsTitle')}
+        </h2>
         <ul className={`grid ${gridCols} gap-3 lg:gap-4`}>
           {CROPS.map((c) => (
             <li key={c.id} className={c.active ? riceSpan : undefined}>
@@ -116,28 +120,41 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                 onClick={c.active ? onStartRice : showUpcoming}
                 className={
                   c.active
-                    ? 'group relative flex h-full w-full flex-col items-center gap-1 rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-400 to-emerald-600 p-4 text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl active:scale-95'
-                    : 'relative flex h-full w-full cursor-not-allowed flex-col items-center gap-1 rounded-2xl border border-slate-200 bg-white/70 p-4 text-slate-500 shadow-sm backdrop-blur-sm'
+                    ? `group relative flex h-full w-full flex-col items-center gap-1 rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-400 to-emerald-600 p-4 text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 ${D('lg:bg-none lg:bg-emerald-500/25 lg:border-emerald-400 lg:shadow-emerald-950/50 lg:hover:bg-emerald-500/35')}`
+                    : `relative flex h-full w-full cursor-help flex-col items-center gap-1 rounded-2xl border border-emerald-900/10 bg-white/85 p-4 shadow-sm backdrop-blur-sm transition duration-200 hover:bg-white ${D('lg:bg-white/[0.06] lg:hover:bg-white/[0.10] lg:border-white/15 lg:backdrop-blur-md lg:shadow-none')}`
                 }
               >
                 <span
                   className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                    c.active ? 'bg-white text-emerald-700' : 'bg-slate-200 text-slate-600'
+                    c.active
+                      ? `bg-white text-emerald-700 ${D('lg:bg-emerald-300 lg:text-[#06291A]')}`
+                      : `bg-amber-100 text-amber-800 ${D('lg:bg-white/10 lg:text-emerald-100 lg:ring-1 lg:ring-white/20')}`
                   }`}
                 >
                   {c.active ? t('cropActive') : t('cropUpcoming')}
                 </span>
-                <span className={`mt-3 text-5xl ${c.active ? '' : 'grayscale opacity-60'}`} aria-hidden="true">
-                  {c.emoji}
+                {c.active ? (
+                  <RicePlantArt className="mt-1 h-[72px] w-16 drop-shadow-[0_4px_10px_rgba(250,204,21,0.35)]" />
+                ) : (
+                  <span className="mt-3 text-5xl leading-none opacity-80" aria-hidden="true">
+                    {c.emoji}
+                  </span>
+                )}
+                <span className={`text-lg font-extrabold ${c.active ? 'text-white' : `text-[#0E1F16] ${D('lg:text-white')}`}`}>
+                  {t(c.labelKey)}
                 </span>
-                <span className={`text-lg font-extrabold ${c.active ? 'text-white' : 'text-slate-700'}`}>{t(c.labelKey)}</span>
-                <span className={`text-xs italic ${c.active ? 'text-emerald-50' : 'text-slate-500'}`}>({c.scientific})</span>
+                <span className={`text-xs italic ${c.active ? 'text-emerald-50' : `text-emerald-800/80 ${D('lg:text-emerald-200')}`}`}>
+                  ({c.scientific})
+                </span>
               </button>
             </li>
           ))}
         </ul>
         {toast && (
-          <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm">
+          <p
+            role="status"
+            className={`rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm ${D('lg:border-amber-400/30 lg:bg-amber-500/15 lg:text-amber-100 lg:shadow-none')}`}
+          >
             {toast}
           </p>
         )}

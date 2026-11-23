@@ -28,7 +28,7 @@ interface LayoutProps {
 export default function Layout({ children, currentHash }: LayoutProps) {
   const { lang, t } = useT()
   const isBn = lang === 'bn'
-  const { isScanActive } = useScanState()
+  const { isScanActive, isLandingView } = useScanState()
 
   const [viewportMode, setViewportMode] = useState<ViewportMode>(() => {
     try {
@@ -56,9 +56,14 @@ export default function Layout({ children, currentHash }: LayoutProps) {
   const isHome = !currentHash || currentHash === '#' || currentHash === '#/'
   // Compact single-screen fit applies ONLY on initial idle Home with NO photo/result active
   const isCompactHome = isHome && !isScanActive && !isMobilePreview
+  // Desktop home landing: one continuous dark emerald canvas from navbar to disclaimer.
+  const isDarkLanding = isHome && isLandingView && !isMobilePreview
+  const canvas = isDarkLanding
+    ? 'lg:from-[#072A19] lg:via-[#0B3B24] lg:to-[#0F4C2E] lg:text-white'
+    : ''
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-br from-[#A7F3D0] via-[#BBF7D0] to-[#86EFAC] text-[#0E1F16] antialiased font-sans">
+    <div className={`flex min-h-screen w-full flex-col bg-gradient-to-br from-[#A7F3D0] via-[#BBF7D0] to-[#86EFAC] text-[#0E1F16] antialiased font-sans ${canvas}`}>
       {/* 1. Desktop Top Navbar: Sleek h-12 (48px) Ultra-Modern Emerald Bar */}
       <header
         className={`sticky top-0 z-40 h-12 shrink-0 border-b border-[#0B5D3B]/40 bg-[#0F5132]/95 px-4 shadow-[0_4px_20px_-4px_rgba(15,81,50,0.3)] backdrop-blur-md ${
@@ -285,7 +290,8 @@ export default function Layout({ children, currentHash }: LayoutProps) {
           <Disclaimer
             lang={lang}
             compact={isCompactHome}
-            className={isCompactHome ? 'mt-2 lg:mt-2.5' : 'mt-6'}
+            darkOnDesktop={isDarkLanding}
+            className={isCompactHome ? 'mt-2 lg:mt-6' : 'mt-6'}
           />
         </main>
 

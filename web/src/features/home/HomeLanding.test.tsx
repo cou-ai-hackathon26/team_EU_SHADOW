@@ -6,6 +6,7 @@ import { ScanStateProvider } from '../../app/scanStateContext'
 import { PhoneFrameProvider } from '../../app/viewportFrame'
 import { resetGlobalLang, STORAGE_KEY } from '../../i18n/useT'
 import { LanguageToggle } from '../../i18n/useT'
+import App from '../../App'
 
 vi.mock('../../ai/engine', () => ({ loadModel: vi.fn(), analyze: vi.fn() }))
 
@@ -115,5 +116,17 @@ describe('Home landing and crop selector', () => {
     expect(desktopHero?.className).not.toMatch(/lg:block/)
     const mobileHero = screen.getByRole('heading', { name: 'আমার ধানগাছ কি সুস্থ?' }).closest('section')
     expect(mobileHero?.className).not.toMatch(/lg:hidden/)
+  })
+
+  it('desktop home is one dark canvas; the scanner goes back to the light theme', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<App />)
+    const root = () => (container.firstElementChild as HTMLElement).className
+    expect(root()).toContain('lg:from-[#072A19]')
+    expect(screen.getAllByRole('note')[0].className).toContain('lg:bg-amber-500/15')
+    await user.click(cropButton('rice'))
+    expect(root()).not.toContain('lg:from-[#072A19]')
+    await user.click(screen.getByRole('button', { name: /ফসল নির্বাচন/ }))
+    expect(root()).toContain('lg:from-[#072A19]')
   })
 })

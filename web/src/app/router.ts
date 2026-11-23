@@ -1,4 +1,4 @@
-import { createElement, useState, type ComponentType } from 'react'
+import { createElement, useEffect, useState, type ComponentType } from 'react'
 import { HomeLanding } from '../features/home/HomeLanding'
 import { History, Info, ShieldCheck, Sprout } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
@@ -20,8 +20,13 @@ export interface RouteDef {
 
 export function HomeScreen() {
   const { t } = useT()
-  const { isScanActive } = useScanState()
+  const { isScanActive, setIsLandingView } = useScanState()
   const [showScanner, setShowScanner] = useState(false)
+
+  useEffect(() => {
+    setIsLandingView(!showScanner)
+    return () => setIsLandingView(false)
+  }, [showScanner, setIsLandingView])
 
   if (!showScanner) {
     return createElement(
