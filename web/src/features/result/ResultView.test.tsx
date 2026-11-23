@@ -260,8 +260,9 @@ describe('ResultView (F4)', () => {
 
     render(<ResultView prediction={pred} />)
 
-    const callLink = screen.getByRole('link', { name: /১৬১২৩/ })
-    expect(callLink).toHaveAttribute('href', 'tel:16123')
+    const callLinks = screen.getAllByRole('link', { name: /১৬১২৩/ })
+    expect(callLinks.length).toBeGreaterThanOrEqual(1)
+    expect(callLinks[0]).toHaveAttribute('href', 'tel:16123')
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
   })
 
@@ -271,5 +272,25 @@ describe('ResultView (F4)', () => {
     const callLink = screen.getByRole('link', { name: /১৬১২৩/ })
     expect(callLink).toHaveAttribute('href', 'tel:16123')
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/ })).toBeInTheDocument()
+  })
+
+  it('disclaimer and the 16123 call button still render when urgent call-out shows', () => {
+    const highActPred: Prediction = {
+      ...basePrediction,
+      tier: 'high',
+      top: [
+        { classId: 'blast', prob: 0.95 },
+      ],
+      heatmap: new Float32Array(49).fill(0.8),
+      heatmapSize: 7,
+    }
+    render(<ResultView prediction={highActPred} />)
+
+    expect(screen.getByText(/আজই ১৬১২৩ নম্বরে কল করুন/)).toBeInTheDocument()
+    expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
+    // The redesigned result screen has its own call button (HelpCall was replaced on main);
+    // the page must offer tel:16123 besides the urgent call-out's own link.
+    const callLinks = screen.getAllByRole('link').filter((a) => a.getAttribute('href') === 'tel:16123')
+    expect(callLinks.length).toBeGreaterThanOrEqual(2)
   })
 })

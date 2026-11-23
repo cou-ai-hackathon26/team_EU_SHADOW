@@ -64,6 +64,10 @@ export default function HowItWorks() {
           </div>
         ))}
       </div>
+
+      <p className="mt-4 rounded-xl border border-emerald-900/10 bg-emerald-50/50 p-3 text-xs text-slate-600 leading-relaxed">
+        <strong>সততা ও স্বচ্ছতা:</strong> হিটম্যাপ ও আক্রান্ত এলাকার বিস্তার মডেলের মনোযোগের আনুমানিক ধারণা (coarse activation), কোনো ল্যাবরেটরিতে মাপা নিখুঁত ক্ষতের পরিমাণ নয়।
+      </p>
     </section>
   )
 }

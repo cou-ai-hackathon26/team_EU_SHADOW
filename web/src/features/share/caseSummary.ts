@@ -1,5 +1,9 @@
 import type { Prediction } from '../../ai/types'
 import { getCard } from '../../content/getCard'
+import {
+  type SeverityEstimate,
+  SEVERITY_BAND_LABELS_BN,
+} from '../severity/estimateSpread'
 
 export const SUMMARY_CANVAS_WIDTH = 720
 export const SUMMARY_CANVAS_HEIGHT = 960
@@ -8,6 +12,7 @@ export interface CaseSummaryInput {
   prediction: Prediction
   date?: Date
   image?: CanvasImageSource
+  severity?: SeverityEstimate
 }
 
 export const TIER_LABELS_BN: Record<string, string> = {
@@ -56,7 +61,7 @@ export function formatTierSummary(prediction: Prediction): string {
  * Strictly avoids any location/GPS data.
  */
 export function generateCaseSummaryText(input: CaseSummaryInput): string {
-  const { prediction, date = new Date() } = input
+  const { prediction, date = new Date(), severity } = input
   const summaryLine = formatTierSummary(prediction)
   const tierName = TIER_LABELS_BN[prediction.tier] ?? prediction.tier
   const dateStr = date.toLocaleDateString('bn-BD', {
@@ -64,10 +69,13 @@ export function generateCaseSummaryText(input: CaseSummaryInput): string {
     month: 'long',
     day: 'numeric',
   })
+  const severityLine = severity
+    ? `\nআক্রান্ত এলাকা (আনুমানিক, হিটম্যাপ থেকে): ${SEVERITY_BAND_LABELS_BN[severity.band]}`
+    : ''
 
   return `AgroLeaf AI — কেস সামারি (কৃষি পরামর্শের জন্য)
 রোগের বিবরণ: ${summaryLine}
-ফলাফলের স্তর: ${tierName}
+ফলাফলের স্তর: ${tierName}${severityLine}
 তারিখ: ${dateStr}
 মডেল সংস্করণ: ${prediction.modelVersion}
 জরুরি কৃষি পরামর্শ ও সহায়তার জন্য কল করুন: কৃষি কল সেন্টার ১৬১২৩
@@ -181,8 +189,18 @@ export async function generateCaseSummaryCanvas(
   ctx.fillStyle = '#334155'
   ctx.font = `20px ${fontFam}`
   ctx.fillText(`ফলাফলের স্তর: ${tierName}`, 60, cardY + 95)
-  ctx.fillText(`তারিখ: ${dateStr}`, 60, cardY + 135)
-  ctx.fillText(`মডেল সংস্করণ: ${prediction.modelVersion}`, 60, cardY + 175)
+  if (input.severity) {
+    ctx.fillText(
+      `আক্রান্ত এলাকা (আনুমানিক, হিটম্যাপ থেকে): ${SEVERITY_BAND_LABELS_BN[input.severity.band]}`,
+      60,
+      cardY + 130,
+    )
+    ctx.fillText(`তারিখ: ${dateStr}`, 60, cardY + 165)
+    ctx.fillText(`মডেল সংস্করণ: ${prediction.modelVersion}`, 60, cardY + 200)
+  } else {
+    ctx.fillText(`তারিখ: ${dateStr}`, 60, cardY + 135)
+    ctx.fillText(`মডেল সংস্করণ: ${prediction.modelVersion}`, 60, cardY + 175)
+  }
 
   // 5. Disclaimer line above the 16123 footer
   ctx.fillStyle = '#64748b'
