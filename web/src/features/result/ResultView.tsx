@@ -131,9 +131,13 @@ export default function ResultView({
             alt={isBn ? 'পরীক্ষিত পাতার ছবি' : 'Scanned leaf photo'}
             className="h-full w-full object-contain"
           />
-          <div className="absolute top-3 left-3">
-            <SeverityChip level={top1Card.severity} lang={lang} />
-          </div>
+          {/* Class badge on the photo only when the model is confident enough to name a class.
+              For "আমি নিশ্চিত নই" and not-rice results it would contradict the card below. */}
+          {(tier === 'high' || tier === 'medium') && (
+            <div className="absolute top-3 left-3" data-testid="photo-class-badge">
+              <SeverityChip level={top1Card.severity} lang={lang} />
+            </div>
+          )}
         </div>
       )}
 
