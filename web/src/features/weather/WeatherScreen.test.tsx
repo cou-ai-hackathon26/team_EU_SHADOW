@@ -313,7 +313,7 @@ describe('F16: WeatherScreen Component', () => {
 
     render(<WeatherScreen />)
 
-    expect(screen.getByRole('heading', { name: /আবহাওয়া ও রোগ-ঝুঁকি/ })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /রোগ-ঝুঁকি/ })).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 })

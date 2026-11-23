@@ -62,13 +62,29 @@ const BADGE_CONFIG: Record<
   },
 }
 
+function safeGet(key: string, defaultValue: string): string {
+  try {
+    return localStorage.getItem(key) || defaultValue
+  } catch {
+    return defaultValue
+  }
+}
+
+function safeSet(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // Ignore storage errors (private mode / quota exceeded)
+  }
+}
+
 export default function WeatherScreen() {
   const selectId = useId()
   const [mode, setMode] = useState<'gps' | 'division'>(() => {
-    return (localStorage.getItem(WEATHER_MODE_KEY) as 'gps' | 'division') || 'gps'
+    return (safeGet(WEATHER_MODE_KEY, 'gps') as 'gps' | 'division') || 'gps'
   })
   const [selectedDivision, setSelectedDivision] = useState<string>(() => {
-    return localStorage.getItem(WEATHER_DIVISION_KEY) || 'dhaka'
+    return safeGet(WEATHER_DIVISION_KEY, 'dhaka')
   })
 
   const [assessmentOutput, setAssessmentOutput] = useState<AssessmentOutput | null>(() => {
@@ -78,12 +94,12 @@ export default function WeatherScreen() {
 
   const [label, setLabel] = useState<string>(() => {
     const loaded = loadWeatherCache()
-    return loaded ? loaded.cached.label : ''
+    return loaded && !loaded.isStale ? loaded.cached.label : ''
   })
 
   const [fetchedAt, setFetchedAt] = useState<number | null>(() => {
     const loaded = loadWeatherCache()
-    return loaded ? loaded.cached.fetchedAt : null
+    return loaded && !loaded.isStale ? loaded.cached.fetchedAt : null
   })
 
   const [isOfflineView, setIsOfflineView] = useState<boolean>(() => {
@@ -170,7 +186,7 @@ export default function WeatherScreen() {
   const requestGps = useCallback(() => {
     setGpsError(null)
     setMode('gps')
-    localStorage.setItem(WEATHER_MODE_KEY, 'gps')
+    safeSet(WEATHER_MODE_KEY, 'gps')
 
     getPosition()
       .then((coords) => {
@@ -178,16 +194,35 @@ export default function WeatherScreen() {
       })
       .catch(() => {
         setGpsError('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')
+        const isOnline = typeof navigator !== 'undefined' ? navigator.onLine !== false : true
+        const loaded = loadWeatherCache()
+        if (loaded && !loaded.isStale) {
+          setAssessmentOutput((prev) => prev || loaded.assessment)
+          setLabel((prev) => prev || loaded.cached.label)
+          setFetchedAt((prev) => prev || loaded.cached.fetchedAt)
+          setIsOfflineView(!isOnline)
+          setIsUnavailable(false)
+        }
       })
   }, [fetchAndAssess])
 
   // Initial load
   useEffect(() => {
     const timer = setTimeout(() => {
-      const storedMode = localStorage.getItem(WEATHER_MODE_KEY)
+      const isOnline = typeof navigator !== 'undefined' ? navigator.onLine !== false : true
+      const loaded = loadWeatherCache()
+      if (loaded && !loaded.isStale) {
+        setAssessmentOutput((prev) => prev || loaded.assessment)
+        setLabel((prev) => prev || loaded.cached.label)
+        setFetchedAt((prev) => prev || loaded.cached.fetchedAt)
+        setIsOfflineView(!isOnline)
+        setIsUnavailable(false)
+      }
+
+      const storedMode = safeGet(WEATHER_MODE_KEY, 'gps')
 
       if (storedMode === 'division') {
-        const divId = localStorage.getItem(WEATHER_DIVISION_KEY) || 'dhaka'
+        const divId = safeGet(WEATHER_DIVISION_KEY, 'dhaka')
         const div = getDivisionById(divId) || DIVISIONS[0]
         void fetchAndAssess(div.lat, div.lon, div.nameBn, 'division')
       } else {
@@ -208,8 +243,8 @@ export default function WeatherScreen() {
     setSelectedDivision(divId)
     setMode('division')
     setGpsError(null)
-    localStorage.setItem(WEATHER_MODE_KEY, 'division')
-    localStorage.setItem(WEATHER_DIVISION_KEY, divId)
+    safeSet(WEATHER_MODE_KEY, 'division')
+    safeSet(WEATHER_DIVISION_KEY, divId)
 
     fetchAndAssess(div.lat, div.lon, div.nameBn, 'division')
   }
