@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { getScans, deleteScan, clearAllScans, type ScanRecord } from './historyStore'
-import { Disclaimer } from '../../components/Disclaimer'
+import { useT, type Lang } from '../../i18n/useT'
 
 function toBengaliNumerals(num: number): string {
   const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯']
   return num.toString().replace(/\d/g, (d) => bnDigits[parseInt(d, 10)])
 }
 
-function formatDate(timestamp: number): string {
+function formatDate(timestamp: number, lang: Lang = 'bn'): string {
   try {
     const d = new Date(timestamp)
-    return d.toLocaleDateString('bn-BD', {
+    return d.toLocaleDateString(lang === 'bn' ? 'bn-BD' : 'en-GB', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -23,6 +23,8 @@ function formatDate(timestamp: number): string {
 }
 
 export function HistoryScreen() {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
   const [scans, setScans] = useState<ScanRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [showClearConfirm, setShowClearConfirm] = useState(false)
@@ -62,9 +64,9 @@ export function HistoryScreen() {
       {/* Header — always rendered immediately so users & test runners see the h1 heading */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">স্ক্যান ইতিহাস</h1>
+          <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{isBn ? 'স্ক্যান ইতিহাস' : 'Scan History'}</h1>
           <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-            আপনার ডিভাইসে সংরক্ষিত পূর্ববর্তী পরীক্ষার ফলাফল। সকল তথ্য সম্পূর্ণ অফলাইনে থাকে।
+            {isBn ? 'আপনার ডিভাইসে সংরক্ষিত পূর্ববর্তী পরীক্ষার ফলাফল। সকল তথ্য সম্পূর্ণ অফলাইনে থাকে।' : 'Earlier results saved on this device. Everything stays offline.'}
           </p>
         </div>
 
@@ -72,20 +74,20 @@ export function HistoryScreen() {
           <div>
             {showClearConfirm ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-rose-600 font-medium">সব মুছবেন?</span>
+                <span className="text-xs text-rose-600 font-medium">{isBn ? 'সব মুছবেন?' : 'Delete all?'}</span>
                 <button
                   type="button"
                   onClick={handleClearAll}
                   className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 transition"
                 >
-                  হ্যাঁ, মুছুন
+                  {isBn ? 'হ্যাঁ, মুছুন' : 'Yes, delete'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowClearConfirm(false)}
                   className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition"
                 >
-                  বাতিল
+                  {isBn ? 'বাতিল' : 'Cancel'}
                 </button>
               </div>
             ) : (
@@ -107,7 +109,7 @@ export function HistoryScreen() {
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 </svg>
-                <span>সব মুছুন</span>
+                <span>{isBn ? 'সব মুছুন' : 'Delete all'}</span>
               </button>
             )}
           </div>
@@ -117,7 +119,7 @@ export function HistoryScreen() {
       {/* Main Content Area */}
       {loading ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center sm:p-12">
-          <p className="text-sm text-slate-500">ইতিহাস লোড হচ্ছে...</p>
+          <p className="text-sm text-slate-500">{isBn ? 'ইতিহাস লোড হচ্ছে...' : 'Loading history...'}</p>
         </div>
       ) : scans.length === 0 ? (
         /* Empty State */
@@ -138,10 +140,10 @@ export function HistoryScreen() {
             </svg>
           </div>
           <h2 className="mt-4 text-base font-semibold text-slate-900 sm:text-lg">
-            কোনো স্ক্যান ইতিহাস নেই
+            {isBn ? 'কোনো স্ক্যান ইতিহাস নেই' : 'No scan history yet'}
           </h2>
           <p className="mt-1.5 max-w-sm text-xs text-slate-500 sm:text-sm">
-            আপনি এখনও কোনো পাতা পরীক্ষা করেননি। নতুন পাতা পরীক্ষা করলে তা স্বয়ংক্রিয়ভাবে এখানে সংরক্ষিত থাকবে।
+            {isBn ? 'আপনি এখনও কোনো পাতা পরীক্ষা করেননি। নতুন পাতা পরীক্ষা করলে তা স্বয়ংক্রিয়ভাবে এখানে সংরক্ষিত থাকবে।' : 'You have not checked any leaves yet. New scans are saved here automatically.'}
           </p>
           <a
             href="#/"
@@ -160,7 +162,7 @@ export function HistoryScreen() {
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
               <circle cx="12" cy="13" r="4" />
             </svg>
-            <span>নতুন পাতা স্ক্যান করুন</span>
+            <span>{isBn ? 'নতুন পাতা স্ক্যান করুন' : 'Scan a new leaf'}</span>
           </a>
         </div>
       ) : (
@@ -168,7 +170,7 @@ export function HistoryScreen() {
         <div className="grid gap-3 sm:gap-4">
           {scans.map((scan) => {
             const percent = Math.round(scan.confidence * 100)
-            const percentBn = toBengaliNumerals(percent)
+            const percentBn = isBn ? toBengaliNumerals(percent) : String(percent)
             return (
               <article
                 key={scan.id}
@@ -178,7 +180,7 @@ export function HistoryScreen() {
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-100 sm:h-20 sm:w-20">
                   <img
                     src={scan.thumbnail}
-                    alt={scan.diseaseName.bn}
+                    alt={scan.diseaseName[lang]}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -187,7 +189,7 @@ export function HistoryScreen() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="truncate text-sm font-bold text-slate-900 sm:text-base">
-                      {scan.diseaseName.bn}
+                      {scan.diseaseName[lang]}
                     </h2>
                     <span
                       className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium ${
@@ -203,7 +205,7 @@ export function HistoryScreen() {
                   </div>
 
                   <p className="mt-0.5 truncate text-xs text-slate-500">
-                    {scan.diseaseName.en} • {formatDate(scan.timestamp)}
+                    {isBn ? `${scan.diseaseName.en} • ` : ''}{formatDate(scan.timestamp, lang)}
                   </p>
                 </div>
 
@@ -211,9 +213,9 @@ export function HistoryScreen() {
                 <button
                   type="button"
                   onClick={() => handleDelete(scan.id)}
-                  aria-label="মুছুন"
+                  aria-label={isBn ? 'মুছুন' : 'Delete'}
                   className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
-                  title="এই ফলাফলটি মুছুন"
+                  title={isBn ? 'এই ফলাফলটি মুছুন' : 'Delete this result'}
                 >
                   <svg
                     className="h-5 w-5"
@@ -235,8 +237,7 @@ export function HistoryScreen() {
         </div>
       )}
 
-      {/* Safety Disclaimer */}
-      <Disclaimer lang="bn" className="mt-2" />
+      {/* Safety disclaimer comes from the page Layout (one per page). */}
     </section>
   )
 }

@@ -1,4 +1,5 @@
 import type { ConfidenceTier } from '../../ai/types'
+import { useT } from '../../i18n/useT'
 import type { DiseaseCard } from '../../content/types'
 import type { SeverityEstimate } from './estimateSpread'
 
@@ -15,6 +16,8 @@ export function UrgentCallout({
   severity,
   className = '',
 }: UrgentCalloutProps) {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
   if (tier !== 'high') return null
   if (!card) return null
 
@@ -27,7 +30,7 @@ export function UrgentCallout({
 
   return (
     <aside
-      aria-label="জরুরি সতর্কতা"
+      aria-label={isBn ? 'জরুরি সতর্কতা' : 'Urgent alert'}
       className={`rounded-2xl border-2 border-rose-300 bg-rose-50/90 p-4 text-slate-900 shadow-xs ${className}`}
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -37,10 +40,12 @@ export function UrgentCallout({
           </span>
           <div>
             <h3 className="text-sm sm:text-base font-bold text-rose-950">
-              আজই ১৬১২৩ নম্বরে কল করুন
+              {isBn ? 'আজই ১৬১২৩ নম্বরে কল করুন' : 'Call 16123 today'}
             </h3>
             <p className="mt-0.5 text-xs text-rose-900">
-              ফসলের ক্ষতি কমাতে দ্রুত নিকটস্থ উপসহকারী কৃষি কর্মকর্তা অথবা কৃষি কল সেন্টারে যোগাযোগ করুন।
+              {isBn
+                ? 'ফসলের ক্ষতি কমাতে দ্রুত নিকটস্থ উপসহকারী কৃষি কর্মকর্তা অথবা কৃষি কল সেন্টারে যোগাযোগ করুন।'
+                : 'To limit crop loss, contact your nearest agriculture officer or the Krishi Call Centre soon.'}
             </p>
           </div>
         </div>
@@ -60,7 +65,7 @@ export function UrgentCallout({
           >
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
           </svg>
-          <span>১৬১২৩ কল করুন</span>
+          <span>{isBn ? '১৬১২৩ কল করুন' : 'Call 16123'}</span>
         </a>
       </div>
     </aside>

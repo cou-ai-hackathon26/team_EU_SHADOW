@@ -17,11 +17,7 @@ export interface PhotoPickerProps {
   selectedFile?: File | null
 }
 
-const ROTATING_TIPS = [
-  'পাতার দাগ ও রঙের পরিবর্তন বিশ্লেষণ করা হচ্ছে...',
-  'কৃত্রিম বুদ্ধিমত্তা (AI) মডেল দিয়ে রোগ শনাক্ত করা হচ্ছে...',
-  'কিছুক্ষণের মধ্যেই সঠিক ফলাফল ও সমাধান পাবেন...',
-]
+const ROTATING_TIPS = ['analyzeTip1', 'analyzeTip2', 'analyzeTip3'] as const
 
 export default function PhotoPicker({
   onImageReady,
@@ -68,7 +64,7 @@ export default function PhotoPicker({
 
     const validation = validateFile(file)
     if (!validation.valid) {
-      setErrorMessage(validation.error ?? 'অকার্যকর ফাইল ফরম্যাট')
+      setErrorMessage(validation.error ?? t('errInvalidFormat'))
       return
     }
 
@@ -157,7 +153,7 @@ export default function PhotoPicker({
         accept="image/*"
         capture="environment"
         className="sr-only"
-        aria-label="ক্যামেরা"
+        aria-label={t('cameraInputAria')}
         onChange={onInputChange}
       />
       <input
@@ -166,7 +162,7 @@ export default function PhotoPicker({
         id="gallery-input"
         accept="image/*"
         className="sr-only"
-        aria-label="গ্যালারি"
+        aria-label={t('galleryInputAria')}
         onChange={onInputChange}
       />
 
@@ -280,7 +276,7 @@ export default function PhotoPicker({
             <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F0F8F4] border border-[#0B5D3B]/20 text-center">
               <div className="flex items-center gap-2 text-[#0B5D3B] font-bold text-[16px] mb-1">
                 <Sparkles className="h-5 w-5 animate-spin" />
-                <span>AI বিশ্লেষণ চলছে...</span>
+                <span>{t('aiAnalyzing')}</span>
               </div>
               <motion.p
                 key={tipIndex}
@@ -288,7 +284,7 @@ export default function PhotoPicker({
                 animate={{ opacity: 1, y: 0 }}
                 className="text-[15px] font-medium text-[#4A5F52]"
               >
-                {ROTATING_TIPS[tipIndex]}
+                {t(ROTATING_TIPS[tipIndex])}
               </motion.p>
             </div>
           ) : (

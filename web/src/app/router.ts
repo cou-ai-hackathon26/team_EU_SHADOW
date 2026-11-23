@@ -80,7 +80,7 @@ export function HomeScreen() {
       ? createElement(
           'section',
           {
-            'aria-label': 'ব্যবহারের নির্দেশনা',
+            'aria-label': t('scanGuideAria'),
             className:
               'flex items-center justify-center rounded-2xl border border-emerald-300/80 bg-white/92 backdrop-blur-sm py-2.5 px-4 sm:px-6 shadow-md text-center transition-all',
           },
@@ -131,7 +131,7 @@ export function AboutScreen() {
           'span',
           { className: 'inline-flex items-center gap-1.5 rounded-full bg-[#E6F4ED] px-3.5 py-1 text-[14px] font-extrabold text-[#0B5D3B] mb-2' },
           createElement(Sprout, { className: 'h-4 w-4' }),
-          'কৃষকদের জন্য নির্ভরযোগ্য ডিজিটাল সহযোগী'
+          t('aboutBadge')
         ),
         createElement(
           'p',
@@ -149,12 +149,12 @@ export function AboutScreen() {
             'div',
             { className: 'flex items-center gap-2 font-bold text-[#0E1F16] text-[16px] mb-1' },
             createElement(ShieldCheck, { className: 'h-5 w-5 text-[#0B5D3B]' }),
-            '১০০% অফলাইন ও ব্যক্তিগত'
+            t('aboutPrivateTitle')
           ),
           createElement(
             'p',
             { className: 'text-[15px] text-[#4A5F52] leading-relaxed' },
-            'আপনার তোলা ছবি ডিভাইসের বাইরে সার্ভারে যায় না। ইন্টারনেট সংযোগ ছাড়াও নিশ্চিন্তে রোগ পরীক্ষা করা যায়।'
+            t('aboutPrivateText')
           )
         ),
         createElement(
@@ -164,12 +164,12 @@ export function AboutScreen() {
             'div',
             { className: 'flex items-center gap-2 font-bold text-[#0E1F16] text-[16px] mb-1' },
             createElement(Sprout, { className: 'h-5 w-5 text-[#B45309]' }),
-            'সরাসরি কৃষি পরামর্শ'
+            t('aboutAdviceTitle')
           ),
           createElement(
             'p',
             { className: 'text-[15px] text-[#4A5F52] leading-relaxed' },
-            'রোগ শনাক্তের পর পরই করণীয় ৩-৪টি বাস্তবসম্মত পদক্ষেপ এবং ১৬১২৩ কৃষি হেল্পলাইনে এক ট্যাপে কল করার সুবিধা।'
+            t('aboutAdviceText')
           )
         )
       ),
@@ -179,12 +179,12 @@ export function AboutScreen() {
         createElement(
           'h3',
           { className: 'font-bold text-[#0B5D3B] text-[15px] mb-1' },
-          'গবেষণা ডেটাসেট ও ছবির লাইসেন্স (Attribution)'
+          t('aboutDataTitle')
         ),
         createElement(
           'p',
           { className: 'text-[14px] text-[#4A5F52] leading-relaxed' },
-          'AgroLeaf AI-এর ডেমো ও টেস্টিং ছবিগুলো আন্তর্জাতিক উন্মুক্ত কৃষি গবেষণা ডেটাসেট (CC BY 4.0 ও CC0 1.0 লাইসেন্সপ্রাপ্ত) থেকে সংগৃহীত। মডেল ট্রেনিং থেকে এই টেস্ট স্প্লিটের ছবি সম্পূর্ণ আলাদা রাখা হয়েছে।'
+          t('aboutDataText')
         )
       )
     )

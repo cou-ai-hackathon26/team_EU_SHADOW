@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Share2, Loader2 } from 'lucide-react'
+import { useT } from '../../i18n/useT'
 import {
   generateCaseSummaryCanvas,
   generateCaseSummaryBlob,
@@ -13,6 +14,8 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ input, className = '' }: ShareButtonProps) {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
   const [isSharing, setIsSharing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,7 +36,7 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
           const files = typeof File !== 'undefined' ? [new File([blob], fileName, { type: 'image/png' })] : []
           if (!navigator.canShare || files.length === 0 || navigator.canShare({ files })) {
             await navigator.share({
-              title: 'AgroLeaf AI কেস সামারি',
+              title: isBn ? 'AgroLeaf AI কেস সামারি' : 'AgroLeaf AI case summary',
               text,
               ...(files.length > 0 ? { files } : {}),
             })
@@ -60,7 +63,7 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
       anchor.click()
       document.body.removeChild(anchor)
     } catch {
-      setError('শেয়ার করা যায়নি — আবার চেষ্টা করুন')
+      setError(isBn ? 'শেয়ার করা যায়নি — আবার চেষ্টা করুন' : 'Could not share — please try again')
     } finally {
       setIsSharing(false)
     }
@@ -72,7 +75,7 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
         type="button"
         onClick={handleShareOrDownload}
         disabled={isSharing}
-        aria-label="কেস সামারি শেয়ার করুন"
+        aria-label={isBn ? 'কেস সামারি শেয়ার করুন' : 'Share the case summary'}
         className={`flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-[#0B5D3B]/20 bg-white px-6 py-3.5 text-[16px] font-bold text-[#0E1F16] shadow-sm transition-all hover:bg-[#E6F4ED]/50 hover:border-[#0B5D3B]/40 active:scale-95 focus:outline-none focus-visible:ring-3 focus-visible:ring-emerald-700/50 disabled:opacity-50 select-none ${className}`}
       >
         {isSharing ? (
@@ -80,7 +83,7 @@ export function ShareButton({ input, className = '' }: ShareButtonProps) {
         ) : (
           <Share2 className="h-5 w-5 text-[#0B5D3B]" strokeWidth={2.2} />
         )}
-        <span>{isSharing ? 'প্রস্তুত হচ্ছে…' : 'শেয়ার করুন'}</span>
+        <span>{isSharing ? (isBn ? 'প্রস্তুত হচ্ছে…' : 'Preparing…') : isBn ? 'শেয়ার করুন' : 'Share'}</span>
       </button>
       {error && (
         <p role="alert" className="mt-2 text-sm text-rose-700">

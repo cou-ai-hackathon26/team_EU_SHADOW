@@ -4,6 +4,7 @@ import type { DiseaseCard } from '../../content/types'
 import type { ConfidenceTier } from '../../ai/types'
 import { buildSpokenText, speakText, stopSpeaking, useBanglaVoice } from './speak'
 import { clipKeyFor, clipUrl, hasClip, playClip } from './voiceClips'
+import { useT } from '../../i18n/useT'
 
 export interface ListenButtonProps {
   card: DiseaseCard
@@ -13,6 +14,8 @@ export interface ListenButtonProps {
 }
 
 export function ListenButton({ card, tier, secondCard, className = '' }: ListenButtonProps) {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [errorNote, setErrorNote] = useState<string | null>(null)
   const { supported, voice, hasBanglaVoice } = useBanglaVoice()
@@ -63,7 +66,7 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
         })
       } else {
         stopAll()
-        setErrorNote('অডিও চালানো যায়নি — লেখাটি পড়ে দেখুন')
+        setErrorNote(isBn ? 'অডিও চালানো যায়নি — লেখাটি পড়ে দেখুন' : 'Could not play the audio — please read the text')
       }
     }
 
@@ -111,10 +114,10 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
           className="inline-flex min-h-[52px] cursor-not-allowed items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-100 px-5 py-3 text-[15px] font-bold text-slate-400 opacity-80"
         >
           <VolumeX className="h-5 w-5" />
-          <span>শুনুন</span>
+          <span>{isBn ? 'শুনুন' : 'Listen'}</span>
         </button>
         <span className="text-[13px] font-medium text-slate-500">
-          ভয়েস সাপোর্ট নেই (আপনার ব্রাউজারে ভয়েস সুবিধা নেই)
+          {isBn ? 'ভয়েস সাপোর্ট নেই (আপনার ব্রাউজারে ভয়েস সুবিধা নেই)' : 'No voice support in this browser'}
         </span>
       </div>
     )
@@ -130,10 +133,10 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
           className="inline-flex min-h-[52px] cursor-not-allowed items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-100 px-5 py-3 text-[15px] font-bold text-slate-400 opacity-80"
         >
           <VolumeX className="h-5 w-5" />
-          <span>শুনুন</span>
+          <span>{isBn ? 'শুনুন' : 'Listen'}</span>
         </button>
         <span className="text-[13px] font-medium text-slate-500">
-          এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন
+          {isBn ? 'এই ডিভাইসে বাংলা ভয়েস নেই — লেখাটি পড়ে দেখুন' : 'No Bangla voice on this device — please read the text'}
         </span>
       </div>
     )
@@ -143,7 +146,7 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={isSpeaking ? 'পড়া বন্ধ করুন' : 'ফলাফল বাংলায় পড়ে শুনুন'}
+      aria-label={isSpeaking ? (isBn ? 'পড়া বন্ধ করুন' : 'Stop reading') : isBn ? 'ফলাফল বাংলায় পড়ে শুনুন' : 'Listen to the result in Bangla'}
       aria-pressed={isSpeaking}
       className={`inline-flex min-h-[56px] items-center justify-center gap-3 rounded-2xl px-6 py-3.5 text-[16px] font-bold shadow-sm transition-all active:scale-[0.98] select-none ${
         isSpeaking
@@ -159,14 +162,14 @@ export function ListenButton({ card, tier, secondCard, className = '' }: ListenB
             <span className="w-1.5 bg-[#B45309] rounded-full animate-bounce delay-200 h-3"></span>
           </div>
           <Square className="h-5 w-5 fill-current" />
-          <span>থামুন</span>
+          <span>{isBn ? 'থামুন' : 'Stop'}</span>
         </>
       ) : (
         <>
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#0B5D3B] text-white shadow-xs">
             <Volume2 className="h-5 w-5" strokeWidth={2.4} />
           </span>
-          <span>শুনুন (বাংলা ভয়েস পরামর্শ)</span>
+          <span>{isBn ? 'শুনুন (বাংলা ভয়েস পরামর্শ)' : 'Listen (Bangla voice advice)'}</span>
         </>
       )}
     </button>
