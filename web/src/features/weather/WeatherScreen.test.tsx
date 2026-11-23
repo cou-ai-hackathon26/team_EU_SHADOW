@@ -199,4 +199,121 @@ describe('F16: WeatherScreen Component', () => {
       expect(text).not.toMatch(pattern)
     }
   })
+
+  it('fresh cache + GPS error: shows cached disease list, "শেষ আপডেট", "অবস্থান পাওয়া যায়নি" note, and division dropdown', async () => {
+    saveWeatherCache({
+      mode: 'gps',
+      lat: 23.81,
+      lon: 90.41,
+      label: 'আপনার অবস্থান',
+      hourly: {
+        temperature_2m: Array(72).fill(25),
+        relative_humidity_2m: Array(72).fill(92),
+        precipitation: Array(72).fill(0),
+      },
+      fetchedAt: Date.now() - 3600 * 1000,
+    })
+
+    const fakeGeo = {
+      getCurrentPosition: vi.fn((_success: PositionCallback, error?: PositionErrorCallback) => {
+        if (error) {
+          error({
+            code: 1,
+            message: 'User denied Geolocation',
+            PERMISSION_DENIED: 1,
+            POSITION_UNAVAILABLE: 2,
+            TIMEOUT: 3,
+          } as GeolocationPositionError)
+        }
+      }),
+    }
+    vi.stubGlobal('navigator', { ...navigator, geolocation: fakeGeo, onLine: true })
+
+    render(<WeatherScreen />)
+
+    expect(await screen.findByText('ব্লাস্ট রোগ')).toBeInTheDocument()
+    expect(screen.getByText('ধানের প্রধান রোগসমূহের পূর্বাভাসভিত্তিক ঝুঁকি')).toBeInTheDocument()
+    expect(screen.getByText(/শেষ আপডেট:/)).toBeInTheDocument()
+    expect(screen.getByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
+  })
+
+  it('fresh cache + GPS mode + getCurrentPosition never answers: cached list is visible immediately on first render', () => {
+    saveWeatherCache({
+      mode: 'gps',
+      lat: 23.81,
+      lon: 90.41,
+      label: 'আপনার অবস্থান',
+      hourly: {
+        temperature_2m: Array(72).fill(25),
+        relative_humidity_2m: Array(72).fill(92),
+        precipitation: Array(72).fill(0),
+      },
+      fetchedAt: Date.now() - 3600 * 1000,
+    })
+
+    const fakeGeo = {
+      getCurrentPosition: vi.fn(() => {
+        // never answers
+      }),
+    }
+    vi.stubGlobal('navigator', { ...navigator, geolocation: fakeGeo, onLine: true })
+
+    render(<WeatherScreen />)
+
+    expect(screen.getByText('ব্লাস্ট রোগ')).toBeInTheDocument()
+    expect(screen.getByText('ধানের প্রধান রোগসমূহের পূর্বাভাসভিত্তিক ঝুঁকি')).toBeInTheDocument()
+    expect(screen.getByText('আপনার অবস্থান')).toBeInTheDocument()
+  })
+
+  it('fresh cache + GPS error + offline: cached list shown with "ইন্টারনেট নেই — শেষ আপডেট"', async () => {
+    saveWeatherCache({
+      mode: 'gps',
+      lat: 23.81,
+      lon: 90.41,
+      label: 'আপনার অবস্থান',
+      hourly: {
+        temperature_2m: Array(72).fill(25),
+        relative_humidity_2m: Array(72).fill(92),
+        precipitation: Array(72).fill(0),
+      },
+      fetchedAt: Date.now() - 3600 * 1000,
+    })
+
+    const fakeGeo = {
+      getCurrentPosition: vi.fn((_success: PositionCallback, error?: PositionErrorCallback) => {
+        if (error) {
+          error({
+            code: 1,
+            message: 'User denied Geolocation',
+            PERMISSION_DENIED: 1,
+            POSITION_UNAVAILABLE: 2,
+            TIMEOUT: 3,
+          } as GeolocationPositionError)
+        }
+      }),
+    }
+    vi.stubGlobal('navigator', { ...navigator, geolocation: fakeGeo, onLine: false })
+
+    render(<WeatherScreen />)
+
+    expect(await screen.findByText('ব্লাস্ট রোগ')).toBeInTheDocument()
+    expect(screen.getByText(/ইন্টারনেট নেই — শেষ আপডেট/)).toBeInTheDocument()
+    expect(screen.getByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
+  })
+
+  it('localStorage throws on getItem/setItem: renders title and division dropdown without crashing', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('localStorage is blocked')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('localStorage is blocked')
+    })
+
+    render(<WeatherScreen />)
+
+    expect(screen.getByRole('heading', { name: /আবহাওয়া ও রোগ-ঝুঁকি/ })).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
+  })
 })
