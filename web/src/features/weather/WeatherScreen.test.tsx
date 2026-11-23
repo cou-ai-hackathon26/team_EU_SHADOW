@@ -231,10 +231,10 @@ describe('F16: WeatherScreen Component', () => {
 
     render(<WeatherScreen />)
 
-    expect(await screen.findByText('ব্লাস্ট রোগ')).toBeInTheDocument()
+    expect(await screen.findByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
+    expect(screen.getByText('ব্লাস্ট রোগ')).toBeInTheDocument()
     expect(screen.getByText('ধানের প্রধান রোগসমূহের পূর্বাভাসভিত্তিক ঝুঁকি')).toBeInTheDocument()
     expect(screen.getByText(/শেষ আপডেট:/)).toBeInTheDocument()
-    expect(screen.getByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
@@ -297,9 +297,9 @@ describe('F16: WeatherScreen Component', () => {
 
     render(<WeatherScreen />)
 
-    expect(await screen.findByText('ব্লাস্ট রোগ')).toBeInTheDocument()
+    expect(await screen.findByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
+    expect(screen.getByText('ব্লাস্ট রোগ')).toBeInTheDocument()
     expect(screen.getByText(/ইন্টারনেট নেই — শেষ আপডেট/)).toBeInTheDocument()
-    expect(screen.getByText('অবস্থান পাওয়া যায়নি — নিচে বিভাগ বেছে নিন')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
