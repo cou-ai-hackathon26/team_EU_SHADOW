@@ -39,7 +39,8 @@ export function RoadmapTimeline({
 
   return (
     <div
-      className={`rounded-3xl border border-[#0B5D3B]/20 bg-gradient-to-br from-[#F0F8F4] to-white p-5 sm:p-6 shadow-sm ${className}`}
+      id="action-roadmap"
+      className={`scroll-mt-20 rounded-3xl border border-[#0B5D3B]/20 bg-gradient-to-br from-[#F0F8F4] to-white p-5 sm:p-6 shadow-sm ${className}`}
     >
       {/* Header */}
       <div className="flex items-center gap-2.5 pb-4 border-b border-[#0B5D3B]/10">

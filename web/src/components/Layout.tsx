@@ -3,6 +3,9 @@ import BottomNav from './BottomNav'
 import { LanguageToggle, useT } from '../i18n/useT'
 import { Disclaimer } from './Disclaimer'
 import { useScanState } from '../app/scanStateContext'
+import { scanSession, useScanSession, RESULT_HASH } from '../app/scanSession'
+import { buildRoadmap } from '../features/roadmap/buildRoadmap'
+import { getCard } from '../content/getCard'
 import { PhoneFrameProvider } from '../app/viewportFrame'
 import {
   Sprout,
@@ -16,6 +19,7 @@ import {
   CloudSun,
   HelpCircle,
   Info,
+  CalendarCheck,
 } from 'lucide-react'
 
 export type ViewportMode = 'desktop' | 'mobile'
@@ -29,6 +33,9 @@ export default function Layout({ children, currentHash }: LayoutProps) {
   const { lang, t } = useT()
   const isBn = lang === 'bn'
   const { isScanActive, isLandingView } = useScanState()
+  const session = useScanSession()
+  // The result screen has its own disclaimer + 16123 card; don't repeat it at the page bottom.
+  const showsResult = Boolean(session.prediction || session.error)
 
   const [viewportMode, setViewportMode] = useState<ViewportMode>(() => {
     try {
@@ -50,9 +57,8 @@ export default function Layout({ children, currentHash }: LayoutProps) {
     e.preventDefault()
     setIsMenuOpen(false)
     setResetKey((k) => k + 1)
+    scanSession.reset()
     if (typeof window !== 'undefined') {
-      const h = window.location.hash
-      if (h !== '' && h !== '#' && h !== '#/') window.location.hash = '#/'
       try {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } catch {
@@ -60,6 +66,32 @@ export default function Layout({ children, currentHash }: LayoutProps) {
       }
       frameScrollRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' })
     }
+  }
+
+  /**
+   * Menu → "করণীয় রোডম্যাপ" (F17). The roadmap belongs to a result, so: with a result that has a
+   * roadmap, jump to it; otherwise open the rice scanner with a short hint to scan a leaf first.
+   */
+  const openRoadmap = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    setIsMenuOpen(false)
+    const s = scanSession.get()
+    const top1 = s.prediction?.top[0]?.classId
+    if (s.prediction && top1 && buildRoadmap(s.prediction, getCard(top1))) {
+      if (window.location.hash !== RESULT_HASH) window.location.hash = RESULT_HASH
+      // Wait for the result screen to render, then scroll the roadmap into view (in every copy).
+      setTimeout(() => {
+        document.querySelectorAll('#action-roadmap').forEach((el) => {
+          try {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          } catch {
+            // jsdom
+          }
+        })
+      }, 50)
+      return
+    }
+    scanSession.openCrop('rice', s.prediction ? t('roadmapMenuNoRoadmap') : t('roadmapMenuScanFirst'))
   }
 
   const handleSetViewport = (mode: ViewportMode) => {
@@ -182,6 +214,16 @@ export default function Layout({ children, currentHash }: LayoutProps) {
                   </a>
 
                   <a
+                    href="#/scan/rice/result"
+                    onClick={openRoadmap}
+                    data-testid="menu-roadmap"
+                    className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 transition-colors"
+                  >
+                    <CalendarCheck className="h-4 w-4 text-emerald-700" />
+                    <span>{t('menuRoadmap')}</span>
+                  </a>
+
+                  <a
                     href="#/history"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 transition-colors"
@@ -285,7 +327,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
             <div ref={frameScrollRef} data-testid="mobile-preview-screen" className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 pb-6 w-full scrollbar-thin">
               <main className="mx-auto flex w-full max-w-xl flex-1 flex-col">
                 <PhoneFrameProvider value={true}><Fragment key={resetKey}>{children}</Fragment></PhoneFrameProvider>
-                <Disclaimer lang={lang} compact={true} className="mt-3" />
+                {!showsResult && <Disclaimer lang={lang} compact={true} className="mt-3" />}
               </main>
             </div>
 
@@ -307,12 +349,12 @@ export default function Layout({ children, currentHash }: LayoutProps) {
           } px-4 pb-20 lg:pb-6`}
         >
           <Fragment key={resetKey}>{children}</Fragment>
-          <Disclaimer
+          {!showsResult && <Disclaimer
             lang={lang}
             compact={isCompactHome}
             darkOnDesktop={isDarkLanding}
             className={isCompactHome ? 'mt-2 lg:mt-6' : 'mt-6'}
-          />
+          />}
         </main>
 
         {/* Global BottomNav (Fixed at bottom on standard views) */}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CheckCircle2, RotateCcw, AlertTriangle, AlertOctagon, HelpCircle, PhoneCall, Sparkles, CloudSun } from 'lucide-react'
 import type { Prediction } from '../../ai/types'
 import { getCard } from '../../content/getCard'
@@ -34,12 +34,20 @@ export default function ResultView({
 }: ResultViewProps) {
   const isBn = lang === 'bn'
 
-  const objectUrl = useMemo(() => {
-    if (imageFile) {
-      return URL.createObjectURL(imageFile)
+  // Each mounted result screen (Web view and Mobile preview) makes its own blob URL for the photo.
+  // Created and revoked in one effect so React StrictMode's mount → unmount → mount never leaves a
+  // revoked URL on screen (that showed an empty photo box).
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!imageFile) return
+    const url = URL.createObjectURL(imageFile)
+    // oxlint-disable-next-line react-hooks/set-state-in-effect
+    setFileUrl(url)
+    return () => {
+      URL.revokeObjectURL(url)
     }
-    return image?.src ?? null
-  }, [imageFile, image])
+  }, [imageFile])
+  const objectUrl = imageFile ? fileUrl : (image?.src ?? null)
 
   const severityEstimate = useMemo(() => {
     if (!prediction || prediction.tier !== 'high') return null
@@ -50,13 +58,6 @@ export default function ResultView({
     return estimateSpread(prediction.heatmap, size)
   }, [prediction])
 
-  useEffect(() => {
-    return () => {
-      if (objectUrl && objectUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(objectUrl)
-      }
-    }
-  }, [objectUrl])
 
   // 1. Error state handling
   if (error) {
