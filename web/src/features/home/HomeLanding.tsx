@@ -1,0 +1,151 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { ArrowRight, Camera, CheckCircle2, Languages, Leaf, Sun, Volume2 } from 'lucide-react'
+import { useT } from '../../i18n/useT'
+import { CROPS } from './crops'
+import { useInPhoneFrame } from '../../app/viewportFrame'
+import { RicePlantArt } from './RicePlantArt'
+
+interface HomeLandingProps {
+  onStartRice: () => void
+}
+
+/** Home / landing: hero + crop selector. Only rice is active; other crops are clearly marked "upcoming". */
+export function HomeLanding({ onStartRice }: HomeLandingProps) {
+  const { t } = useT()
+  const inFrame = useInPhoneFrame()
+  const [toast, setToast] = useState<string | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current)
+  }, [])
+
+  const showUpcoming = () => {
+    setToast(t('cropUpcomingToast'))
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => setToast(null), 3500)
+  }
+
+  // Inside the laptop phone frame, always use the mobile layout.
+  const desk = inFrame ? 'hidden' : 'hidden lg:block'
+  const mob = inFrame ? 'block' : 'block lg:hidden'
+  const gridCols = inFrame ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'
+
+  return (
+    <div className="flex w-full flex-col gap-4">
+      {/* Desktop hero */}
+      <section
+        aria-labelledby="landing-headline"
+        className={`${desk} relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B3B24] via-[#0F5132] to-[#14532D] p-8 text-white shadow-xl`}
+      >
+        <div className="grid grid-cols-[1.1fr_1fr_1fr] items-center gap-6">
+          <div className="flex flex-col gap-4">
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-white/15">
+              <Leaf className="h-3.5 w-3.5" aria-hidden="true" /> AgroLeaf AI
+            </span>
+            <h2 id="landing-headline" className="text-4xl font-extrabold leading-tight tracking-tight">
+              {t('landingHeadline')}
+            </h2>
+            <p className="text-sm leading-relaxed text-emerald-100/90">{t('landingSubtitle')}</p>
+          </div>
+
+          <div className="relative mx-auto h-64 w-56">
+            <RicePlantArt className="h-full w-full drop-shadow-2xl" />
+            <HeroBadge className="-left-10 top-4" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
+            <HeroBadge className="-right-12 top-28" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
+            <HeroBadge className="-left-8 bottom-6" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">{t('landingGuideTitle')}</p>
+            <ul className="flex flex-col gap-2">
+              {(['landingGuide1', 'landingGuide2', 'landingGuide3'] as const).map((k, i) => (
+                <li key={k} className="flex items-center gap-2 rounded-xl bg-white/8 px-3 py-2 text-sm ring-1 ring-white/10">
+                  {i === 1 ? <Sun className="h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" /> : <Camera className="h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />}
+                  <span>{t(k)}</span>
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              onClick={onStartRice}
+              className="mt-2 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-emerald-400 px-6 py-3 text-base font-bold text-[#06291A] shadow-lg transition hover:bg-emerald-300 active:scale-95"
+            >
+              {t('landingCta')} <ArrowRight className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile hero */}
+      <section
+        aria-labelledby="landing-mobile-title"
+        className={`${mob} relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#ECFDF5] to-[#D1FAE5] px-5 pt-5 pb-3 shadow-md ring-1 ring-emerald-900/10`}
+      >
+        <h2 id="landing-mobile-title" className="text-center text-2xl font-extrabold leading-snug text-[#0B3B24]">
+          {t('landingMobileTitle')}
+        </h2>
+        <div className="mt-1 flex items-end justify-center gap-3">
+          <RicePlantArt className="h-32 w-28" />
+          <RicePlantArt className="h-24 w-20 opacity-80" />
+          <RicePlantArt className="h-28 w-24" />
+        </div>
+        <p className="mt-1 text-center text-xs text-[#14532D]">
+          <Languages className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
+          {t('landingBadgeClasses')} • {t('landingBadgeVoice')}
+        </p>
+      </section>
+
+      {/* Crop selector */}
+      <section aria-labelledby="crops-title" className="flex flex-col gap-3">
+        <h2 id="crops-title" className="text-lg font-bold text-[#0B3B24]">{t('landingCropsTitle')}</h2>
+        <ul className={`grid ${gridCols} gap-3 lg:gap-4`}>
+          {CROPS.map((c) => (
+            <li key={c.id}>
+              <button
+                type="button"
+                data-crop={c.id}
+                aria-disabled={c.active ? undefined : true}
+                onClick={c.active ? onStartRice : showUpcoming}
+                className={
+                  c.active
+                    ? 'group relative flex h-full w-full flex-col items-center gap-1 rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-400 to-emerald-600 p-4 text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl active:scale-95'
+                    : 'relative flex h-full w-full cursor-not-allowed flex-col items-center gap-1 rounded-2xl border border-slate-200 bg-white/70 p-4 text-slate-500 shadow-sm backdrop-blur-sm'
+                }
+              >
+                <span
+                  className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    c.active ? 'bg-white text-emerald-700' : 'bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  {c.active ? t('cropActive') : t('cropUpcoming')}
+                </span>
+                <span className={`mt-3 text-5xl ${c.active ? '' : 'grayscale opacity-60'}`} aria-hidden="true">
+                  {c.emoji}
+                </span>
+                <span className={`text-lg font-extrabold ${c.active ? 'text-white' : 'text-slate-700'}`}>{t(c.labelKey)}</span>
+                <span className={`text-xs italic ${c.active ? 'text-emerald-50' : 'text-slate-500'}`}>({c.scientific})</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {toast && (
+          <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm">
+            {toast}
+          </p>
+        )}
+      </section>
+    </div>
+  )
+}
+
+function HeroBadge({ className, icon, text }: { className: string; icon: ReactNode; text: string }) {
+  return (
+    <span
+      className={`absolute ${className} inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#06291A]/80 px-3 py-1.5 text-xs font-semibold text-emerald-50 shadow-lg ring-1 ring-emerald-300/30 backdrop-blur-sm`}
+    >
+      <span className="text-emerald-300" aria-hidden="true">{icon}</span>
+      {text}
+    </span>
+  )
+}

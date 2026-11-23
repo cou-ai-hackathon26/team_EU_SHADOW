@@ -121,6 +121,27 @@ export const bn = {
   langToggleBn: 'বাংলা',
   langToggleEn: 'English',
   langToggleAria: 'ভাষা পরিবর্তন করুন (Switch Language)',
+  // Home landing (crop selector)
+  landingHeadline: 'পাতা দেখান, রোগের সমাধান জানুন',
+  landingSubtitle: 'ধানপাতার একটি ছবি দিন — এআই মুহূর্তেই ফোনেই রোগের প্রাথমিক স্ক্রিনিং করে করণীয় জানাবে।',
+  landingMobileTitle: 'আমার ধানগাছ কি সুস্থ?',
+  landingBadgeSpecies: 'ধান • Oryza sativa',
+  landingBadgeClasses: '৫টি রোগ + সুস্থ পাতা শনাক্তকরণ',
+  landingBadgeVoice: 'বাংলায় ভয়েস পরামর্শ',
+  landingGuideTitle: 'ভালো ছবির জন্য',
+  landingGuide1: '১. আক্রান্ত পাতার কাছে ধরুন',
+  landingGuide2: '২. পর্যাপ্ত আলোতে তুলুন',
+  landingGuide3: '৩. একটি পাতার স্পষ্ট ছবি দিন',
+  landingCta: 'ধান স্ক্যান করুন',
+  landingCropsTitle: 'ফসল নির্বাচন করুন',
+  cropRice: 'ধান',
+  cropBrinjal: 'বেগুন',
+  cropPotato: 'আলু',
+  cropTomato: 'টমেটো',
+  cropActive: 'সক্রিয়',
+  cropUpcoming: 'শীঘ্রই আসছে',
+  cropUpcomingToast: 'বর্তমানে শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয় আছে — অন্যান্য ফসল পরবর্তী আপডেটে যুক্ত হবে',
+  backToCrops: '← ফসল নির্বাচন',
 } as const
 
 export type I18nKeys = keyof typeof bn

@@ -3,6 +3,7 @@ import BottomNav from './BottomNav'
 import { LanguageToggle, useT } from '../i18n/useT'
 import { Disclaimer } from './Disclaimer'
 import { useScanState } from '../app/scanStateContext'
+import { PhoneFrameProvider } from '../app/viewportFrame'
 import {
   Sprout,
   PhoneCall,
@@ -258,7 +259,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
             {/* Phone Frame Content Body (Scrollable inside phone always) */}
             <div className="flex-1 overflow-y-auto p-3 pb-6 w-full scrollbar-thin">
               <main className="mx-auto flex w-full max-w-xl flex-1 flex-col">
-                {children}
+                <PhoneFrameProvider value={true}>{children}</PhoneFrameProvider>
                 <Disclaimer lang={lang} compact={true} className="mt-3" />
               </main>
             </div>

@@ -1,4 +1,5 @@
-import { createElement, type ComponentType } from 'react'
+import { createElement, useState, type ComponentType } from 'react'
+import { HomeLanding } from '../features/home/HomeLanding'
 import { History, Info, ShieldCheck, Sprout } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
@@ -20,11 +21,31 @@ export interface RouteDef {
 export function HomeScreen() {
   const { t } = useT()
   const { isScanActive } = useScanState()
+  const [showScanner, setShowScanner] = useState(false)
+
+  if (!showScanner) {
+    return createElement(
+      'div',
+      { className: 'flex flex-col gap-3 sm:gap-4 w-full' },
+      createElement('h1', { className: 'sr-only' }, 'AgroLeaf AI'),
+      createElement(HomeLanding, { onStartRice: () => setShowScanner(true) })
+    )
+  }
 
   return createElement(
     'div',
     { className: 'flex flex-col gap-3 sm:gap-4 w-full' },
     createElement('h1', { className: 'sr-only' }, 'AgroLeaf AI'),
+    createElement(
+      'button',
+      {
+        type: 'button',
+        onClick: () => setShowScanner(false),
+        className:
+          'inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-4 py-1.5 text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95',
+      },
+      t('backToCrops')
+    ),
     !isScanActive
       ? createElement(
           'section',
