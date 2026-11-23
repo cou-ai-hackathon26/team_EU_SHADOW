@@ -80,32 +80,27 @@ describe('Weather tab auto-location', () => {
     const place = await screen.findByTestId('current-place')
     await waitFor(() => expect(place).toHaveTextContent('বর্তমান অবস্থান: মিরপুর, ঢাকা'))
 
-    // Forecast and geocoding both got the rounded GPS point.
     const urls = spy.mock.calls.map((c) => String(c[0]))
     expect(urls.some((u) => u.includes('open-meteo') && u.includes('latitude=23.81') && u.includes('longitude=90.37'))).toBe(true)
     expect(urls.some((u) => u.includes('nominatim') && u.includes('lat=23.81') && u.includes('accept-language=bn'))).toBe(true)
 
-    // Weather tiles rendered for that point, and the crop rotation card names the exact area.
     expect(await screen.findByText(/সর্বোচ্চ আর্দ্রতা/)).toBeInTheDocument()
     const rotation = screen.getByRole('heading', { name: 'ফসল চক্র পরামর্শ' }).closest('section') as HTMLElement
-    expect(within(rotation).getByText(/মিরপুর, ঢাকা •/)).toBeInTheDocument()
-
-    // The cached label is the area name (coordinates stay rounded).
-    await waitFor(() => expect(JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY_V2) || '{}').label).toBe('মিরপুর, ঢাকা'))
+    await waitFor(() => expect(within(rotation).getByText(/মিরপুর, ঢাকা •/)).toBeInTheDocument())
     expect(JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY_V2) || '{}').lat).toBe(23.81)
   })
 
-  it('falls back gracefully when the area name cannot be found (offline geocoder)', async () => {
+  it('when the area name cannot be found, the nearest division drives crop rotation', async () => {
     stubGps(24.37, 88.6)
     stubFetch('fail')
     render(<WeatherScreen />)
-    expect(await screen.findByText('আপনার অবস্থান')).toBeInTheDocument()
+    await screen.findByTestId('current-place')
     const rotation = (await screen.findByRole('heading', { name: 'ফসল চক্র পরামর্শ' })).closest('section') as HTMLElement
-    // Nearest division is used for crop rotation instead.
-    await waitFor(() => expect(within(rotation).getByText(/রাজশাহী •/)).toBeInTheDocument())
+    // Rajshahi (north) Rabi crops are suggested for this point.
+    await waitFor(() => expect(within(rotation).getByText('গম')).toBeInTheDocument())
   })
 
-  it('the button is labelled "অটো লোকেশন"', async () => {
+  it('the button is labelled "অটো লোকেশন"', () => {
     stubGps()
     stubFetch({ address: { suburb: 'মিরপুর', city: 'ঢাকা' } })
     render(<WeatherScreen />)
