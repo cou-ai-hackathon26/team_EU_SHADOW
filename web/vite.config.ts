@@ -5,15 +5,16 @@ import { defineConfig } from 'vite'
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa'
 
 export const pwaOptions: Partial<VitePWAOptions> = {
-  registerType: 'prompt',
+  // New deploys take over immediately, so no one is stuck on an old cached shell.
+  registerType: 'autoUpdate',
   manifest: {
     name: 'AgroLeaf AI — ধানপাতার রোগ নির্ণয়',
     short_name: 'AgroLeaf AI',
     description: 'ধানপাতার রোগের প্রাথমিক স্ক্রিনিং ও শনাক্তকরণ',
     start_url: '/',
     display: 'standalone',
-    background_color: '#ffffff',
-    theme_color: '#166534',
+    background_color: '#072A19',
+    theme_color: '#072A19',
     icons: [
       {
         src: '/icons/icon-192.png',
@@ -36,6 +37,9 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     ],
   },
   workbox: {
+    skipWaiting: true,
+    clientsClaim: true,
+    cleanupOutdatedCaches: true,
     globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}', 'samples/*.{jpg,json}', 'crops/*.webp'],
     maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
     runtimeCaching: [

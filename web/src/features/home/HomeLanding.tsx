@@ -75,11 +75,11 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">{t('landingGuideTitle')}</p>
+            <p data-testid="photo-guide-title" className="text-[15px] font-semibold tracking-wide text-emerald-200 antialiased">{t('landingGuideTitle')}</p>
             <ul className="flex flex-col gap-2">
               {(['landingGuide1', 'landingGuide2', 'landingGuide3'] as const).map((k, i) => (
-                <li key={k} className="flex items-center gap-2 rounded-xl bg-white/8 px-3 py-2 text-sm ring-1 ring-white/10">
-                  {i === 1 ? <Sun className="h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" /> : <Camera className="h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />}
+                <li key={k} data-testid="photo-guide-step" className="flex items-center gap-2.5 rounded-xl border border-emerald-400/50 bg-[#041B10]/80 px-4 py-3 text-[15px] font-semibold text-[#FFFFFF] shadow-sm antialiased">
+                  {i === 1 ? <Sun className="h-5 w-5 shrink-0 text-amber-300" aria-hidden="true" /> : <Camera className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden="true" />}
                   <span>{t(k)}</span>
                 </li>
               ))}
@@ -140,10 +140,10 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                 }
               >
                 <span
-                  className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                  className={`absolute right-2 top-2 rounded-full px-2.5 py-0.5 text-xs font-semibold antialiased ${
                     c.active
                       ? `bg-white text-emerald-700 ${D('lg:bg-emerald-300 lg:text-[#06291A]')}`
-                      : `bg-amber-100 text-amber-800 ${D('lg:bg-white/10 lg:text-emerald-100 lg:ring-1 lg:ring-white/20')}`
+                      : `border border-amber-300 bg-amber-100 text-amber-900 ${D('lg:border-amber-300/60 lg:bg-amber-400/20 lg:text-amber-200')}`
                   }`}
                 >
                   {c.active ? t('cropActive') : t('cropUpcoming')}
@@ -156,17 +156,17 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
                     width={300}
                     height={300}
                     loading="lazy"
-                    className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 ${c.active ? '' : 'opacity-80'}`}
+                    className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 ${c.active ? '' : 'brightness-90 saturate-[.85]'}`}
                   />
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(7,42,25,0.55)_100%)] shadow-[inset_0_0_0_2px_rgba(11,59,36,0.45)]"
                   />
                 </span>
-                <span className={`text-lg font-extrabold ${c.active ? 'text-white' : `text-[#0E1F16] ${D('lg:text-white')}`}`}>
+                <span data-crop-name className={`text-base font-bold antialiased lg:text-lg ${c.active ? 'text-white' : `text-[#0E1F16] ${D('lg:text-[#FFFFFF]')}`}`}>
                   {t(c.labelKey)}
                 </span>
-                <span className={`text-xs italic ${c.active ? 'text-emerald-50' : `text-emerald-800/80 ${D('lg:text-emerald-200')}`}`}>
+                <span className={`text-xs italic antialiased ${c.active ? 'text-emerald-50' : `text-emerald-800 ${D('lg:text-emerald-200')}`}`}>
                   ({c.scientific})
                 </span>
                 {c.active && (

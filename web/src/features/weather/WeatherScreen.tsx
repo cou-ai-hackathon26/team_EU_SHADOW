@@ -16,6 +16,8 @@ import {
   type CachedWeatherV2,
 } from './weatherCache'
 import { getCard } from '../../content/getCard'
+import { CropRotationCard } from './CropRotationCard'
+import { nearestDivisionId } from './cropRotation'
 
 const WEEKDAYS_BN = [
   'রবিবার',
@@ -115,6 +117,8 @@ export default function WeatherScreen() {
   })
 
   const [gpsError, setGpsError] = useState<string | null>(null)
+  // Division used for crop-rotation advice: nearest to GPS, or the selected one.
+  const [gpsDivisionId, setGpsDivisionId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   // Fetch forecast for lat/lon
@@ -190,6 +194,7 @@ export default function WeatherScreen() {
 
     getPosition()
       .then((coords) => {
+        setGpsDivisionId(nearestDivisionId(coords.lat, coords.lon))
         return fetchAndAssess(coords.lat, coords.lon, 'আপনার অবস্থান', 'gps')
       })
       .catch(() => {
@@ -250,6 +255,7 @@ export default function WeatherScreen() {
   }
 
   const hasHighRisk = assessmentOutput?.diseases.some((d) => d.level === 'high')
+  const rotationDivisionId = mode === 'division' ? selectedDivision || null : gpsDivisionId
 
   return (
     <section className="flex flex-col gap-5">
@@ -425,6 +431,9 @@ export default function WeatherScreen() {
           </div>
         </>
       )}
+
+      {/* ফসল চক্র পরামর্শ: always shown; falls back to season + region when weather is unavailable */}
+      <CropRotationCard divisionId={rotationDivisionId} summary={assessmentOutput?.summary ?? null} />
 
       {/* Footer Disclaimer & Credits */}
       <footer className="rounded-2xl border border-slate-200 bg-white/70 p-4 text-center text-xs text-slate-500 shadow-2xs space-y-1">

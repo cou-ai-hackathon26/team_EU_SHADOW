@@ -80,7 +80,7 @@ export default function BottomNav({ currentHash, isInsideMobileFrame = false }: 
                   />
                 )}
                 <NavIcon id={route.id} active={isActive} />
-                <span className="text-[10px] sm:text-[11.5px] leading-tight select-none truncate max-w-[64px] sm:max-w-none">
+                <span className="text-[10.5px] sm:text-[11.5px] leading-tight select-none text-center whitespace-normal max-w-[72px] sm:max-w-none">
                   {label}
                 </span>
               </a>

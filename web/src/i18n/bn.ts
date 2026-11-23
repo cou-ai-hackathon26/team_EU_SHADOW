@@ -144,6 +144,7 @@ export const bn = {
   cropActive: 'সক্রিয়',
   cropUpcoming: 'শীঘ্রই আসছে',
   cropUpcomingToast: 'বর্তমানে শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয় আছে — অন্যান্য ফসল পরবর্তী আপডেটে যুক্ত হবে',
+  logoHomeAria: 'AgroLeaf AI — প্রথম পাতায় ফিরুন',
   backToCrops: '← ফসল নির্বাচন',
   landingHeroPhotoAlt: 'সবুজ-সোনালি ধানগাছের আসল ছবি',
   landingPhotoCredits: 'ছবির সূত্র ও লাইসেন্স',

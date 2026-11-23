@@ -156,4 +156,46 @@ describe('Home landing and crop selector', () => {
     expect(cropButton('rice').closest('li')?.className ?? '').not.toMatch(/col-span/)
     expect(cropButton('rice').closest('ul')?.className).toMatch(/grid-cols-2/)
   })
+
+  it('the hero photo guide is large and high-contrast (Bangla and English)', async () => {
+    const user = userEvent.setup()
+    renderHome()
+    const title = screen.getByTestId('photo-guide-title')
+    expect(title).toHaveTextContent('ভালো ছবির জন্য')
+    expect(title.className).toMatch(/text-\[15px\]/)
+    expect(title.className).toMatch(/font-semibold/)
+    expect(title.className).toMatch(/text-emerald-200/)
+    const steps = screen.getAllByTestId('photo-guide-step')
+    expect(steps).toHaveLength(3)
+    expect(steps[0]).toHaveTextContent('১. আক্রান্ত পাতার কাছে ধরুন')
+    for (const s of steps) {
+      expect(s.className).toMatch(/text-\[#FFFFFF\]/)
+      expect(s.className).toMatch(/font-semibold/)
+      expect(s.className).toMatch(/text-\[15px\]/)
+      expect(s.className).toMatch(/bg-\[#041B10\]\/80/)
+      expect(s.className).toMatch(/border-emerald-400\/50/)
+    }
+    await user.click(screen.getByRole('button', { name: /ভাষা পরিবর্তন/ }))
+    expect(screen.getByTestId('photo-guide-title')).toHaveTextContent('For best photo results')
+    expect(screen.getAllByTestId('photo-guide-step')[1]).toHaveTextContent('2. Use good light')
+  })
+
+  it('upcoming crop names, badges and guide items are never faded with opacity or blur', () => {
+    renderHome()
+    const faded = /(^|\s)(lg:)?(opacity-|blur)/
+    for (const id of ['potato', 'brinjal', 'tomato', 'chili']) {
+      const btn = cropButton(id)
+      expect(btn.className).not.toMatch(faded)
+      const badge = [...btn.querySelectorAll('span')].find((el) => el.textContent === 'শীঘ্রই আসছে') as HTMLElement
+      expect(badge.className).not.toMatch(faded)
+      expect(badge.className).toMatch(/lg:bg-amber-400\/20/)
+      expect(badge.className).toMatch(/lg:text-amber-200/)
+      expect(badge.className).toMatch(/font-semibold/)
+      const name = btn.querySelector('[data-crop-name]') as HTMLElement
+      expect(name.className).not.toMatch(faded)
+      expect(name.className).toMatch(/font-bold/)
+      expect(name.className).toMatch(/lg:text-\[#FFFFFF\]/)
+    }
+    for (const s of screen.getAllByTestId('photo-guide-step')) expect(s.className).not.toMatch(faded)
+  })
 })
