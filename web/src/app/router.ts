@@ -20,13 +20,13 @@ export interface RouteDef {
 
 export function HomeScreen() {
   const { t } = useT()
-  const { isScanActive, setIsLandingView } = useScanState()
+  const { isScanActive, registerLanding } = useScanState()
   const [showScanner, setShowScanner] = useState(false)
 
   useEffect(() => {
-    setIsLandingView(!showScanner)
-    return () => setIsLandingView(false)
-  }, [showScanner, setIsLandingView])
+    if (showScanner) return
+    return registerLanding()
+  }, [showScanner, registerLanding])
 
   if (!showScanner) {
     return createElement(
