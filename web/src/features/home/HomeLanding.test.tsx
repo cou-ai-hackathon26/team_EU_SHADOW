@@ -156,4 +156,26 @@ describe('Home landing and crop selector', () => {
     expect(cropButton('rice').closest('li')?.className ?? '').not.toMatch(/col-span/)
     expect(cropButton('rice').closest('ul')?.className).toMatch(/grid-cols-2/)
   })
+
+  it('the hero photo guide is large and high-contrast (Bangla and English)', async () => {
+    const user = userEvent.setup()
+    renderHome()
+    const title = screen.getByTestId('photo-guide-title')
+    expect(title).toHaveTextContent('ভালো ছবির জন্য')
+    expect(title.className).toMatch(/text-sm/)
+    expect(title.className).toMatch(/font-semibold/)
+    expect(title.className).toMatch(/text-emerald-200/)
+    const steps = screen.getAllByTestId('photo-guide-step')
+    expect(steps).toHaveLength(3)
+    expect(steps[0]).toHaveTextContent('১. আক্রান্ত পাতার কাছে ধরুন')
+    for (const s of steps) {
+      expect(s.className).toMatch(/text-white/)
+      expect(s.className).toMatch(/px-4 py-3/)
+      expect(s.className).toMatch(/md:text-\[15px\]/)
+      expect(s.className).toMatch(/bg-white\/12/)
+    }
+    await user.click(screen.getByRole('button', { name: /ভাষা পরিবর্তন/ }))
+    expect(screen.getByTestId('photo-guide-title')).toHaveTextContent('For best photo results')
+    expect(screen.getAllByTestId('photo-guide-step')[1]).toHaveTextContent('2. Use good light')
+  })
 })

@@ -22,8 +22,8 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
     const manifest = pwaOptions.manifest
     expect(manifest.name).toContain('ধানপাতার রোগ নির্ণয়')
     expect(manifest.short_name).toBe('AgroLeaf AI')
-    expect(manifest.theme_color).toBe('#166534')
-    expect(manifest.background_color).toBe('#ffffff')
+    expect(manifest.theme_color).toBe('#072A19')
+    expect(manifest.background_color).toBe('#072A19')
     expect(manifest.display).toBe('standalone')
 
     expect(Array.isArray(manifest.icons)).toBe(true)
@@ -65,7 +65,10 @@ describe('F14 PWA Service Worker & Manifest Configuration', () => {
   })
 
   it('3. Workbox precache config includes wasm in globPatterns and has 20 MB limit', () => {
-    expect(pwaOptions.registerType).toBe('prompt')
+    expect(pwaOptions.registerType).toBe('autoUpdate')
+    expect(pwaOptions.workbox?.skipWaiting).toBe(true)
+    expect(pwaOptions.workbox?.clientsClaim).toBe(true)
+    expect(pwaOptions.workbox?.cleanupOutdatedCaches).toBe(true)
     expect(pwaOptions.workbox).toBeDefined()
     const workbox = pwaOptions.workbox!
 
