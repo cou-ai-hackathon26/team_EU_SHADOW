@@ -113,17 +113,28 @@ export function LanguageToggle({ className = '' }: { className?: string }) {
       type: 'button',
       onClick: toggleLang,
       'aria-label': t('langToggleAria'),
-      className: `inline-flex items-center gap-1 rounded-full border border-leaf-800/20 bg-white/80 px-2.5 py-1 text-xs font-semibold text-leaf-900 shadow-xs backdrop-blur-xs transition hover:bg-leaf-100 hover:text-leaf-950 active:scale-95 ${className}`,
+      className: `inline-flex h-8 items-center gap-0.5 rounded-full border border-white/25 bg-white/10 p-0.5 text-xs font-bold text-white shadow-2xs backdrop-blur-xs transition-all hover:bg-white/20 hover:border-white/40 active:scale-95 cursor-pointer ${className}`,
     },
     createElement(
       'span',
-      { className: lang === 'bn' ? 'font-bold text-leaf-800' : 'text-slate-400' },
+      {
+        className: `rounded-full px-2 py-0.5 transition-all text-xs ${
+          lang === 'bn'
+            ? 'bg-white text-[#0F5132] font-black shadow-xs'
+            : 'text-emerald-100/90 font-semibold hover:text-white'
+        }`,
+      },
       'বাং'
     ),
-    createElement('span', { className: 'text-slate-300' }, '/'),
     createElement(
       'span',
-      { className: lang === 'en' ? 'font-bold text-leaf-800' : 'text-slate-400' },
+      {
+        className: `rounded-full px-2 py-0.5 transition-all text-xs ${
+          lang === 'en'
+            ? 'bg-white text-[#0F5132] font-black shadow-xs'
+            : 'text-emerald-100/90 font-semibold hover:text-white'
+        }`,
+      },
       'EN'
     )
   )

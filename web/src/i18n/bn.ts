@@ -15,7 +15,7 @@ export const bn = {
 
   // Home Hero
   homeHeroTitle: 'AgroLeaf AI — ধানপাতার রোগ নির্ণয়',
-  homeHeroDesc: 'ধানগাছের আক্রান্ত পাতার স্পষ্ট ছবি তুলুন বা গ্যালারি থেকে নির্বাচন করুন। এআই মডেল তাৎক্ষণিক রোগ শনাক্ত করতে সাহায্য করবে।',
+  homeHeroDesc: 'আক্রান্ত ধানপাতার স্পষ্ট ছবি তুলুন অথবা গ্যালারি থেকে নির্বাচন করুন — আমাদের এআই মডেল তাৎক্ষণিকভাবে রোগ শনাক্ত করে করণীয় জানাবে।',
 
   // History & About Placeholder screens
   historyTitle: 'স্ক্যান ইতিহাস',
@@ -36,8 +36,47 @@ export const bn = {
   errFileTooLarge: 'ছবির আকার ১০ মেগাবাইট (10 MB)-এর চেয়ে বেশি হতে পারবে না।',
   errLoadFailed: 'ছবিটি প্রসেস করা সম্ভব হয়নি। অনুগ্রহ করে অন্য ছবি নির্বাচন করুন।',
 
+  // 3-Step Micro Guide
+  guideStep1: '১. কাছে ধরুন',
+  guideStep2: '২. আলোতে তুলুন',
+  guideStep3: '৩. পরামর্শ শুনুন',
+
   // Sample Gallery
   sampleGalleryTitle: 'বা নমুনা ছবি দিয়ে পরীক্ষা করুন:',
+  sampleHeading: 'নমুনা ছবি দিয়ে চেষ্টা করুন',
+  sampleSubtitle: 'পরীক্ষা করার জন্য নিচের নমুনা ছবিতে ট্যাপ করুন — তাৎক্ষণিক ডেমো রোগ নির্ণয় দেখুন',
+  sampleTapToTest: 'ট্যাপ করুন',
+
+  // Weather & Risk Module
+  weatherTitle: 'স্থানীয় আবহাওয়া, ফসল ও রোগের ঝুঁকি',
+  weatherSubtitle: 'BRRI ও ওপেন-মেটিও আবহাওয়া তথ্যের ভিত্তিতে রোগ পূর্বাভাস, মৌসুমি যত্ন ও ৩ডি মানচিত্র',
+  weatherSelectDistrict: 'জেলা নির্বাচন করুন:',
+  weatherAutoLocate: 'আমার এলাকা শনাক্ত করুন',
+  weatherLocating: 'অবস্থান খোঁজা হচ্ছে...',
+  weatherSelectedPrefix: 'নির্বাচিত:',
+  weatherCurrentTitle: 'বর্তমান মাঠের আবহাওয়া',
+  weatherHumidity: 'আর্দ্রতা',
+  weatherRainProb: 'বৃষ্টির সম্ভাবনা',
+  weatherWind: 'বাতাস',
+  weatherRiskMeterTitle: 'ধানের রোগ বিস্তারের ঝুঁকি',
+  weatherRiskBRRI: 'BRRI এপিডেমিওলজি',
+  weatherCropRotationTitle: 'শস্য পর্যায় ও মাটির উর্বরতা রক্ষা',
+  weatherMap3DTitle: '৩ডি ক্ষেত্র মানচিত্র',
+  weatherAdviceLabel: 'পরামর্শ:',
+
+  // Menu Drawer
+  menuBtn: 'মেনু',
+  menuTitle: 'ফিচার মেনু',
+  menuHomeScan: 'হোম ও পাতা স্ক্যান',
+  menuHistory: 'স্ক্যান ইতিহাস',
+  menuWeather: 'আবহাওয়া ও রোগের ঝুঁকি',
+  menuHowItWorks: 'কীভাবে কাজ করে',
+  menuAbout: 'প্রকল্প পরিচিতি',
+  menuHelpline: 'কৃষি কল সেন্টার ১৬১২৩',
+  menuClose: 'বন্ধ করুন',
+  viewModeWeb: 'ওয়েব ভিউ',
+  viewModeMobile: 'মোবাইল ভিউ',
+  backToWebView: 'ওয়েব ভিউতে ফিরুন',
 
   // Quality Hints (F3)
   qualityWarningTitle: 'ছবির গুণমান সতর্কতা:',
@@ -82,6 +121,32 @@ export const bn = {
   langToggleBn: 'বাংলা',
   langToggleEn: 'English',
   langToggleAria: 'ভাষা পরিবর্তন করুন (Switch Language)',
+  // Home landing (crop selector)
+  landingHeadline: 'পাতা দেখান, রোগের সমাধান জানুন',
+  landingSubtitle: 'ধানপাতার একটি ছবি দিন — এআই মুহূর্তেই ফোনেই রোগের প্রাথমিক স্ক্রিনিং করে করণীয় জানাবে।',
+  landingMobileTitle: 'আমার ধানগাছ কি সুস্থ?',
+  landingBadgeSpecies: 'ধান • Oryza sativa',
+  landingBadgeClasses: '৫টি রোগ + সুস্থ পাতা শনাক্তকরণ',
+  landingBadgeVoice: 'বাংলায় ভয়েস পরামর্শ',
+  landingGuideTitle: 'ভালো ছবির জন্য',
+  landingGuide1: '১. আক্রান্ত পাতার কাছে ধরুন',
+  landingGuide2: '২. পর্যাপ্ত আলোতে তুলুন',
+  landingGuide3: '৩. একটি পাতার স্পষ্ট ছবি দিন',
+  landingCta: 'ধান স্ক্যান করুন',
+  landingCropsTitle: 'ফসল নির্বাচন করুন',
+  cropRice: 'ধান',
+  cropBrinjal: 'বেগুন',
+  cropPotato: 'আলু',
+  cropTomato: 'টমেটো',
+  cropChili: 'মরিচ',
+  cropScanHint: 'স্ক্যান শুরু করুন →',
+  cropTapHint: 'ট্যাপ করুন →',
+  cropActive: 'সক্রিয়',
+  cropUpcoming: 'শীঘ্রই আসছে',
+  cropUpcomingToast: 'বর্তমানে শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয় আছে — অন্যান্য ফসল পরবর্তী আপডেটে যুক্ত হবে',
+  backToCrops: '← ফসল নির্বাচন',
+  landingHeroPhotoAlt: 'সবুজ-সোনালি ধানগাছের আসল ছবি',
+  landingPhotoCredits: 'ছবির সূত্র ও লাইসেন্স',
 } as const
 
 export type I18nKeys = keyof typeof bn
