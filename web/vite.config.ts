@@ -47,6 +47,21 @@ export const pwaOptions: Partial<VitePWAOptions> = {
           networkTimeoutSeconds: 5,
         },
       },
+      // Must match AUDIO_CACHE_NAME in web/src/pwa/warmModelCache.ts
+      {
+        urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'agroleaf-audio',
+          rangeRequests: true,
+          cacheableResponse: {
+            statuses: [200],
+          },
+          expiration: {
+            maxEntries: 40,
+          },
+        },
+      },
     ],
   },
 }
@@ -68,6 +83,6 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'e2e/**/*.test.{ts,tsx}'],
   },
 })

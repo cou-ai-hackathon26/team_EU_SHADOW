@@ -1,0 +1,335 @@
+[
+  {
+    "id": "ec-01",
+    "name": "healthy_leaf_natural",
+    "category": "class_coverage",
+    "classId": "healthy",
+    "description": "স্বাভাবিক প্রাকৃতিক আলোয় সুস্থ ধানের পাতা",
+    "expectedTier": "high",
+    "expectedBehavior": "Tier high বা healthy, রোগমুক্ত ও সুষম সার নির্দেশনা",
+    "file": "healthy.jpg",
+    "credit": "RiceLeafDiseaseBD v3 - CC BY 4.0"
+  },
+  {
+    "id": "ec-02",
+    "name": "healthy_leaf_morning_dew",
+    "category": "class_coverage",
+    "classId": "healthy",
+    "description": "সকালের শিশিরবিন্দু যুক্ত সুস্থ পাতা",
+    "expectedTier": "high",
+    "expectedBehavior": "শিশিরবিন্দু সত্ত্বেও সঠিক শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-03",
+    "name": "blast_leaf_early_spindle",
+    "category": "class_coverage",
+    "classId": "blast",
+    "description": "পাতায় ব্লাস্ট রোগের প্রাথমিক মাকু আকৃতির দাগ",
+    "expectedTier": "high",
+    "expectedBehavior": "ব্লাস্ট রোগ শনাক্তকরণ ও ১৬১২৩ হেল্পলাইন",
+    "file": "blast.jpg",
+    "credit": "BanglaRiceLeaf - CC0 1.0"
+  },
+  {
+    "id": "ec-04",
+    "name": "blast_leaf_multiple_lesions",
+    "category": "class_coverage",
+    "classId": "blast",
+    "description": "পাতায় একাধিক ব্লাস্টের পুরোনো দাগ",
+    "expectedTier": "high",
+    "expectedBehavior": "ব্লাস্ট শনাক্তকরণ ও সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-05",
+    "name": "brown_spot_dense",
+    "category": "class_coverage",
+    "classId": "brown_spot",
+    "description": "ঘন বাদামি দাগ বিশিষ্ট রোগাক্রান্ত পাতা",
+    "expectedTier": "high",
+    "expectedBehavior": "বাদামি দাগ রোগ শনাক্তকরণ",
+    "file": "brown_spot.jpg",
+    "credit": "RiceLeafDiseaseBD v3 - CC BY 4.0"
+  },
+  {
+    "id": "ec-06",
+    "name": "brown_spot_faint",
+    "category": "class_coverage",
+    "classId": "brown_spot",
+    "description": "হালকা বাদামি ছোপ ছোপ দাগ",
+    "expectedTier": "medium",
+    "expectedBehavior": "মাঝারি নির্ভরতা (medium tier) এবং স্পষ্ট ছবির অনুরোধ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-07",
+    "name": "leaf_smut_black_spots",
+    "category": "class_coverage",
+    "classId": "leaf_smut",
+    "description": "পাতায় লিফ স্মাট বা কয়লার মতো কালো দাগ",
+    "expectedTier": "high",
+    "expectedBehavior": "লিফ স্মাট রোগ শনাক্তকরণ",
+    "file": "leaf_smut.jpg",
+    "credit": "RiceLeafDiseaseBD v3 - CC BY 4.0"
+  },
+  {
+    "id": "ec-08",
+    "name": "leaf_smut_scattered",
+    "category": "class_coverage",
+    "classId": "leaf_smut",
+    "description": "বিক্ষিপ্ত লিফ স্মাট দাগ",
+    "expectedTier": "high",
+    "expectedBehavior": "লিফ স্মাট শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-09",
+    "name": "sheath_blight_lesion",
+    "category": "class_coverage",
+    "classId": "sheath_blight",
+    "description": "খোলের উপর সাপের খোলসের মতো খোলপোড়া দাগ",
+    "expectedTier": "high",
+    "expectedBehavior": "খোলপোড়া রোগ শনাক্তকরণ",
+    "file": "sheath_blight.jpg",
+    "credit": "RiceLeafDiseaseBD v3 - CC BY 4.0"
+  },
+  {
+    "id": "ec-10",
+    "name": "sheath_blight_advanced",
+    "category": "class_coverage",
+    "classId": "sheath_blight",
+    "description": "তীব্র খোলপোড়া রোগে আক্রান্ত পাতা",
+    "expectedTier": "high",
+    "expectedBehavior": "খোলপোড়া শনাক্তকরণ ও ১৬১২৩",
+    "file": "pending"
+  },
+  {
+    "id": "ec-11",
+    "name": "tungro_yellow_orange",
+    "category": "class_coverage",
+    "classId": "tungro",
+    "description": "টুংরো রোগে হলুদাভ কমলা রঙের পাতার ডগা",
+    "expectedTier": "high",
+    "expectedBehavior": "টুংরো রোগ শনাক্তকরণ",
+    "file": "tungro.jpg",
+    "credit": "RiceLeafDiseaseBD v3 - CC BY 4.0"
+  },
+  {
+    "id": "ec-12",
+    "name": "tungro_stunted_leaf",
+    "category": "class_coverage",
+    "classId": "tungro",
+    "description": "টুংরো আক্রান্ত খর্বাকৃতির পাতা",
+    "expectedTier": "high",
+    "expectedBehavior": "টুংরো রোগ শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-13",
+    "name": "blur_motion_slight",
+    "category": "quality_blur",
+    "description": "বাতাসে পাতা নড়াচড়ার কারণে সামান্য ঝাপসা",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ওয়ার্নিং প্রদর্শন করবে কিন্তু অ্যানালাইসিস ব্লক করবে না",
+    "file": "pending"
+  },
+  {
+    "id": "ec-14",
+    "name": "blur_severe_out_of_focus",
+    "category": "quality_blur",
+    "description": "ক্যামেরার ফোকাস না মেলায় তীব্র ঝাপসা",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ওয়ার্নিং প্রদর্শন ও নতুন পরিষ্কার ছবির পরামর্শ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-15",
+    "name": "blur_hand_shake",
+    "category": "quality_blur",
+    "description": "কৃষকের হাত কেঁপে ওঠার কারণে মোশন ব্লার",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ঝাপসা শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-16",
+    "name": "blur_dirty_lens",
+    "category": "quality_blur",
+    "description": "মোবাইলের ক্যামেরার লেন্সে ধুলোবালি থাকার কারণে ব্লার",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ঝাপসা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-17",
+    "name": "blur_raindrops_on_lens",
+    "category": "quality_blur",
+    "description": "লেন্সে বৃষ্টির ফোঁটায় অস্বচ্ছ ব্লার",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ঝাপসা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-18",
+    "name": "blur_macro_too_close",
+    "category": "quality_blur",
+    "description": "অতিরিক্ত কাছে থেকে ছবি তোলায় ফোকাস হারানো",
+    "expectedWarning": "ছবিটি ঝাপসা দেখাচ্ছে",
+    "expectedBehavior": "ঝাপসা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-19",
+    "name": "dark_dusk_evening",
+    "category": "quality_dark",
+    "description": "সন্ধ্যার আবছা আলোয় তোলা ছবি (লুমা < ৪০)",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "অন্ধকার সতর্কতা প্রদান",
+    "file": "pending"
+  },
+  {
+    "id": "ec-20",
+    "name": "dark_cloudy_overcast",
+    "category": "quality_dark",
+    "description": "ভারী মেঘলা দিনে কম আলো",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "অন্ধকার সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-21",
+    "name": "dark_shadow_farmer",
+    "category": "quality_dark",
+    "description": "কৃষকের নিজের শরীরের ছায়া পাতার উপর পড়েছে",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "অন্ধকার ছায়া সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-22",
+    "name": "dark_indoor_room",
+    "category": "quality_dark",
+    "description": "ঘরের ভেতর অপ্রতুল বাতির আলোয় তোলা",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "আলো কম সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-23",
+    "name": "dark_night_flash_off",
+    "category": "quality_dark",
+    "description": "রাতে ফ্ল্যাশ ছাড়া প্রায় কালো ছবি",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "তীব্র অন্ধকার সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-24",
+    "name": "dark_under_canopy",
+    "category": "quality_dark",
+    "description": "গাছের ঘন ক্যানোপির নিচে আলোহীন অংশ",
+    "expectedWarning": "ছবিটি অতিরিক্ত অন্ধকার (আলো কম)",
+    "expectedBehavior": "অন্ধকার সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-25",
+    "name": "bright_direct_sunlight",
+    "category": "quality_bright",
+    "description": "দুপুরের তীব্র রোদে অতিরিক্ত আলোকিত ছবি (লুমা > ২২০)",
+    "expectedWarning": "ছবিটি অতিরিক্ত উজ্জ্বল (আলো বেশি)",
+    "expectedBehavior": "অতিরিক্ত উজ্জ্বলতা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-26",
+    "name": "bright_phone_flash_glare",
+    "category": "quality_bright",
+    "description": "কাছ থেকে ক্যামেরার ফ্ল্যাশ মারায় পাতার ওপর গ্লেয়ার",
+    "expectedWarning": "ছবিটি অতিরিক্ত উজ্জ্বল (আলো বেশি)",
+    "expectedBehavior": "উজ্জ্বলতা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-27",
+    "name": "bright_white_background_washout",
+    "category": "quality_bright",
+    "description": "সাদা কাগজের উপর তীব্র রোদে পাতা",
+    "expectedWarning": "ছবিটি অতিরিক্ত উজ্জ্বল (আলো বেশি)",
+    "expectedBehavior": "উজ্জ্বলতা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-28",
+    "name": "bright_specular_dew_reflection",
+    "category": "quality_bright",
+    "description": "শিশিরবিন্দুতে সূর্যের প্রতিফলনে ঝলসে যাওয়া ছবি",
+    "expectedWarning": "ছবিটি অতিরিক্ত উজ্জ্বল (আলো বেশি)",
+    "expectedBehavior": "উজ্জ্বলতা সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-29",
+    "name": "not_rice_weed_leaf",
+    "category": "not_rice",
+    "description": "ধানক্ষেতের ঘাস বা আগাছার পাতা (ধানপাতা নয়)",
+    "expectedTier": "not_rice",
+    "expectedBehavior": "এটি ধানপাতা মনে হচ্ছে না সতর্কতা",
+    "file": "pending"
+  },
+  {
+    "id": "ec-30",
+    "name": "not_rice_farmer_hand",
+    "category": "not_rice",
+    "description": "পাতা না ধরে শুধু কৃষকের হাত বা আঙুল",
+    "expectedTier": "not_rice",
+    "expectedBehavior": "ধানপাতা নয় শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-31",
+    "name": "not_rice_mud_ground",
+    "category": "not_rice",
+    "description": "ক্ষেতের কাদা ও পানির ছবি",
+    "expectedTier": "not_rice",
+    "expectedBehavior": "ধানপাতা নয় শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-32",
+    "name": "not_rice_sky_background",
+    "category": "not_rice",
+    "description": "আকাশ বা দিগন্তের ছবি",
+    "expectedTier": "not_rice",
+    "expectedBehavior": "ধানপাতা নয় শনাক্তকরণ",
+    "file": "pending"
+  },
+  {
+    "id": "ec-33",
+    "name": "not_rice_blank_noise",
+    "category": "not_rice",
+    "description": "সম্পূর্ণ ফাঁকা বা এলোমেলো রঙিন নয়েজ",
+    "expectedTier": "not_rice",
+    "expectedBehavior": "লো টিয়ার বা ধানপাতা নয়",
+    "file": "pending"
+  },
+  {
+    "id": "ec-34",
+    "name": "oversized_file_11mb",
+    "category": "file_validation",
+    "description": "১০ মেগাবাইট সীমার চেয়ে বড় ফাইল (১১ মেগাবাইট)",
+    "expectedValid": false,
+    "expectedError": "ছবির আকার ১০ মেগাবাইট (10 MB)-এর চেয়ে বেশি হতে পারবে না।",
+    "file": "pending"
+  },
+  {
+    "id": "ec-35",
+    "name": "invalid_extension_document",
+    "category": "file_validation",
+    "description": "ছবির পরিবর্তে টেক্সট বা পিডিএফ ফাইল (.txt / .pdf)",
+    "expectedValid": false,
+    "expectedError": "শুধুমাত্র JPG, PNG বা WebP ফরম্যাটের ছবি আপলোড করুন।",
+    "file": "pending"
+  }
+]

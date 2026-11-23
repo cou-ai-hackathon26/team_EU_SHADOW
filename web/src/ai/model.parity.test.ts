@@ -33,9 +33,21 @@ describe.runIf(existsSync(modelPath) && existsSync(fixturePath))('M6 ORT-Web par
       const out = await session.run({ input: x })
       const logits = out.logits.data as Float32Array
       expect(logits.length).toBe(meta.classes.length)
-      for (let i = 0; i < logits.length; i++) {
-        expect(Math.abs(logits[i] - c.logits[i]), `${c.name} logit ${i}`).toBeLessThanOrEqual(fx.atol)
+      // Compare probabilities, not raw log-values: since M3 the outputs are log-probabilities, and log() of a
+      // near-zero probability (e.g. p(not_rice) ~ 1e-6) amplifies harmless float noise.
+      const probs = (v: ArrayLike<number>) => {
+        const m = Math.max(...Array.from(v))
+        const e = Array.from(v, (z) => Math.exp(z - m))
+        const s = e.reduce((a, b) => a + b, 0)
+        return e.map((z) => z / s)
       }
+      const pWeb = probs(logits)
+      const pPy = probs(c.logits)
+      for (let i = 0; i < logits.length; i++) {
+        expect(Math.abs(pWeb[i] - pPy[i]), `${c.name} prob ${i}`).toBeLessThanOrEqual(fx.atol)
+      }
+      // top-1 must agree exactly
+      expect(pWeb.indexOf(Math.max(...pWeb)), `${c.name} top-1`).toBe(pPy.indexOf(Math.max(...pPy)))
       expect(out.cam.dims).toEqual([1, meta.classes.length, 7, 7])
     }
   }, 60_000)

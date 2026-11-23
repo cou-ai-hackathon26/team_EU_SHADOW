@@ -151,8 +151,8 @@ export default function SampleGallery({
         </summary>
         <p className="mt-1 text-[11px] text-[#4A5F52]">
           {isBn
-            ? 'ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া; মডেল ট্রেনিংয়ে আলাদা রাখা হয়েছে।'
-            : 'Images are selected from our test split; kept isolated from model training.'}
+            ? 'ছবিগুলো আমাদের টেস্ট স্প্লিট থেকে নেওয়া (মডেল ট্রেনিংয়ে ব্যবহার হয়নি) এবং প্রতিটি রোগ দেখাতে বাছাই করা। আসল নির্ভুলতা দেখুন Accuracy পেজে ও docs/MODEL_REPORT.md-এ।'
+            : 'Images come from our test split (never used in training) and were picked to show each disease. See the real accuracy on the Accuracy page and in docs/MODEL_REPORT.md.'}
         </p>
         <ul className="mt-1 flex flex-col gap-0.5 text-[11px]">
           {samples.map((s) => {

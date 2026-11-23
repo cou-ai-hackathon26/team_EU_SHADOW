@@ -66,6 +66,7 @@ export interface ModelReport {
   notRice?: {
     threshold: number
     blendConfidenceCap?: number
+    rule?: string
     notRiceValRejected: number
     notRiceTestRejected: number
     riceValFalseReject: number
@@ -73,8 +74,17 @@ export interface ModelReport {
     macroF1SixClassBase: number
     macroF1SixClassWithGate: number
     sources: { name: string; licence: string; url: string }[]
-    bd5GateOnly?: { note: string; testFalseReject: number }
-    screenRecapture?: { riceFalseReject: number; notRiceRejected: number; macroF1SixClassWithGate: number }
+    split?: { train: number; val: number; test: number }
+    bd5GateOnly?: {
+      note: string
+      testFalseReject: number
+      split?: { train: number; val: number; test: number }
+    }
+    screenRecapture?: {
+      riceFalseReject: number
+      notRiceRejected: number
+      macroF1SixClassWithGate: number
+    }
   }
 }
 

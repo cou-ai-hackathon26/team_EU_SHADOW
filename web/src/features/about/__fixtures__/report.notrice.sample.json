@@ -78,13 +78,18 @@
       }
     ],
     "bd5GateOnly": {
-      "note": "বি.দ্র. BD5 এক্সটার্নাল টেস্ট সেটে গেট ব্যবহারে সামান্য মিথ্যা বাতিল হতে পারে।",
-      "testFalseReject": 0.045
+      "note": "BD5 (rice leaves on white paper) was split 70/15/15 and used to train/threshold the gate only; the disease blend never saw it.",
+      "split": {
+        "train": 1869,
+        "val": 401,
+        "test": 401
+      },
+      "testFalseReject": 0
     },
     "screenRecapture": {
-      "riceFalseReject": 0.03,
-      "notRiceRejected": 0.94,
-      "macroF1SixClassWithGate": 0.88
+      "riceFalseReject": 0.0005,
+      "notRiceRejected": 0.74,
+      "macroF1SixClassWithGate": 0.65
     }
   }
 }

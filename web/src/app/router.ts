@@ -1,13 +1,13 @@
 import { createElement, useEffect, useState, type ComponentType } from 'react'
 import { HomeLanding } from '../features/home/HomeLanding'
-import { History, Info, ShieldCheck, Sprout } from 'lucide-react'
+import { Info, ShieldCheck, Sprout } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
-import { LocalWeatherRiskModule } from '../features/weather/LocalWeatherRiskModule'
+import HistoryScreen from '../features/history/HistoryScreen'
+import WeatherScreen from '../features/weather/WeatherScreen'
 import { useT } from '../i18n/useT'
 import { useScanState } from './scanStateContext'
 import { Card } from '../ui/Card'
-import { EmptyState } from '../ui/EmptyState'
 
 export interface RouteDef {
   id: string
@@ -73,51 +73,8 @@ export function HomeScreen() {
   )
 }
 
-export function WeatherScreen() {
-  return createElement(
-    'section',
-    { className: 'flex flex-col gap-5 w-full' },
-    createElement(LocalWeatherRiskModule, null)
-  )
-}
-
-export function HistoryScreen() {
-  const { t } = useT()
-
-  return createElement(
-    'section',
-    { className: 'flex flex-col gap-5' },
-    createElement(
-      'div',
-      { className: 'flex items-center gap-3' },
-      createElement(
-        'div',
-        { className: 'flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E6F4ED] text-[#0B5D3B]' },
-        createElement(History, { className: 'h-6 w-6', strokeWidth: 2.2 })
-      ),
-      createElement(
-        'h1',
-        { className: 'text-2xl sm:text-3xl font-extrabold text-[#0E1F16] tracking-tight' },
-        t('historyTitle')
-      )
-    ),
-    createElement(EmptyState, {
-      icon: createElement(History, { className: 'h-8 w-8', strokeWidth: 2.2 }),
-      title: 'এখনো কোনো স্ক্যান সংরক্ষণ করা হয়নি',
-      description: 'ধানের পাতার ছবি স্ক্যান করলে ফলাফল স্বয়ংক্রিয়ভাবে আপনার ডিভাইসে সংরক্ষিত থাকবে।',
-      action: createElement(
-        'a',
-        {
-          href: '#/',
-          className:
-            'inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B5D3B] to-[#15803D] px-6 py-3 text-[16px] font-bold text-white shadow-md transition-all hover:shadow-lg active:scale-95',
-        },
-        createElement(Sprout, { className: 'h-5 w-5', strokeWidth: 2.2 }),
-        'প্রথম পাতা স্ক্যান করুন'
-      ),
-    })
-  )
-}
+// History (F9) and Weather (F16) are the real screens from main.
+export { HistoryScreen } from '../features/history/HistoryScreen'
 
 export function AboutScreen() {
   const { t } = useT()
@@ -218,18 +175,18 @@ export const routes: RouteDef[] = [
     component: HomeScreen,
   },
   {
+    id: 'weather',
+    hash: '#/weather',
+    label: 'আবহাওয়া',
+    title: 'আবহাওয়া ও রোগ-ঝুঁকি',
+    component: WeatherScreen,
+  },
+  {
     id: 'history',
     hash: '#/history',
     label: 'ইতিহাস',
     title: 'স্ক্যান ইতিহাস',
     component: HistoryScreen,
-  },
-  {
-    id: 'weather',
-    hash: '#/weather',
-    label: 'আবহাওয়া ও ৩ডি ম্যাপ',
-    title: 'স্থানীয় আবহাওয়া ও ৩ডি ম্যাপ',
-    component: WeatherScreen,
   },
   {
     id: 'how-it-works',

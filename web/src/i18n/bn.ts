@@ -8,7 +8,7 @@ export const bn = {
 
   // Navigation
   navHome: 'হোম',
-  navWeather: 'আবহাওয়া',
+  navWeather: 'আবহাওয়া',
   navHistory: 'ইতিহাস',
   navHowItWorks: 'কীভাবে কাজ করে',
   navAbout: 'সম্পর্কে',

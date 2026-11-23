@@ -52,6 +52,36 @@ function mockNotRiceFetch(metaOverride = {}) {
   return fetchMock
 }
 
+function mockNotRiceWithoutSubBlocksFetch() {
+  const customReport = {
+    ...sampleNotRiceReport,
+    notRice: {
+      ...sampleNotRiceReport.notRice,
+      bd5GateOnly: undefined,
+      screenRecapture: undefined,
+    },
+  }
+  const fetchMock = vi.fn().mockImplementation((url: string) => {
+    if (url.includes('/model/report.json')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => customReport,
+      } as Response)
+    }
+    if (url.includes('/model/model_meta.json')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => sampleMeta,
+      } as Response)
+    }
+    return Promise.resolve({ ok: false, status: 404 } as Response)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
 describe('AccuracyScreen & HowItWorks', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
@@ -256,15 +286,75 @@ describe('AccuracyScreen & HowItWorks', () => {
       expect(screen.getByText(/CC0 1.0/)).toBeInTheDocument()
     })
 
-    it('shows bd5GateOnly note as a small honest disclosure line when present', async () => {
+    it('shows bd5GateOnly Bangla line and English note when present', async () => {
       mockNotRiceFetch()
       render(<AccuracyScreen />)
 
       expect(
-        await screen.findByText(
-          /বি\.দ্র\. BD5 এক্সটার্নাল টেস্ট সেটে গেট ব্যবহারে সামান্য মিথ্যা বাতিল হতে পারে।/,
+        await screen.findByText((_, el) =>
+          el?.tagName.toLowerCase() === 'p' &&
+          (el.textContent?.includes(
+            'সাদা কাগজে রাখা ধানপাতা (BD5, টেস্ট ৪০১টি): ভুল বাতিল ০%',
+          ) ?? false),
         ),
       ).toBeInTheDocument()
+
+      expect(screen.getByText(/ভুল বাতিল ০%/)).toBeInTheDocument()
+
+      expect(
+        screen.getByText(/BD5 \(rice leaves on white paper\)/),
+      ).toBeInTheDocument()
+    })
+
+    it('shows screenRecapture heading, rejection/macro-F1 stats, and Bangla warning sentence when present', async () => {
+      mockNotRiceFetch()
+      render(<AccuracyScreen />)
+
+      expect(
+        await screen.findByRole('heading', {
+          level: 3,
+          name: /স্ক্রিন থেকে তোলা ছবিতে/i,
+        }),
+      ).toBeInTheDocument()
+
+      // notRiceRejected: 0.74 -> ৭৪%
+      expect(screen.getByText(/৭৪%/)).toBeInTheDocument()
+      // macroF1SixClassWithGate: 0.65 -> ৬৫%
+      expect(screen.getByText(/৬৫%/)).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /মোবাইল\/কম্পিউটার স্ক্রিনের ছবি তুলে পরীক্ষা করলে নির্ভুলতা কমে যায় — আসল পাতার ছবি তুলুন।/,
+        ),
+      ).toBeInTheDocument()
+    })
+
+    it('when bd5GateOnly and screenRecapture are absent: neither block renders, while core notRice still renders', async () => {
+      mockNotRiceWithoutSubBlocksFetch()
+      render(<AccuracyScreen />)
+
+      await screen.findByRole('heading', {
+        level: 2,
+        name: /ধানপাতা নয় যাচাই/i,
+      })
+
+      expect(
+        screen.queryByText(/সাদা কাগজে রাখা ধানপাতা/),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/BD5 \(rice leaves on white paper\)/),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          level: 3,
+          name: /স্ক্রিন থেকে তোলা ছবিতে/i,
+        }),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /মোবাইল\/কম্পিউটার স্ক্রিনের ছবি তুলে পরীক্ষা করলে নির্ভুলতা কমে যায়/,
+        ),
+      ).not.toBeInTheDocument()
     })
 
     it('does NOT render the "ধানপাতা নয় যাচাই" section when report.notRice is absent', async () => {

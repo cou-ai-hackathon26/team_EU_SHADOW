@@ -6,6 +6,7 @@ import { useScanState } from '../../app/scanStateContext'
 import PhotoPicker from '../capture/PhotoPicker'
 import SampleGallery from '../capture/SampleGallery'
 import ResultView from './ResultView'
+import { saveScanFromPrediction } from '../history/historyStore'
 
 export default function ScanFlow() {
   const { lang } = useT()
@@ -50,6 +51,8 @@ export default function ScanFlow() {
       await loadModel()
       const result = await analyze(selectedImage)
       setPrediction(result)
+      // F9: keep a small thumbnail on this device only; a failed save must not block the result
+      saveScanFromPrediction(result, selectedImage).catch(() => {})
     } catch (err) {
       setAnalysisError(err instanceof Error ? err : new Error('মডেল চালাতে সমস্যা হয়েছে'))
     } finally {
