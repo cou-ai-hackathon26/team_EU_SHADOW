@@ -140,6 +140,7 @@ export const en: Record<I18nKeys, string> = {
   cropBrinjal: 'Brinjal',
   cropPotato: 'Potato',
   cropTomato: 'Tomato',
+  cropChili: 'Chili',
   cropActive: 'Active',
   cropUpcoming: 'Upcoming',
   cropUpcomingToast: 'Only rice disease screening is active right now — other crops will come in a later update',

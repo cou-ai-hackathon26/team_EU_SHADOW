@@ -28,12 +28,12 @@ describe('Home landing and crop selector', () => {
     act(() => resetGlobalLang())
   })
 
-  it('shows 4 crop cards and only rice is active', () => {
+  it('shows 5 crop cards and only rice is active', () => {
     renderHome()
-    for (const id of ['rice', 'brinjal', 'potato', 'tomato']) expect(cropButton(id)).toBeInTheDocument()
+    for (const id of ['rice', 'potato', 'brinjal', 'tomato', 'chili']) expect(cropButton(id)).toBeInTheDocument()
     expect(cropButton('rice')).not.toHaveAttribute('aria-disabled')
     expect(cropButton('rice')).toHaveTextContent('সক্রিয়')
-    for (const id of ['brinjal', 'potato', 'tomato']) {
+    for (const id of ['potato', 'brinjal', 'tomato', 'chili']) {
       expect(cropButton(id)).toHaveAttribute('aria-disabled', 'true')
       expect(cropButton(id)).toHaveTextContent('শীঘ্রই আসছে')
     }
@@ -45,6 +45,7 @@ describe('Home landing and crop selector', () => {
     expect(screen.getByText(/Solanum melongena/)).toBeInTheDocument()
     expect(screen.getByText(/Solanum tuberosum/)).toBeInTheDocument()
     expect(screen.getByText(/Solanum lycopersicum/)).toBeInTheDocument()
+    expect(screen.getByText(/Capsicum annuum/)).toBeInTheDocument()
   })
 
   it('an upcoming crop shows the toast and does not open the scanner', async () => {
@@ -54,6 +55,23 @@ describe('Home landing and crop selector', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয়/)
     expect(screen.queryByRole('button', { name: /ফসল নির্বাচন/ })).not.toBeInTheDocument()
     expect(cropButton('rice')).toBeInTheDocument()
+  })
+
+  it('every upcoming crop, including chili, only shows the toast', async () => {
+    const user = userEvent.setup()
+    renderHome()
+    for (const id of ['potato', 'brinjal', 'tomato', 'chili']) {
+      await user.click(cropButton(id))
+      expect(screen.getByRole('status')).toHaveTextContent(/শুধুমাত্র ধানের রোগ নির্ণয় সক্রিয়/)
+      expect(screen.queryByRole('button', { name: /ফসল নির্বাচন/ })).not.toBeInTheDocument()
+    }
+    expect(cropButton('chili')).toHaveTextContent('মরিচ')
+  })
+
+  it('crops are in the order rice, potato, brinjal, tomato, chili', () => {
+    renderHome()
+    const ids = [...document.querySelectorAll('[data-crop]')].map((b) => b.getAttribute('data-crop'))
+    expect(ids).toEqual(['rice', 'potato', 'brinjal', 'tomato', 'chili'])
   })
 
   it('the rice card opens the scanner and Back returns to the crops', async () => {

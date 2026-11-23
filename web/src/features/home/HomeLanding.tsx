@@ -29,31 +29,38 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
   // Inside the laptop phone frame, always use the mobile layout.
   const desk = inFrame ? 'hidden' : 'hidden lg:block'
   const mob = inFrame ? 'block' : 'block lg:hidden'
-  const gridCols = inFrame ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'
+  // Mobile: rice spans the full row, the 4 upcoming crops sit in a 2x2 grid. Desktop: 5 columns.
+  const gridCols = inFrame ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-5'
+  const riceSpan = inFrame ? 'col-span-2' : 'col-span-2 lg:col-span-1'
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      {/* Desktop hero */}
+    <div className="flex w-full flex-col gap-4 lg:gap-6">
+      {/* Desktop hero: full-bleed, edge to edge under the navbar */}
       <section
         aria-labelledby="landing-headline"
-        className={`${desk} relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B3B24] via-[#0F5132] to-[#14532D] p-8 text-white shadow-xl`}
+        className={`${desk} relative left-1/2 w-screen -translate-x-1/2 -mt-4 overflow-hidden bg-[radial-gradient(ellipse_at_50%_60%,#1B6B42_0%,#0F5132_38%,#0B3B24_75%,#072A19_100%)] text-white`}
       >
-        <div className="grid grid-cols-[1.1fr_1fr_1fr] items-center gap-6">
-          <div className="flex flex-col gap-4">
+        {/* subtle leaf-vein texture */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:repeating-linear-gradient(115deg,#fff_0_1px,transparent_1px_22px)]"
+        />
+        <div className="relative mx-auto grid min-h-[520px] max-w-7xl grid-cols-[1fr_1.45fr_0.9fr] items-center gap-8 px-10 py-12">
+          <div className="flex flex-col gap-5">
             <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-white/15">
               <Leaf className="h-3.5 w-3.5" aria-hidden="true" /> AgroLeaf AI
             </span>
-            <h2 id="landing-headline" className="text-4xl font-extrabold leading-tight tracking-tight">
+            <h2 id="landing-headline" className="text-5xl font-extrabold leading-[1.15] tracking-tight xl:text-6xl">
               {t('landingHeadline')}
             </h2>
-            <p className="text-sm leading-relaxed text-emerald-100/90">{t('landingSubtitle')}</p>
+            <p className="max-w-md text-base leading-relaxed text-emerald-100/85">{t('landingSubtitle')}</p>
           </div>
 
-          <div className="relative mx-auto h-64 w-56">
-            <RicePlantArt className="h-full w-full drop-shadow-2xl" />
-            <HeroBadge className="-left-10 top-4" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
-            <HeroBadge className="-right-12 top-28" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
-            <HeroBadge className="-left-8 bottom-6" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
+          <div className="relative mx-auto h-[430px] w-[300px]">
+            <RicePlantArt className="h-full w-full drop-shadow-[0_25px_35px_rgba(0,0,0,0.45)]" />
+            <Callout side="left" className="right-[62%] top-[14%]" icon={<Leaf className="h-3.5 w-3.5" />} text={t('landingBadgeSpecies')} />
+            <Callout side="right" className="left-[62%] top-[44%]" icon={<CheckCircle2 className="h-3.5 w-3.5" />} text={t('landingBadgeClasses')} />
+            <Callout side="left" className="right-[58%] bottom-[12%]" icon={<Volume2 className="h-3.5 w-3.5" />} text={t('landingBadgeVoice')} />
           </div>
 
           <div className="flex flex-col gap-3">
@@ -101,7 +108,7 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
         <h2 id="crops-title" className="text-lg font-bold text-[#0B3B24]">{t('landingCropsTitle')}</h2>
         <ul className={`grid ${gridCols} gap-3 lg:gap-4`}>
           {CROPS.map((c) => (
-            <li key={c.id}>
+            <li key={c.id} className={c.active ? riceSpan : undefined}>
               <button
                 type="button"
                 data-crop={c.id}
@@ -139,13 +146,19 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
   )
 }
 
-function HeroBadge({ className, icon, text }: { className: string; icon: ReactNode; text: string }) {
-  return (
-    <span
-      className={`absolute ${className} inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#06291A]/80 px-3 py-1.5 text-xs font-semibold text-emerald-50 shadow-lg ring-1 ring-emerald-300/30 backdrop-blur-sm`}
-    >
+/** Editorial callout: a label, a thin rule and a dot pointing at the plant. */
+function Callout({ className, icon, text, side }: { className: string; icon: ReactNode; text: string; side: 'left' | 'right' }) {
+  const label = (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#06291A]/75 px-3 py-1.5 text-sm font-semibold text-emerald-50 shadow-lg ring-1 ring-emerald-300/30 backdrop-blur-sm">
       <span className="text-emerald-300" aria-hidden="true">{icon}</span>
       {text}
+    </span>
+  )
+  const rule = <span aria-hidden="true" className="h-px w-10 bg-emerald-100/60" />
+  const dot = <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full border-2 border-emerald-100 bg-[#0B3B24]" />
+  return (
+    <span className={`absolute ${className} flex items-center gap-0`}>
+      {side === 'left' ? (<>{label}{rule}{dot}</>) : (<>{dot}{rule}{label}</>)}
     </span>
   )
 }

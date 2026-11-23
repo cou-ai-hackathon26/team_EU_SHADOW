@@ -277,7 +277,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
         <main
           className={`mx-auto flex w-full max-w-xl lg:max-w-6xl flex-1 flex-col ${
             isCompactHome
-              ? 'lg:h-[calc(100vh-48px)] lg:justify-between lg:py-4'
+              ? 'justify-start py-4'
               : 'justify-start py-4 sm:py-6'
           } px-4 pb-20 lg:pb-6`}
         >
