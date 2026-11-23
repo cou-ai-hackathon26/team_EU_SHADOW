@@ -293,4 +293,67 @@ describe('ResultView (F4)', () => {
     const callLinks = screen.getAllByRole('link').filter((a) => a.getAttribute('href') === 'tel:16123')
     expect(callLinks.length).toBeGreaterThanOrEqual(2)
   })
+
+  describe('F17: Roadmap integration', () => {
+    it('high tier shows the roadmap heading', () => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier: 'high',
+        top: [{ classId: 'blast', prob: 0.95 }],
+      }
+      render(<ResultView prediction={pred} />)
+      expect(screen.getByText('পরবর্তী ৭ দিনের করণীয়')).toBeInTheDocument()
+    })
+
+    it('medium tier shows the roadmap heading', () => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier: 'medium',
+        top: [
+          { classId: 'blast', prob: 0.55 },
+          { classId: 'brown_spot', prob: 0.40 },
+        ],
+      }
+      render(<ResultView prediction={pred} />)
+      expect(screen.getByText('পরবর্তী ৭ দিনের করণীয়')).toBeInTheDocument()
+    })
+
+    it('low tier does not show the roadmap heading', () => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier: 'low',
+        top: [{ classId: 'blast', prob: 0.3 }],
+      }
+      render(<ResultView prediction={pred} />)
+      expect(screen.queryByText('পরবর্তী ৭ দিনের করণীয়')).not.toBeInTheDocument()
+    })
+
+    it('not_rice tier does not show the roadmap heading', () => {
+      const pred: Prediction = {
+        ...basePrediction,
+        tier: 'not_rice',
+        top: [{ classId: 'not_rice', prob: 0.95 }],
+      }
+      render(<ResultView prediction={pred} />)
+      expect(screen.queryByText('পরবর্তী ৭ দিনের করণীয়')).not.toBeInTheDocument()
+    })
+
+    it('disclaimer and 16123 still render in all tiers', () => {
+      const allTiers: Prediction['tier'][] = ['high', 'medium', 'low', 'not_rice']
+      for (const tier of allTiers) {
+        const pred: Prediction = {
+          ...basePrediction,
+          tier,
+          top: tier === 'not_rice'
+            ? [{ classId: 'not_rice', prob: 0.95 }]
+            : [{ classId: 'blast', prob: 0.8 }],
+        }
+        const { unmount } = render(<ResultView prediction={pred} />)
+        expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
+        const links = screen.getAllByRole('link').filter((l) => l.getAttribute('href') === 'tel:16123')
+        expect(links.length).toBeGreaterThanOrEqual(1)
+        unmount()
+      }
+    })
+  })
 })
