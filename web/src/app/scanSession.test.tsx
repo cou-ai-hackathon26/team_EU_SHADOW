@@ -166,3 +166,47 @@ describe('menu → করণীয় রোডম্যাপ (F17)', () => {
     await waitFor(() => expect(document.getElementById('action-roadmap')).toBeInTheDocument())
   })
 })
+
+describe('two-level Back on the result screen', () => {
+  beforeEach(() => {
+    localStorage.removeItem(STORAGE_KEY)
+    localStorage.setItem('agroleaf_viewport_mode', 'desktop')
+    act(() => resetGlobalLang())
+  })
+
+  it('"← ক্যামেরা ও গ্যালারি" clears the result and returns to the rice camera & gallery workspace', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    giveResult()
+    expect(screen.getAllByText('ব্লাস্ট রোগ').length).toBeGreaterThan(0)
+
+    await user.click(screen.getByTestId('back-to-scanner'))
+    expect(window.location.hash).toBe(SCAN_HASH)
+    expect(screen.queryAllByText('ব্লাস্ট রোগ')).toHaveLength(0)
+    expect(screen.getAllByRole('button', { name: /ক্যামেরা দিয়ে/ }).length).toBeGreaterThan(0)
+    expect(document.querySelector('[data-crop]')).toBeNull()
+    expect(scanSession.get().crop).toBe('rice')
+  })
+
+  it('"ফসল নির্বাচন করুন" goes all the way back to the hero and crop selector', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    giveResult()
+    await user.click(screen.getByTestId('change-crop'))
+    expect(document.querySelector('[data-crop="rice"]')).toBeInTheDocument()
+    expect(scanSession.get().crop).toBeNull()
+  })
+
+  it('with only a photo (before analysing), Back also returns to the camera & gallery', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    act(() => {
+      scanSession.openCrop('rice')
+      scanSession.setImage(new Image(), new File(['x'], 'leaf.jpg', { type: 'image/jpeg' }))
+    })
+    await user.click(screen.getByTestId('back-to-scanner'))
+    expect(scanSession.get().image).toBeNull()
+    expect(scanSession.get().crop).toBe('rice')
+    expect(screen.queryByTestId('back-to-scanner')).toBeNull()
+  })
+})
