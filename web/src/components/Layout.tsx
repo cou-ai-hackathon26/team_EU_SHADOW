@@ -236,7 +236,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
 
       {/* 2. Mobile Preview Mode Frame on Laptop */}
       {isMobilePreview ? (
-        <div className="hidden lg:flex flex-col items-center justify-center min-h-[calc(100vh-48px)] py-4 relative">
+        <div data-testid="mobile-preview-stage" className="hidden lg:flex h-screen w-full overflow-hidden flex-col items-center justify-center p-4 relative">
           {/* Floating Exit Button outside phone */}
           <button
             type="button"
@@ -248,7 +248,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
           </button>
 
           {/* Centered Mobile Phone Frame */}
-          <div className="mobile-preview-frame h-[680px] w-[375px] my-auto flex flex-col overflow-hidden rounded-[36px] border-[6px] border-slate-900 shadow-2xl bg-[#F8FAF8] relative">
+          <div data-testid="mobile-preview-frame" className="mobile-preview-frame h-[calc(100vh-32px)] max-h-[700px] w-[375px] flex flex-col overflow-hidden rounded-[2.5rem] border-[6px] border-slate-900 shadow-2xl bg-[#F8FAF8] relative">
             {/* Phone Notch */}
             <div className="shrink-0 bg-[#F8FAF8] pt-2 pb-1 text-center">
               <div className="w-24 h-4 bg-slate-900 rounded-full mx-auto flex items-center justify-center gap-1.5">
@@ -282,7 +282,7 @@ export default function Layout({ children, currentHash }: LayoutProps) {
             </div>
 
             {/* Phone Frame Content Body (Scrollable inside phone always) */}
-            <div ref={frameScrollRef} className="flex-1 overflow-y-auto p-3 pb-6 w-full scrollbar-thin">
+            <div ref={frameScrollRef} data-testid="mobile-preview-screen" className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 pb-6 w-full scrollbar-thin">
               <main className="mx-auto flex w-full max-w-xl flex-1 flex-col">
                 <PhoneFrameProvider value={true}><Fragment key={resetKey}>{children}</Fragment></PhoneFrameProvider>
                 <Disclaimer lang={lang} compact={true} className="mt-3" />
