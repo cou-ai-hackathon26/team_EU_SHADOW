@@ -109,7 +109,7 @@ export function FieldRowScreen({
               if (typeof window !== 'undefined') window.location.hash = '#/scan/rice'
             }}
             data-testid="back-to-single-leaf"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#0B5D3B] px-4 py-1.5 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#0F5132] active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition-all active:scale-95 cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>{isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan'}</span>
@@ -122,7 +122,7 @@ export function FieldRowScreen({
               if (typeof window !== 'undefined') window.location.hash = '#/'
             }}
             data-testid="back-to-crops"
-            className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3.5 py-2 text-xs sm:text-sm font-semibold text-emerald-950 shadow-xs hover:shadow-sm transition-all active:scale-95 cursor-pointer"
           >
             <span>{isBn ? 'ফসল নির্বাচন' : 'Crop Selection'}</span>
           </a>

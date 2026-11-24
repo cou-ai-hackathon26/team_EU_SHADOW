@@ -1,7 +1,7 @@
 import { createElement, type ComponentType } from 'react'
 import { scanSession, useScanSession } from './scanSession'
 import { HomeLanding } from '../features/home/HomeLanding'
-import { Info, ShieldCheck, Sprout, Leaf } from 'lucide-react'
+import { Info, ShieldCheck, Sprout, Leaf, ArrowRight } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
@@ -32,7 +32,7 @@ export function RiceModeSwitcher({ activeMode = 'single' }: { activeMode?: 'sing
       role: 'tablist',
       'aria-label': isBn ? 'স্ক্যান মোড নির্বাচন' : 'Select Scan Mode',
       className:
-        'flex items-center gap-1.5 rounded-2xl border border-emerald-700/20 bg-white/95 p-1.5 shadow-sm backdrop-blur-sm w-full',
+        'flex items-center gap-2 rounded-2xl border border-emerald-700/20 bg-white/95 p-1.5 shadow-sm backdrop-blur-sm w-full',
     },
     createElement(
       'a',
@@ -41,14 +41,17 @@ export function RiceModeSwitcher({ activeMode = 'single' }: { activeMode?: 'sing
         onClick: () => scanSession.openCrop('rice'),
         role: 'tab',
         'aria-selected': activeMode === 'single',
-        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm transition-all cursor-pointer ${
           activeMode === 'single'
-            ? 'bg-[#0B5D3B] text-white shadow-sm ring-1 ring-emerald-700'
-            : 'text-[#4A5F52] hover:bg-emerald-50 hover:text-[#0B5D3B]'
+            ? 'bg-emerald-800 text-white font-bold shadow-sm'
+            : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 font-semibold shadow-xs hover:shadow-sm'
         }`,
       },
       createElement(Leaf, { className: 'h-4 w-4' }),
-      createElement('span', null, isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan')
+      createElement('span', null, isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan'),
+      activeMode !== 'single'
+        ? createElement(ArrowRight, { className: 'h-3.5 w-3.5 text-emerald-800 ml-0.5' })
+        : null
     ),
     createElement(
       'a',
@@ -57,14 +60,17 @@ export function RiceModeSwitcher({ activeMode = 'single' }: { activeMode?: 'sing
         'data-testid': 'start-field-row',
         role: 'tab',
         'aria-selected': activeMode === 'field-row',
-        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm transition-all cursor-pointer ${
           activeMode === 'field-row'
-            ? 'bg-[#0B5D3B] text-white shadow-sm ring-1 ring-emerald-700'
-            : 'text-[#4A5F52] hover:bg-emerald-50 hover:text-[#0B5D3B]'
+            ? 'bg-emerald-800 text-white font-bold shadow-sm'
+            : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 font-semibold shadow-xs hover:shadow-sm'
         }`,
       },
       createElement(Sprout, { className: 'h-4 w-4' }),
-      createElement('span', null, FIELD_ROW_COPY.title[lang])
+      createElement('span', null, FIELD_ROW_COPY.title[lang]),
+      activeMode !== 'field-row'
+        ? createElement(ArrowRight, { className: 'h-3.5 w-3.5 text-emerald-800 ml-0.5' })
+        : null
     )
   )
 }
