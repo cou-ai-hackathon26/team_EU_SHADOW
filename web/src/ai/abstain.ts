@@ -23,6 +23,12 @@ export const ABSTAIN_THRESHOLDS = {
   // almost no green is still dead_leaf. Lesion leaves (blast, brown spot, etc.)
   // at 25-35% brown never reach deadBrownMin, so the other thresholds are unchanged.
   tungroKeepsGreenMin: 0.12,
+  // Field-row calibration: dense field crops naturally have higher ambient entropy
+  // and lighting variations. A leaf region is only abstained as unrelated_crop if
+  // notRice is convincingly high (>= 0.70) or disease entropy is extreme (>= 0.90) with minimal margin (<= 0.05).
+  fieldUnrelatedNotRice: 0.70,
+  fieldEntropyMin: 0.90,
+  fieldMarginMax: 0.05,
 } as const
 
 /**
@@ -72,8 +78,9 @@ export function decideAbstention(args: {
   probs: ClassProb[]
   color: LeafColorStats
   meta: Pick<ModelMeta, 'thresholds'>
+  context?: 'single' | 'field'
 }): AbstentionReason | null {
-  const { probs, color, meta } = args
+  const { probs, color, meta, context = 'single' } = args
   const notRiceProb = probs.find((p) => p.classId === 'not_rice')?.prob ?? 0
 
   // 1. Existing hard not_rice gate
@@ -100,11 +107,16 @@ export function decideAbstention(args: {
   // 3. Unrelated crop: living plant tissue with ambiguous disease distribution or elevated not_rice
   const { entropy, margin } = entropyAndMargin(probs)
   if (color.greenRatio >= ABSTAIN_THRESHOLDS.minGreenForLeaf) {
-    if (
-      notRiceProb >= ABSTAIN_THRESHOLDS.unrelatedNotRiceSoft ||
-      (entropy >= ABSTAIN_THRESHOLDS.unrelatedEntropyMin &&
-        margin <= ABSTAIN_THRESHOLDS.unrelatedMarginMax)
-    ) {
+    const isUnrelated =
+      context === 'field'
+        ? notRiceProb >= ABSTAIN_THRESHOLDS.fieldUnrelatedNotRice ||
+          (entropy >= ABSTAIN_THRESHOLDS.fieldEntropyMin &&
+            margin <= ABSTAIN_THRESHOLDS.fieldMarginMax)
+        : notRiceProb >= ABSTAIN_THRESHOLDS.unrelatedNotRiceSoft ||
+          (entropy >= ABSTAIN_THRESHOLDS.unrelatedEntropyMin &&
+            margin <= ABSTAIN_THRESHOLDS.unrelatedMarginMax)
+
+    if (isUnrelated) {
       if (color.greyRatio >= 0.35) {
         return 'not_rice'
       }

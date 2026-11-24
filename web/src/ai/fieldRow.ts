@@ -282,7 +282,7 @@ export const screenFieldRow: ScreenFieldRow = async (
     const top1Disease = diseases[0] as { classId: DiseaseClassId; prob: number } | undefined
 
     const tier = decideTier(top, meta)
-    const abstain = decideAbstention({ probs: top, color, meta })
+    const abstain = decideAbstention({ probs: top, color, meta, context: 'field' })
     const { entropy, margin } = entropyAndMargin(top)
     const pNotRice = notRiceEntry?.prob ?? 0
 

@@ -39,6 +39,15 @@ export function classifyPixel(
 
   const lum = 0.299 * r + 0.587 * g + 0.114 * b
 
+  // Sky pixel exclusion:
+  // Blue sky: hue 180-250 deg & s >= 0.15
+  // Overcast / washed-out sky: low saturation s < 0.15 & bright v > 0.70
+  // Never put sky in the vegetation mask.
+  const isSky = (h >= 180 && h <= 250 && s >= 0.15) || (s < 0.15 && v > 0.70)
+  if (isSky) {
+    return { type: 'other', v, s, h, lum }
+  }
+
   // 1. Green: hue 60-170 deg, s >= 0.20, v >= 0.15
   if (h >= 60 && h <= 170 && s >= 0.20 && v >= 0.15) {
     return { type: 'green', v, s, h, lum }
@@ -175,24 +184,24 @@ export function gridTiles(
 }
 
 /**
- * Soil-aware and dense-canopy region proposal heuristics:
- * - 0.35 (soilMode threshold): When brown pixels comprise >= 35% of the frame, the scene is
- *   dominated by soil/ground rather than dense foliage or neutral studio background.
- * - 0.55 & medianBrownV + 0.15: Dry straw/dead leaf tissue typically has high reflectance,
- *   suppressing ambient dark soil while preserving true lesion/straw tissue.
- * - 0.45 (dense canopy threshold): When raw vegetation exceeds 45%, dense-canopy splitting activates.
- *   Overlapping rice blades are cleaved by 3x3 Sobel gradient edges and shadow gaps (v < 0.28).
- * - Secondary symptomatic hotspot pass: Visibly symptomatic brown/yellow lesion patches get dedicated
- *   tight bounding boxes so localized infections are never obscured by surrounding green canopy.
- * - 2x2 subdivision: Large blobs > 25% of the frame are subdivided into 2x2 sub-boxes instead of
- *   triggering global grid fallback.
+ * Foreground leaf proposal engine:
+ * - Sky pixel exclusion: Blue sky (hue 180-250 & s >= 0.15) or bright overcast (s < 0.15 & v > 0.70)
+ *   are strictly excluded from the vegetation mask to prevent false detections.
+ * - Horizon detection (0.35 threshold): First downscaled row from the top where green share >= 0.35 (0 if none).
+ *   Components and boxes whose centre is above this horizon are dropped to eliminate distant background trees.
+ * - Area cap (18% threshold): Any box with area > 18% of frame is split 2x2, re-tightened to its own mask pixels
+ *   (minX..maxX, minY..maxY), and dropped if vegetation area < 15% (repeated recursively if needed).
+ * - NMS (IoU 0.15) & Containment (0.60): Box score is the count of raw vegetation pixels. Boxes with IoU > 0.15
+ *   against a higher-scoring kept box are suppressed. If >= 60% of a smaller box lies inside a larger box,
+ *   the larger box is dropped to preserve tight leaf boundaries rather than swallowing them.
+ * - Max regions: Defaults to 14 foreground leaf boxes.
  */
 export function proposeLeafRegions(
   img: { data: ArrayLike<number>; width: number; height: number },
   opts?: { maxRegions?: number; tightGrid?: boolean },
 ): { boxes: LeafBox[]; mode: 'leaf_regions' | 'grid_fallback' } {
   const { data, width, height } = img
-  const maxRegions = opts?.maxRegions ?? 18
+  const maxRegions = opts?.maxRegions ?? 14
 
   if (width <= 0 || height <= 0 || !data || data.length === 0) {
     return { boxes: [], mode: 'grid_fallback' }
@@ -238,6 +247,55 @@ export function proposeLeafRegions(
           symptomMask[pIdx] = 1
           rawVegCount++
         }
+      }
+    }
+  }
+
+  // Horizon = first downscaled row from the top where green share of that row >= 0.35 (0 if none)
+  // Only applies when sky pixels are present in the upper portion of the frame
+  let hasSkyAtTop = false
+  for (let dy = 0; dy < Math.min(dh, Math.round(dh * 0.45)); dy++) {
+    for (let dx = 0; dx < dw; dx++) {
+      const idx =
+        (Math.min(height - 1, Math.floor(dy / scale)) * width +
+          Math.min(width - 1, Math.floor(dx / scale))) *
+        4
+      const r = data[idx] / 255
+      const g = data[idx + 1] / 255
+      const b = data[idx + 2] / 255
+      const max = Math.max(r, g, b)
+      const min = Math.min(r, g, b)
+      const delta = max - min
+      const v = max
+      const s = max === 0 ? 0 : delta / max
+      let h = 0
+      if (delta !== 0) {
+        if (max === r) h = 60 * (((g - b) / delta) % 6)
+        else if (max === g) h = 60 * ((b - r) / delta + 2)
+        else h = 60 * ((r - g) / delta + 4)
+        if (h < 0) h += 360
+      }
+      if ((h >= 180 && h <= 250 && s >= 0.15) || (s < 0.15 && v > 0.70)) {
+        hasSkyAtTop = true
+        break
+      }
+    }
+    if (hasSkyAtTop) break
+  }
+
+  let horizonRow = 0
+  if (hasSkyAtTop) {
+    for (let dy = 0; dy < dh; dy++) {
+      let rowGreen = 0
+      const rowOffset = dy * dw
+      for (let dx = 0; dx < dw; dx++) {
+        if (pixelClasses[rowOffset + dx] === 1) {
+          rowGreen++
+        }
+      }
+      if (rowGreen / dw >= 0.35) {
+        horizonRow = dy
+        break
       }
     }
   }
@@ -330,6 +388,53 @@ export function proposeLeafRegions(
     }
   }
 
+  const maxArea = 0.18 * totalArea
+
+  // Recursive 2x2 subdivision for boxes exceeding 18% area cap
+  function splitLargeBox(b: LeafBox, mask: Uint8Array, depth = 0): LeafBox[] {
+    if (b.w * b.h <= maxArea || depth >= 4) {
+      return [b]
+    }
+    const halfW = Math.floor(b.w / 2)
+    const halfH = Math.floor(b.h / 2)
+    const quads: LeafBox[] = [
+      { x: b.x, y: b.y, w: halfW, h: halfH },
+      { x: b.x + halfW, y: b.y, w: b.w - halfW, h: halfH },
+      { x: b.x, y: b.y + halfH, w: halfW, h: b.h - halfH },
+      { x: b.x + halfW, y: b.y + halfH, w: b.w - halfW, h: b.h - halfH },
+    ]
+    const out: LeafBox[] = []
+    for (const q of quads) {
+      if (q.w <= 0 || q.h <= 0) continue
+      let qMinX = q.x + q.w
+      let qMaxX = q.x - 1
+      let qMinY = q.y + q.h
+      let qMaxY = q.y - 1
+      let vegCount = 0
+      for (let qy = q.y; qy < q.y + q.h; qy++) {
+        const rowOff = qy * dw
+        for (let qx = q.x; qx < q.x + q.w; qx++) {
+          if (mask[rowOff + qx] === 1) {
+            vegCount++
+            if (qx < qMinX) qMinX = qx
+            if (qx > qMaxX) qMaxX = qx
+            if (qy < qMinY) qMinY = qy
+            if (qy > qMaxY) qMaxY = qy
+          }
+        }
+      }
+      if (vegCount === 0 || qMinX > qMaxX || qMinY > qMaxY) continue
+      const tw = qMaxX - qMinX + 1
+      const th = qMaxY - qMinY + 1
+      const subArea = tw * th
+      // Drop sub-box if < 15% vegetation area
+      if (vegCount / subArea < 0.15) continue
+      const tightened: LeafBox = { x: qMinX, y: qMinY, w: tw, h: th }
+      out.push(...splitLargeBox(tightened, mask, depth + 1))
+    }
+    return out
+  }
+
   // 5. 4-neighbour connected components extraction
   function findComponents(
     mask: Uint8Array,
@@ -415,21 +520,24 @@ export function proposeLeafRegions(
         const bh = maxY - minY + 1
         const compFraction = count / totalArea
 
-        // Giant blob check: if > 25% and <= 70%, subdivide into 2x2 sub-boxes
-        if (compFraction > 0.25 && compFraction <= 0.70) {
-          const halfW = Math.ceil(bw / 2)
-          const halfH = Math.ceil(bh / 2)
-          boxes.push(
-            { x: minX, y: minY, w: halfW, h: halfH },
-            { x: minX + Math.floor(bw / 2), y: minY, w: halfW, h: halfH },
-            { x: minX, y: minY + Math.floor(bh / 2), w: halfW, h: halfH },
-            { x: minX + Math.floor(bw / 2), y: minY + Math.floor(bh / 2), w: halfW, h: halfH },
-          )
-        } else if (compFraction <= 0.35) {
-          boxes.push({ x: minX, y: minY, w: bw, h: bh })
+        // Drop any component whose centre is above horizon
+        const centerY = minY + bh / 2
+        if (horizonRow > 0 && centerY < horizonRow) {
+          continue
         }
+
         // Giant monolithic blobs > 70% of frame are dropped so background canopy
         // does not swallow discrete leaf boxes or cause false full-frame regions
+        if (compFraction > 0.70) {
+          continue
+        }
+
+        const rawBox: LeafBox = { x: minX, y: minY, w: bw, h: bh }
+        if (rawBox.w * rawBox.h > maxArea) {
+          boxes.push(...splitLargeBox(rawBox, mask))
+        } else {
+          boxes.push(rawBox)
+        }
       }
     }
 
@@ -441,32 +549,17 @@ export function proposeLeafRegions(
   const canopyBoxes = findComponents(workingVegMask, true)
   const candidateBoxes = [...symptomBoxes, ...canopyBoxes]
 
-  // 6. Merge/NMS overlapping boxes with IoU > 0.35
-  let mergedBoxes = [...candidateBoxes]
-  let changed = true
-  while (changed) {
-    changed = false
-    for (let i = 0; i < mergedBoxes.length; i++) {
-      for (let j = i + 1; j < mergedBoxes.length; j++) {
-        if (boxIoU(mergedBoxes[i], mergedBoxes[j]) > 0.35) {
-          const b1 = mergedBoxes[i]
-          const b2 = mergedBoxes[j]
-          const nx = Math.min(b1.x, b2.x)
-          const ny = Math.min(b1.y, b2.y)
-          const nw = Math.max(b1.x + b1.w, b2.x + b2.w) - nx
-          const nh = Math.max(b1.y + b1.h, b2.y + b2.h) - ny
-          mergedBoxes[i] = { x: nx, y: ny, w: nw, h: nh }
-          mergedBoxes.splice(j, 1)
-          changed = true
-          break
-        }
-      }
-      if (changed) break
-    }
-  }
+  // Filter out any boxes whose centre is above horizon
+  const origHorizonY = horizonRow > 0 ? horizonRow / scale : 0
+  const filteredCandidates = candidateBoxes.filter((b) => {
+    const cy = (b.y + b.h / 2) / scale
+    return origHorizonY === 0 || cy >= origHorizonY
+  })
 
-  // 7. Pad each box lightly (5%), elongated rice-leaf aspect ratio (minSide >= 0.35 * maxSide), scale back
-  const processedBoxes: LeafBox[] = mergedBoxes.map((b) => {
+  // 6. Pad each box lightly (5%), elongated rice-leaf aspect ratio (minSide >= 0.35 * maxSide), scale back
+  const maxOrigArea = 0.18 * width * height
+
+  const processedBoxes: LeafBox[] = filteredCandidates.map((b) => {
     // 5% padding
     const padX = Math.round(b.w * 0.05)
     const padY = Math.round(b.h * 0.05)
@@ -475,33 +568,126 @@ export function proposeLeafRegions(
     let pw = Math.min(dw - px, b.w + padX * 2)
     let ph = Math.min(dh - py, b.h + padY * 2)
 
-    // Elongated rice-leaf aspect ratio (minSide >= 0.35 * maxSide)
-    if (pw < 0.35 * ph) {
-      const targetW = 0.35 * ph
+    // Elongated rice-leaf aspect ratio (minSide >= minRatio * maxSide)
+    const minRatio = isDense ? 0.20 : 0.30
+    if (pw < minRatio * ph) {
+      const targetW = minRatio * ph
       const diff = targetW - pw
       px = Math.max(0, Math.round(px - diff / 2))
       pw = Math.min(dw - px, Math.round(targetW))
-    } else if (ph < 0.35 * pw) {
-      const targetH = 0.35 * pw
+    } else if (ph < minRatio * pw) {
+      const targetH = minRatio * pw
       const diff = targetH - ph
       py = Math.max(0, Math.round(py - diff / 2))
       ph = Math.min(dh - py, Math.round(targetH))
     }
 
     // Scale back to original coordinates
-    const ox = Math.max(0, Math.min(width - 1, Math.round(px / scale)))
-    const oy = Math.max(0, Math.min(height - 1, Math.round(py / scale)))
-    const ow = Math.min(width - ox, Math.max(1, Math.round(pw / scale)))
-    const oh = Math.min(height - oy, Math.max(1, Math.round(ph / scale)))
+    let ox = Math.max(0, Math.min(width - 1, Math.round(px / scale)))
+    let oy = Math.max(0, Math.min(height - 1, Math.round(py / scale)))
+    let ow = Math.min(width - ox, Math.max(1, Math.round(pw / scale)))
+    let oh = Math.min(height - oy, Math.max(1, Math.round(ph / scale)))
+
+    // Enforce area cap <= 18% on final scaled box
+    if (ow * oh > maxOrigArea) {
+      const scaleDown = Math.sqrt(maxOrigArea / (ow * oh))
+      ow = Math.max(1, Math.floor(ow * scaleDown))
+      oh = Math.max(1, Math.floor(oh * scaleDown))
+    }
 
     return { x: ox, y: oy, w: ow, h: oh }
   })
 
+  // 7. Containment filtering & NMS
+  function computeBoxScore(box: LeafBox): number {
+    const x1 = Math.max(0, Math.floor(box.x * scale))
+    const y1 = Math.max(0, Math.floor(box.y * scale))
+    const x2 = Math.min(dw, Math.ceil((box.x + box.w) * scale))
+    const y2 = Math.min(dh, Math.ceil((box.y + box.h) * scale))
+    let cnt = 0
+    for (let y = y1; y < y2; y++) {
+      const rowOff = y * dw
+      for (let x = x1; x < x2; x++) {
+        if (rawVegMask[rowOff + x] === 1) cnt++
+      }
+    }
+    return cnt
+  }
+
+  // Containment pass: if interArea / min(areaA, areaB) >= 0.60, drop the LARGER box
+  let candidatePool = [...processedBoxes]
+  let changed = true
+  while (changed) {
+    changed = false
+    const toDrop = new Set<number>()
+    for (let i = 0; i < candidatePool.length; i++) {
+      if (toDrop.has(i)) continue
+      for (let j = i + 1; j < candidatePool.length; j++) {
+        if (toDrop.has(j)) continue
+        const b1 = candidatePool[i]
+        const b2 = candidatePool[j]
+        const ix1 = Math.max(b1.x, b2.x)
+        const iy1 = Math.max(b1.y, b2.y)
+        const ix2 = Math.min(b1.x + b1.w, b2.x + b2.w)
+        const iy2 = Math.min(b1.y + b1.h, b2.y + b2.h)
+        const interArea = Math.max(0, ix2 - ix1) * Math.max(0, iy2 - iy1)
+        if (interArea <= 0) continue
+        const a1 = b1.w * b1.h
+        const a2 = b2.w * b2.h
+        const minArea = Math.min(a1, a2)
+        if (interArea / minArea >= 0.60) {
+          if (a1 >= a2) {
+            toDrop.add(i)
+            break
+          } else {
+            toDrop.add(j)
+          }
+        }
+      }
+    }
+    if (toDrop.size > 0) {
+      candidatePool = candidatePool.filter((_, idx) => !toDrop.has(idx))
+      changed = true
+    }
+  }
+
+  // NMS pass: sort by score descending. Suppress if IoU > 0.15 or containment >= 0.60
+  const scored = candidatePool.map((b) => ({ box: b, score: computeBoxScore(b) }))
+  scored.sort((a, b) => b.score - a.score)
+
+  const nmsKept: LeafBox[] = []
+  for (const item of scored) {
+    const b = item.box
+    let suppress = false
+    for (const k of nmsKept) {
+      if (boxIoU(b, k) > 0.15) {
+        suppress = true
+        break
+      }
+      const ix1 = Math.max(b.x, k.x)
+      const iy1 = Math.max(b.y, k.y)
+      const ix2 = Math.min(b.x + b.w, k.x + k.w)
+      const iy2 = Math.min(b.y + b.h, k.y + k.h)
+      const interArea = Math.max(0, ix2 - ix1) * Math.max(0, iy2 - iy1)
+      if (interArea > 0) {
+        const minArea = Math.min(b.w * b.h, k.w * k.h)
+        if (interArea / minArea >= 0.60) {
+          suppress = true
+          break
+        }
+      }
+    }
+    if (!suppress) {
+      nmsKept.push(b)
+      if (nmsKept.length >= maxRegions) break
+    }
+  }
+
   // 8. Smarter grid_fallback (only if < 2 boxes or monolithic canopy > 70%)
   const origArea = width * height
-  const hasDenseCanopy = processedBoxes.some((b) => b.w * b.h > 0.70 * origArea)
+  const hasDenseCanopy = nmsKept.some((b) => b.w * b.h > 0.70 * origArea)
 
-  if (processedBoxes.length < 2 || hasDenseCanopy) {
+  if (nmsKept.length < 2 || hasDenseCanopy) {
     const tiles = gridTiles(width, height, { tight: opts?.tightGrid ?? false })
     // Drop tiles whose vegetation ratio (green + brown) is < 0.15
     const filteredTiles = tiles.filter((t) => {
@@ -527,13 +713,9 @@ export function proposeLeafRegions(
     }
   }
 
-  // 9. Keep largest maxRegions
-  processedBoxes.sort((a, b) => b.w * b.h - a.w * a.h)
-  const kept = processedBoxes.slice(0, maxRegions)
-
-  // 10. Sort in reading order (top to bottom, left to right)
+  // 9. Reading order sort (top to bottom, left to right)
   const rowBand = height * 0.10
-  kept.sort((a, b) => {
+  nmsKept.sort((a, b) => {
     if (Math.abs(a.y - b.y) > rowBand) {
       return a.y - b.y
     }
@@ -541,7 +723,7 @@ export function proposeLeafRegions(
   })
 
   return {
-    boxes: kept,
+    boxes: nmsKept,
     mode: 'leaf_regions',
   }
 }

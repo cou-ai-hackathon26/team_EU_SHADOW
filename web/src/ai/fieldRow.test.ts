@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
+import * as engine from './engine'
 import { resetEngineState } from './engine'
 import { summarizeField, screenFieldRow } from './fieldRow'
 import type { LeafScreening } from './fieldRow.types'
@@ -241,5 +242,35 @@ describe('fieldRow - screenFieldRow', () => {
     await expect(
       screenFieldRow({ data, width, height }, { signal: controller.signal }),
     ).rejects.toThrow()
+  })
+
+  it('screens non-abstained crop with low tier as status uncertain while keeping top-1 disease label', async () => {
+    vi.spyOn(engine, 'runLogits').mockImplementationOnce(async (_data, n) => {
+      // 7 classes: [healthy, blast, brown_spot, leaf_smut, tungro, sheath_blight, not_rice]
+      // blast is top-1, but confidence is low (below medium threshold 0.55), so tier is 'low'
+      // dummyMeta thresholds: high: 0.85, medium: 0.55, healthyHigh: 0.9, notRice: 0.5
+      // logits: [0.8, 1.2, 0.5, 0.5, 0.5, 0.5, -3.0]
+      const single = new Float32Array([0.8, 1.2, 0.5, 0.5, 0.5, 0.5, -3.0])
+      return Array.from({ length: n }, () => single)
+    })
+
+    const width = 300
+    const height = 200
+    const data = new Uint8ClampedArray(width * height * 4)
+    for (let i = 0; i < width * height; i++) {
+      data[i * 4] = 34
+      data[i * 4 + 1] = 139
+      data[i * 4 + 2] = 34
+      data[i * 4 + 3] = 255
+    }
+
+    const res = await screenFieldRow({ data, width, height })
+    expect(res.leaves.length).toBeGreaterThan(0)
+    for (const leaf of res.leaves) {
+      expect(leaf.tier).toBe('low')
+      expect(leaf.abstain).toBeNull()
+      expect(leaf.status).toBe('uncertain')
+      expect(leaf.label).toBe('blast')
+    }
   })
 })
