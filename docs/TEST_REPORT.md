@@ -76,15 +76,15 @@ A synthetic sky-blue patch (`not_rice_sky.jpg`, 224×224 JPEG, plain blue pixels
 
 ## Latest test output
 
-Run on 24 November 2026 in `web/` on branch `feat/onsite-copy-qa-docs`:
+Run on 23 November 2026 in `web/` after merging `origin/main` (merge commit `183fc9f`):
 
 ### Unit tests (`npm test`)
 
 ```
- Test Files  58 passed | 1 skipped (59)
-      Tests  413 passed | 16 skipped (429)
-   Start at  10:20:32
-   Duration  30.66s (environment 58%, setup 16%, import 14%, tests 11%, transform 1%, worker 1%)
+ Test Files  33 passed (33)
+      Tests  191 passed (191)
+   Start at  00:00:21
+   Duration  27.32s (environment 61%, setup 21%, tests 7%, import 6%, transform 4%, worker 1%)
 ```
 
 ### End-to-end tests (`npm run test:e2e`)
@@ -117,19 +117,13 @@ Running 16 tests using 6 workers
 ```
 > oxlint
 Found 0 warnings and 0 errors.
-Finished in 45ms on 141 files with 116 rules using 12 threads.
+Finished in 90ms on 83 files with 116 rules using 12 threads.
 ```
 
 ```
 > tsc -b && vite build
-vite v8.3.8 building client environment for production...
-transforming...
-✓ 2630 modules transformed.
-dist/index.html                                        1.30 kB │ gzip:     0.71 kB
-dist/assets/ort-wasm-simd-threaded-qh98TCA_.wasm  14,848.85 kB │ gzip: 3,878.24 kB
-dist/assets/main-DWJx1G2_.css                         79.39 kB │ gzip:    13.33 kB
-dist/assets/workbox-window.prod.es5-Bd17z0YL.js        5.65 kB │ gzip:     2.20 kB
-dist/assets/engine-DuiyakFG.js                        79.86 kB │ gzip:    26.63 kB
-dist/assets/main-bKzpIQ6T.js                         594.76 kB │ gzip:   179.09 kB
-✓ built in 1.18s
+✓ 61 modules transformed.
+dist/index.html  1.09 kB │ gzip: 0.58 kB
+dist/assets/main-DSDfWW8w.js  347.68 kB │ gzip: 101.27 kB
+✓ built in 594ms
 ```

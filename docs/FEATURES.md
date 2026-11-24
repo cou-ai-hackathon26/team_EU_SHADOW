@@ -59,11 +59,3 @@ Every item: Understand → Plan → **Tests first** → Implement → PR → Rev
 | F10 | QA: edge-case ছবি সেট + end-to-end test | MUST | CP2–CP4 | `feat/F10-qa-e2e` | merged (#26) |
 | F18 | আনুমানিক আক্রান্ত এলাকা + ১৬১২৩ জরুরি সংকেত | SHOULD | CP3 | `feat/F18-severity-estimate` | in-review |
 | S1 | README (সব নিয়ম মেনে) | MUST | CP4 | `docs/S1-readme` | merged (#27) |
-
-## Onsite Final Challenges (২৪ নভেম্বর ২০২৬)
-
-| ID | Feature | Responsibility & Ownership | Branch | Status |
-|---|---|---|---|---|
-| C1 | মাঠের সারি স্ক্যান (Field-row screening) | Engine: Masum · UI: Tanjil · Copy/QA/Docs: Mehedi | `feat/onsite-field-engine-and-ood`, `feat/onsite-field-row-ui`, `feat/onsite-copy-qa-docs` | in-progress |
-| C2 | দায়িত্বশীল অ্যাবস্টেনশন (Honest Abstention) | Engine: Masum · UI: Tanjil · Copy/QA/Docs: Mehedi | `feat/onsite-field-engine-and-ood`, `feat/onsite-field-row-ui`, `feat/onsite-copy-qa-docs` | in-progress |
-
