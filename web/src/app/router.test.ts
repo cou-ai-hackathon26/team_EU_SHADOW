@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { createElement } from 'react'
-import { routes, matchRoute, HomeScreen, HistoryScreen } from './router'
+import { routes, matchRoute, HomeScreen, HistoryScreen, FieldRowRoute } from './router'
+import { scanSession } from './scanSession'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import WeatherScreen from '../features/weather/WeatherScreen'
 
@@ -53,5 +54,20 @@ describe('router registry (F1 & F16)', () => {
 
     expect(geoSpy).not.toHaveBeenCalled()
     expect(screen.queryByText(/আবহাওয়া ও রোগ-ঝুঁকি/)).not.toBeInTheDocument()
+  })
+})
+
+describe('FieldRowRoute disclaimer', () => {
+  it('shows its own disclaimer while a single-leaf result hides the shell one', () => {
+    scanSession.setResult(null, new Error('earlier single-leaf error'))
+    render(createElement(FieldRowRoute))
+    expect(screen.getAllByLabelText('সতর্কবার্তা ও দায়িত্বশীল এআই নির্দেশনা').length).toBeGreaterThan(0)
+    scanSession.reset()
+  })
+
+  it('leaves the disclaimer to the shell when no single-leaf result exists', () => {
+    scanSession.reset()
+    render(createElement(FieldRowRoute))
+    expect(screen.queryAllByLabelText('সতর্কবার্তা ও দায়িত্বশীল এআই নির্দেশনা')).toHaveLength(0)
   })
 })
