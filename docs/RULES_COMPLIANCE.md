@@ -13,7 +13,7 @@ Lead re-checks this before every merge to main and before submission. Last full 
 | 9 | Real AI only | Predictions come only from `agroleaf.onnx`; field-row screening (C1) and abstention (C2) run real batched ORT-Web inference; mocks only in tests | ☑ |
 | 9 | Data public/licensed and credited | 6 datasets (CC BY 4.0 / CC0 / COCO's permissive subset), all in README §6 and `docs/CREDITS.md` | ☑ |
 | 10 | One public repo, regular commits from each member's account, no force-push/squash/back-dating | Merge commits only; Masum, Tanjil and Mehedi each commit from their own account; history never rewritten | ☑ |
-| 10 | Hourly commits during the final (24 Nov) | Every member commits at least once an hour, 9 AM to 1 PM | ☐ |
+| 10 | Hourly commits during the final (24 Nov) | Every member commits at least once an hour, 9 AM to 1 PM (Masum, Tanjil, Mehedi) | ☑ |
 | 10 | No keys committed; `.env.example` | No secrets needed (Open-Meteo and Nominatim need no key); `.env.example` says so; `.gitignore` covers `.env`, `kaggle.json`, `.vercel/` | ☑ |
 | 10 | README items | Team, members and roles; problem/solution; features (F1–F18, C1, C2) and how the AI works; stack, models, APIs, datasets; AI tools and what for; third-party credits; setup; live link; demo video marked optional (Rule 12.6) | ☑ |
 | 11 | Public deployment that stays live; live demo runs the real project; local copy | Vercel (root `web`) + local fallback `npm run demo` + offline PWA; a local screen recording is kept only as a network backup | ☑ |
