@@ -355,5 +355,29 @@ describe('ResultView (F4)', () => {
         unmount()
       }
     })
+
+    it('shows dead_leaf abstain title and description when prediction has abstain="dead_leaf"', () => {
+      const pred: Prediction & { abstain?: string } = {
+        ...basePrediction,
+        tier: 'not_rice',
+        top: [{ classId: 'not_rice', prob: 0.95 }],
+        abstain: 'dead_leaf',
+      }
+      render(<ResultView prediction={pred} lang="bn" />)
+      expect(screen.getByText('পাতাটি শুকনো বা মৃত মনে হচ্ছে')).toBeInTheDocument()
+      expect(screen.getByText(/শুকনো পাতায় রোগ নির্ণয় নির্ভরযোগ্য নয়/)).toBeInTheDocument()
+    })
+
+    it('shows unrelated_crop abstain title and description when prediction has abstain="unrelated_crop"', () => {
+      const pred: Prediction & { abstain?: string } = {
+        ...basePrediction,
+        tier: 'not_rice',
+        top: [{ classId: 'not_rice', prob: 0.95 }],
+        abstain: 'unrelated_crop',
+      }
+      render(<ResultView prediction={pred} lang="bn" />)
+      expect(screen.getByText('এটি অন্য ফসল মনে হচ্ছে')).toBeInTheDocument()
+      expect(screen.getByText(/AgroLeaf AI এখন শুধু ধানপাতা পরীক্ষা করে/)).toBeInTheDocument()
+    })
   })
 })

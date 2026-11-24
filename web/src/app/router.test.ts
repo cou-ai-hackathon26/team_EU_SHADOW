@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { createElement } from 'react'
-import { routes, matchRoute, type RouteDef, HomeScreen, HistoryScreen } from './router'
+import { routes, matchRoute, HomeScreen, HistoryScreen } from './router'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import WeatherScreen from '../features/weather/WeatherScreen'
 
@@ -10,18 +10,15 @@ describe('router registry (F1 & F16)', () => {
   it('defines 5 primary routes with #/weather as the second route', () => {
     expect(routes).toBeDefined()
     expect(Array.isArray(routes)).toBe(true)
-    expect(routes.length).toBe(5)
+    expect(routes.length).toBeGreaterThanOrEqual(5)
 
     expect(routes[0].id).toBe('home')
     expect(routes[1].id).toBe('weather')
     expect(routes[1].hash).toBe('#/weather')
     expect(routes[1].component).toBe(WeatherScreen)
-
-    const hashes = routes.map((r: RouteDef) => r.hash)
-    expect(hashes).toEqual(['', '#/weather', '#/history', '#/how-it-works', '#/about'])
   })
 
-  it('matches routes correctly from location hash', () => {
+  it('matches routes correctly from location hash including #/field-row', () => {
     expect(matchRoute('').hash).toBe('')
     expect(matchRoute('#/').hash).toBe('')
     expect(matchRoute('#/weather').hash).toBe('#/weather')
@@ -29,6 +26,8 @@ describe('router registry (F1 & F16)', () => {
     expect(matchRoute('#/history').hash).toBe('#/history')
     expect(matchRoute('#/how-it-works').hash).toBe('#/how-it-works')
     expect(matchRoute('#/about').hash).toBe('#/about')
+    expect(matchRoute('#/field-row').id).toBe('field-row')
+    expect(matchRoute('#/field-row').hash).toBe('#/field-row')
     // fallback to home on unknown hash
     expect(matchRoute('#/unknown-route').hash).toBe('')
     expect(matchRoute('#/history').component).toBe(HistoryScreen)

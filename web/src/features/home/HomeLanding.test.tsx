@@ -198,4 +198,12 @@ describe('Home landing and crop selector', () => {
     }
     for (const s of screen.getAllByTestId('photo-guide-step')) expect(s.className).not.toMatch(faded)
   })
+
+  it('renders field-row screening CTA navigating to #/field-row', () => {
+    renderHome()
+    const cta = screen.getByTestId('start-field-row')
+    expect(cta).toBeInTheDocument()
+    expect(cta).toHaveTextContent(/মাঠের সারি স্ক্যান/)
+    expect(cta).toHaveAttribute('href', '#/field-row')
+  })
 })

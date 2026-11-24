@@ -6,6 +6,9 @@ import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
 import WeatherScreen from '../features/weather/WeatherScreen'
+import { FieldRowScreen } from '../features/fieldRow/FieldRowScreen'
+import { screenFieldRow } from '../ai/fieldRow'
+import { FIELD_ROW_COPY } from '../features/fieldRow/fieldRowCopy'
 import { useT } from '../i18n/useT'
 import { useScanState } from './scanStateContext'
 import { Card } from '../ui/Card'
@@ -191,6 +194,11 @@ export function AboutScreen() {
   )
 }
 
+export function FieldRowRoute() {
+  const { lang } = useT()
+  return createElement(FieldRowScreen, { screen: screenFieldRow, lang })
+}
+
 export const routes: RouteDef[] = [
   {
     id: 'home',
@@ -227,6 +235,13 @@ export const routes: RouteDef[] = [
     label: 'সম্পর্কে',
     title: 'সম্পর্কে',
     component: AboutScreen,
+  },
+  {
+    id: 'field-row',
+    hash: '#/field-row',
+    label: FIELD_ROW_COPY.title.bn,
+    title: FIELD_ROW_COPY.title.bn,
+    component: FieldRowRoute,
   },
 ]
 
