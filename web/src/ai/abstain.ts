@@ -105,6 +105,9 @@ export function decideAbstention(args: {
       (entropy >= ABSTAIN_THRESHOLDS.unrelatedEntropyMin &&
         margin <= ABSTAIN_THRESHOLDS.unrelatedMarginMax)
     ) {
+      if (color.greyRatio >= 0.35) {
+        return 'not_rice'
+      }
       return 'unrelated_crop'
     }
   }

@@ -115,6 +115,30 @@ describe('abstain - decideAbstention', () => {
     expect(reason).toBe('unrelated_crop')
   })
 
+  it('rule 3c: abstains not_rice instead of unrelated_crop when background/sky is dominant (greyRatio >= 0.35)', () => {
+    const skyBackgroundStats: LeafColorStats = {
+      greenRatio: 0.25,
+      brownRatio: 0.10,
+      greyRatio: 0.40,
+      meanSaturation: 0.30,
+    }
+    // Triggers soft not_rice
+    const softNotRiceProbs = makeProbs({ not_rice: 0.55, blast: 0.20 })
+    expect(decideAbstention({ probs: softNotRiceProbs, color: skyBackgroundStats, meta: dummyMeta })).toBe('not_rice')
+
+    // Triggers high entropy / low margin
+    const flatProbs = makeProbs({
+      blast: 0.17,
+      healthy: 0.17,
+      brown_spot: 0.17,
+      leaf_smut: 0.17,
+      tungro: 0.16,
+      sheath_blight: 0.16,
+      not_rice: 0.02,
+    })
+    expect(decideAbstention({ probs: flatProbs, color: skyBackgroundStats, meta: dummyMeta })).toBe('not_rice')
+  })
+
   it('rule 4: abstains not_rice if greenRatio < minGreenForLeaf (no leaf at all)', () => {
     const probs = makeProbs({ blast: 0.50, not_rice: 0.10 })
     const reason = decideAbstention({ probs, color: noLeafStats, meta: dummyMeta })
