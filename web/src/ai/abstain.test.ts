@@ -58,6 +58,9 @@ describe('abstain - entropyAndMargin', () => {
     expect(ABSTAIN_THRESHOLDS.unrelatedEntropyMin).toBe(0.80)
     expect(ABSTAIN_THRESHOLDS.unrelatedMarginMax).toBe(0.10)
     expect(ABSTAIN_THRESHOLDS.unrelatedNotRiceSoft).toBe(0.50)
+    expect(ABSTAIN_THRESHOLDS.fieldUnrelatedNotRice).toBe(0.70)
+    expect(ABSTAIN_THRESHOLDS.fieldEntropyMin).toBe(0.90)
+    expect(ABSTAIN_THRESHOLDS.fieldMarginMax).toBe(0.05)
   })
 
   it('computes zero entropy for uniform 1.0 peak and 1.0 margin', () => {
@@ -166,15 +169,16 @@ describe('abstain - decideAbstention', () => {
     }
     const probs = makeProbs({
       not_rice: 0.55,
-      blast: 0.15,
+      blast: 0.18,
       healthy: 0.10,
-      brown_spot: 0.08,
-      leaf_smut: 0.05,
-      tungro: 0.04,
+      brown_spot: 0.07,
+      leaf_smut: 0.04,
+      tungro: 0.03,
       sheath_blight: 0.03,
     })
     const { entropy } = entropyAndMargin(probs)
     expect(entropy).toBeGreaterThan(0.80)
+    expect(entropy).toBeLessThan(0.90)
 
     // Single context (default) abstains via unrelatedNotRiceSoft (0.50)
     expect(decideAbstention({ probs, color: leafColor, meta: dummyMeta })).toBe('unrelated_crop')

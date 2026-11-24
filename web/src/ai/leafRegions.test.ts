@@ -350,8 +350,8 @@ describe('leafRegions - proposeLeafRegions & gridTiles', () => {
       data[i * 4 + 3] = 255
     }
 
-    // Green row spanning full width at bottom: x=0, y=230, w=400, h=70, rgb(40, 150, 40)
-    drawRect(data, width, 0, 230, 400, 70, 40, 150, 40)
+    // Green row spanning full width at bottom: x=0, y=250, w=400, h=50, rgb(40, 150, 40)
+    drawRect(data, width, 0, 250, 400, 50, 40, 150, 40)
 
     // Two green 50x40 leaves at (60,40) and (250,40)
     drawRect(data, width, 60, 40, 50, 40, 40, 150, 40)
@@ -377,7 +377,7 @@ describe('leafRegions - proposeLeafRegions & gridTiles', () => {
     }
 
     // Bright straw band spanning full width at bottom: rgb(200, 170, 110)
-    drawRect(data, width, 0, 230, 400, 70, 200, 170, 110)
+    drawRect(data, width, 0, 250, 400, 50, 200, 170, 110)
 
     // Two green 50x40 leaves at (60,40) and (250,40)
     drawRect(data, width, 60, 40, 50, 40, 40, 150, 40)
