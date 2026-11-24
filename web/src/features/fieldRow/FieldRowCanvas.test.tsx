@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { FieldRowCanvas } from './FieldRowCanvas'
 import type { FieldRowResult } from '../../ai/fieldRow.types'
@@ -107,8 +107,9 @@ describe('FieldRowCanvas component', () => {
     fireEvent.click(diseasedBtn)
 
     // Blast disease card name in Bangla and high confidence
-    expect(screen.getByText(/ব্লাস্ট/)).toBeInTheDocument()
-    expect(screen.getByText(/৯২%/)).toBeInTheDocument()
+    const detail = screen.getByTestId('selected-leaf-detail')
+    expect(within(detail).getByText(/ব্লাস্ট/)).toBeInTheDocument()
+    expect(within(detail).getByText(/৯২%/)).toBeInTheDocument()
   })
 
   it('displays abstain notice when an abstained leaf is selected', () => {
@@ -118,6 +119,7 @@ describe('FieldRowCanvas component', () => {
     fireEvent.click(abstainedBtn)
 
     // Abstain title from ABSTAIN_COPY.not_rice
-    expect(screen.getByText(/এটি ধানপাতা মনে হচ্ছে না/)).toBeInTheDocument()
+    const detail = screen.getByTestId('selected-leaf-detail')
+    expect(within(detail).getByText(/এটি ধানপাতা মনে হচ্ছে না/)).toBeInTheDocument()
   })
 })

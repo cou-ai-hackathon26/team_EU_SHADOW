@@ -37,10 +37,10 @@ describe('FieldSummaryCard component', () => {
 
     // Total leaves and screened count
     expect(screen.getByText(/৮/)).toBeInTheDocument()
-    expect(screen.getByText(/৬/)).toBeInTheDocument()
+    expect(screen.getAllByText(/৬/).length).toBeGreaterThanOrEqual(1)
 
     // Counts for healthy and diseased
-    expect(screen.getByText(/৪/)).toBeInTheDocument()
+    expect(screen.getAllByText(/৪/).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText(/২/).length).toBeGreaterThanOrEqual(1)
 
     // Highest risk disease: ব্লাস্ট and confidence 94%

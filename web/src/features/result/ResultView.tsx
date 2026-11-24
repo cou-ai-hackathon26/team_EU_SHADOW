@@ -14,6 +14,7 @@ import { ListenButton } from '../voice/ListenButton'
 import { SeverityChip } from '../../ui/SeverityChip'
 import { ProgressBar } from '../../ui/ProgressBar'
 import { RoadmapTimeline } from '../roadmap/RoadmapTimeline'
+import { ABSTAIN_COPY } from '../fieldRow/fieldRowCopy'
 
 export interface ResultViewProps {
   prediction?: Prediction | null
@@ -317,28 +318,41 @@ export default function ResultView({
         </div>
       )}
 
-      {/* Tier 4: Not Rice ("এটি ধানপাতা মনে হচ্ছে না") */}
-      {tier === 'not_rice' && (
-        <div className="flex flex-col gap-5">
-          <div className="rounded-3xl border border-rose-200 bg-rose-50/80 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-200 text-rose-800 font-bold">
-                ✕
-              </span>
-              <div>
-                <h2 id="result-heading" className="text-2xl font-bold text-rose-950">
-                  {isBn ? 'এটি ধানপাতা মনে হচ্ছে না' : 'Not Rice Leaf'}
-                </h2>
-                <p className="mt-2 text-[16px] leading-relaxed text-rose-900">
-                  {isBn
-                    ? 'আপলোডকৃত ছবিটি ধানগাছের পাতা হিসেবে শনাক্ত করা যায়নি। অনুগ্রহ করে শুধু ধানক্ষেতের আক্রান্ত পাতার স্পষ্ট ছবি দিন।'
-                    : 'The uploaded image does not appear to be a rice leaf. Please upload a clear photo of a rice leaf.'}
-                </p>
+      {/* Tier 4: Not Rice ("এটি ধানপাতা মনে হচ্ছে না" or Abstention Reason) */}
+      {tier === 'not_rice' && (() => {
+        const abstainReason = (prediction as { abstain?: 'not_rice' | 'dead_leaf' | 'unrelated_crop' } | null | undefined)?.abstain
+        const isKnownAbstain = abstainReason && (abstainReason === 'dead_leaf' || abstainReason === 'unrelated_crop')
+        const titleText = isKnownAbstain
+          ? ABSTAIN_COPY[abstainReason].title[lang]
+          : isBn
+            ? 'এটি ধানপাতা মনে হচ্ছে না'
+            : 'Not Rice Leaf'
+        const descText = isKnownAbstain
+          ? ABSTAIN_COPY[abstainReason].desc[lang]
+          : isBn
+            ? 'আপলোডকৃত ছবিটি ধানগাছের পাতা হিসেবে শনাক্ত করা যায়নি। অনুগ্রহ করে শুধু ধানক্ষেতের আক্রান্ত পাতার স্পষ্ট ছবি দিন।'
+            : 'The uploaded image does not appear to be a rice leaf. Please upload a clear photo of a rice leaf.'
+
+        return (
+          <div className="flex flex-col gap-5">
+            <div className="rounded-3xl border border-rose-200 bg-rose-50/80 p-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-200 text-rose-800 font-bold">
+                  ✕
+                </span>
+                <div>
+                  <h2 id="result-heading" className="text-2xl font-bold text-rose-950">
+                    {titleText}
+                  </h2>
+                  <p className="mt-2 text-[16px] leading-relaxed text-rose-900">
+                    {descText}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Heatmap Overlay (if not_rice, hidden) */}
       {tier !== 'not_rice' && (

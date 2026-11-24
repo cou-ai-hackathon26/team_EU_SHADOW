@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { createElement } from 'react'
-import { routes, matchRoute, type RouteDef, HomeScreen, HistoryScreen } from './router'
+import { routes, matchRoute, HomeScreen, HistoryScreen } from './router'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import WeatherScreen from '../features/weather/WeatherScreen'
 

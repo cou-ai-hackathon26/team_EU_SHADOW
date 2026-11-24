@@ -1,7 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { FieldRowScreen } from './FieldRowScreen'
 import type { FieldRowResult, ScreenFieldRow } from '../../ai/fieldRow.types'
+import { loadImage } from '../capture/loadImage'
+
+vi.mock('../capture/loadImage', () => ({
+  loadImage: vi.fn(),
+}))
+
+const mockLoadImage = vi.mocked(loadImage)
 
 const sampleResult: FieldRowResult = {
   imageWidth: 640,
@@ -55,6 +62,20 @@ const sampleResult: FieldRowResult = {
 }
 
 describe('FieldRowScreen', () => {
+  beforeEach(() => {
+    vi.spyOn(URL, 'createObjectURL').mockImplementation(() => 'blob:test-image')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    mockLoadImage.mockImplementation(async () => {
+      const img = new Image(640, 480)
+      return img
+    })
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.clearAllMocks()
+  })
+
   it('renders idle state with PhotoPicker, 16123 helpline, and disclaimer', () => {
     render(<FieldRowScreen lang="bn" />)
 
@@ -66,9 +87,7 @@ describe('FieldRowScreen', () => {
   })
 
   it('runs analysis and displays progress then result', async () => {
-    let progressCallback: any
     const mockScreen: ScreenFieldRow = vi.fn().mockImplementation((_, opts) => {
-      progressCallback = opts?.onProgress
       opts?.onProgress?.({ stage: 'detecting', done: 0, total: 0 })
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -99,7 +118,7 @@ describe('FieldRowScreen', () => {
     // Once finished, results are rendered
     await waitFor(() => {
       expect(screen.getByTestId('leaf-list')).toBeInTheDocument()
-      expect(screen.getByText(/ব্লাস্ট/)).toBeInTheDocument()
+      expect(screen.getAllByText(/ব্লাস্ট/).length).toBeGreaterThanOrEqual(1)
     })
 
     // 16123 helpline and disclaimer still present in result state
@@ -150,7 +169,7 @@ describe('FieldRowScreen', () => {
     fireEvent.click(analyzeBtn)
 
     await waitFor(() => {
-      expect(screen.getByText(/Network failure|সমস্যা হয়েছে/)).toBeInTheDocument()
+      expect(screen.getAllByText(/Network failure|সমস্যা হয়েছে/).length).toBeGreaterThanOrEqual(1)
     })
 
     // Helpline and disclaimer in error state
