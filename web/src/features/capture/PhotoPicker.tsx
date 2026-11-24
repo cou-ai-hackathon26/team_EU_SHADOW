@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type ChangeEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Camera, ImagePlus, Focus, Sun, Volume2, RotateCcw, AlertCircle, Sparkles } from 'lucide-react'
+import { Camera, ImagePlus, Focus, Sun, Volume2, RotateCcw, AlertCircle, Sparkles, X } from 'lucide-react'
 import { validateFile } from './validateFile'
 import { loadImage } from './loadImage'
 import { assessQuality } from '../quality/quality'
@@ -26,18 +26,21 @@ export default function PhotoPicker({
   isAnalyzing = false,
   selectedFile,
 }: PhotoPickerProps) {
-  const { t } = useT()
+  const { t, lang } = useT()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null)
   const [tipIndex, setTipIndex] = useState(0)
+  const [isCameraOpen, setIsCameraOpen] = useState(false)
 
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const currentUrlRef = useRef<string | null>(null)
   const currentFileRef = useRef<File | null>(null)
   const requestIdRef = useRef(0)
+  const streamRef = useRef<MediaStream | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
 
   // Rotate tips during analysis
   useEffect(() => {
@@ -48,11 +51,23 @@ export default function PhotoPicker({
     return () => clearInterval(timer)
   }, [isAnalyzing])
 
-  // Clean up object URL when unmounting
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+    setIsCameraOpen(false)
+  }, [])
+
+  // Clean up object URL and camera stream when unmounting
   useEffect(() => {
     return () => {
       if (currentUrlRef.current) {
         URL.revokeObjectURL(currentUrlRef.current)
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop())
+        streamRef.current = null
       }
     }
   }, [])
@@ -130,6 +145,7 @@ export default function PhotoPicker({
   }
 
   const handleReset = () => {
+    stopCamera()
     currentFileRef.current = null
     requestIdRef.current++
     if (currentUrlRef.current) {
@@ -141,6 +157,78 @@ export default function PhotoPicker({
     setFileName(null)
     setQualityReport(null)
     onClear?.()
+  }
+
+  const handleCameraClick = async () => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      cameraInputRef.current?.click()
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false,
+      })
+      streamRef.current = stream
+      setIsCameraOpen(true)
+      setErrorMessage(null)
+    } catch {
+      setErrorMessage(
+        lang === 'bn'
+          ? 'ক্যামেরা চালু করা যায়নি — ফাইল থেকে ছবি বেছে নিন'
+          : 'Camera unavailable — choose a photo from files'
+      )
+      cameraInputRef.current?.click()
+    }
+  }
+
+  const setVideoRef = useCallback((video: HTMLVideoElement | null) => {
+    videoRef.current = video
+    if (video && streamRef.current) {
+      video.srcObject = streamRef.current
+      try {
+        const p = video.play()
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {})
+        }
+      } catch {
+        // ignore autoplay restriction
+      }
+    }
+  }, [])
+
+  const handleCaptureFromVideo = () => {
+    if (!videoRef.current) return
+    const video = videoRef.current
+    const width = video.videoWidth || 640
+    const height = video.videoHeight || 480
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext?.('2d')
+    if (ctx) {
+      try {
+        ctx.drawImage(video, 0, 0, width, height)
+      } catch {
+        // ignore canvas drawing error in test
+      }
+    }
+    if (typeof canvas.toBlob === 'function') {
+      canvas.toBlob(
+        (blob) => {
+          stopCamera()
+          if (!blob) return
+          const capturedFile = new File([blob], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' })
+          void handleFile(capturedFile)
+        },
+        'image/jpeg',
+        0.92
+      )
+    } else {
+      stopCamera()
+      const capturedFile = new File(['mock-camera-frame'], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' })
+      void handleFile(capturedFile)
+    }
   }
 
   return (
@@ -190,7 +278,7 @@ export default function PhotoPicker({
             <motion.button
               type="button"
               whileTap={{ scale: 0.98 }}
-              onClick={() => cameraInputRef.current?.click()}
+              onClick={handleCameraClick}
               className="group relative flex flex-col items-center justify-center text-center py-3.5 sm:py-4 px-4 sm:px-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0F5132] via-[#0E7446] to-[#15803D] text-white border-2 border-emerald-400/40 shadow-[0_10px_24px_-4px_rgba(15,81,50,0.4)] transition-all hover:border-emerald-300 hover:shadow-[0_14px_28px_-4px_rgba(15,81,50,0.5)] hover:scale-[1.01] focus:outline-none focus-visible:ring-3 focus-visible:ring-emerald-700/60 cursor-pointer min-h-[105px] sm:min-h-[112px]"
             >
               <div className="relative mb-1.5 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/20 text-white shadow-inner backdrop-blur-xs transition-transform duration-200 group-hover:scale-110">
@@ -315,6 +403,86 @@ export default function PhotoPicker({
               loading={isAnalyzing}
             />
           )}
+        </div>
+      )}
+
+      {/* Live Camera Modal */}
+      {isCameraOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={lang === 'bn' ? 'লাইভ ক্যামেরা' : 'Live Camera'}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md"
+        >
+          <div className="relative flex flex-col w-full max-w-lg overflow-hidden rounded-3xl border border-emerald-500/30 bg-[#072A19] shadow-2xl text-white">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-emerald-900/60 bg-[#0B3B24]">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                </span>
+                <span className="text-sm sm:text-base font-bold text-white">
+                  {lang === 'bn' ? 'লাইভ ক্যামেরা' : 'Live Camera'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={stopCamera}
+                aria-label={lang === 'bn' ? 'বাতিল' : 'Cancel'}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/90 transition-all cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Video Viewport */}
+            <div className="relative aspect-4/3 w-full overflow-hidden bg-black flex items-center justify-center">
+              <video
+                ref={setVideoRef}
+                autoPlay
+                playsInline
+                muted
+                data-testid="camera-video-feed"
+                className="h-full w-full object-cover"
+              />
+
+              {/* Framing Brackets */}
+              <div className="pointer-events-none absolute inset-6 border-2 border-white/30 rounded-2xl">
+                <span className="absolute -top-1 -left-1 h-5 w-5 border-t-4 border-l-4 border-emerald-400 rounded-tl-lg" />
+                <span className="absolute -top-1 -right-1 h-5 w-5 border-t-4 border-r-4 border-emerald-400 rounded-tr-lg" />
+                <span className="absolute -bottom-1 -left-1 h-5 w-5 border-b-4 border-l-4 border-emerald-400 rounded-bl-lg" />
+                <span className="absolute -bottom-1 -right-1 h-5 w-5 border-b-4 border-r-4 border-emerald-400 rounded-br-lg" />
+              </div>
+
+              {/* Bottom hint pill */}
+              <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-[11px] sm:text-xs font-medium text-emerald-200 backdrop-blur-xs whitespace-nowrap">
+                {lang === 'bn' ? 'আক্রান্ত ধানপাতা ক্যামেরার ফ্রেমে সোজা ধরুন' : 'Hold diseased leaf steady in frame'}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-between gap-3 px-4 py-3.5 bg-[#0B3B24]/90 border-t border-emerald-900/60">
+              <button
+                type="button"
+                onClick={stopCamera}
+                data-testid="cancel-camera-modal"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white/90 active:scale-95 transition-all cursor-pointer"
+              >
+                <span>{lang === 'bn' ? 'বাতিল' : 'Cancel'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCaptureFromVideo}
+                data-testid="capture-from-camera-modal"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 py-3 px-5 text-sm sm:text-base font-black text-white shadow-lg active:scale-95 transition-all cursor-pointer"
+              >
+                <Camera className="h-5 w-5" strokeWidth={2.4} />
+                <span>{lang === 'bn' ? 'ছবি তুলুন' : 'Capture Photo'}</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

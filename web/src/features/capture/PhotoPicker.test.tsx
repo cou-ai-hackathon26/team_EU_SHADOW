@@ -170,4 +170,103 @@ describe('PhotoPicker (F2)', () => {
     expect(onImageReady).toHaveBeenCalledTimes(1)
     expect(onImageReady).not.toHaveBeenCalledWith(imgA, fileA)
   })
+
+  it('clicking "ক্যামেরা দিয়ে তুলুন" requests live camera stream and opens live camera modal', async () => {
+    const user = userEvent.setup()
+    const stopMock = vi.fn()
+    const mockStream = {
+      getTracks: () => [{ stop: stopMock }],
+    }
+    const getUserMediaMock = vi.fn().mockResolvedValue(mockStream)
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      mediaDevices: {
+        getUserMedia: getUserMediaMock,
+      },
+    })
+
+    render(<PhotoPicker />)
+    const cameraButton = screen.getByRole('button', { name: /ক্যামেরা দিয়ে তুলুন/i })
+    await user.click(cameraButton)
+
+    expect(getUserMediaMock).toHaveBeenCalledWith({
+      video: { facingMode: { ideal: 'environment' } },
+      audio: false,
+    })
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByTestId('camera-video-feed')).toBeInTheDocument()
+  })
+
+  it('capturing from camera modal produces an image file and stops all media tracks', async () => {
+    const user = userEvent.setup()
+    const stopMock = vi.fn()
+    const mockStream = {
+      getTracks: () => [{ stop: stopMock }],
+    }
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      mediaDevices: {
+        getUserMedia: vi.fn().mockResolvedValue(mockStream),
+      },
+    })
+
+    const onImageReady = vi.fn()
+    render(<PhotoPicker onImageReady={onImageReady} />)
+    const cameraButton = screen.getByRole('button', { name: /ক্যামেরা দিয়ে তুলুন/i })
+    await user.click(cameraButton)
+
+    const captureButton = await screen.findByTestId('capture-from-camera-modal')
+    await user.click(captureButton)
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+    expect(stopMock).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(onImageReady).toHaveBeenCalled()
+    })
+  })
+
+  it('permission denial or getUserMedia error falls back cleanly to file picker and shows notice', async () => {
+    const user = userEvent.setup()
+    const getUserMediaMock = vi.fn().mockRejectedValue(new Error('Permission denied'))
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      mediaDevices: {
+        getUserMedia: getUserMediaMock,
+      },
+    })
+
+    render(<PhotoPicker />)
+    const cameraInput = screen.getByLabelText(/ক্যামেরা/i)
+    const clickSpy = vi.spyOn(cameraInput, 'click')
+
+    const cameraButton = screen.getByRole('button', { name: /ক্যামেরা দিয়ে তুলুন/i })
+    await user.click(cameraButton)
+
+    expect(await screen.findByText(/ক্যামেরা চালু করা যায়নি — ফাইল থেকে ছবি বেছে নিন/i)).toBeInTheDocument()
+    expect(clickSpy).toHaveBeenCalled()
+  })
+
+  it('canceling camera modal closes dialog and stops all media tracks', async () => {
+    const user = userEvent.setup()
+    const stopMock = vi.fn()
+    const mockStream = {
+      getTracks: () => [{ stop: stopMock }],
+    }
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      mediaDevices: {
+        getUserMedia: vi.fn().mockResolvedValue(mockStream),
+      },
+    })
+
+    render(<PhotoPicker />)
+    await user.click(screen.getByRole('button', { name: /ক্যামেরা দিয়ে তুলুন/i }))
+    const cancelButton = await screen.findByTestId('cancel-camera-modal')
+    await user.click(cancelButton)
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(stopMock).toHaveBeenCalled()
+  })
 })
