@@ -3,6 +3,7 @@ import {
   FIELD_ROW_COPY,
   STATUS_COPY,
   ABSTAIN_COPY,
+  CANVAS_COPY,
   progressText,
   summaryLine,
 } from './fieldRowCopy'
@@ -102,6 +103,8 @@ describe('fieldRowCopy (C1 + C2 UI Copy & Safety)', () => {
       'noLeafFound',
       'gridFallbackNote',
       'fieldDisclaimer',
+      'canvas.showOthers',
+      'canvas.hideOthers',
     ]
 
     for (const k of requiredKeys) {
@@ -165,5 +168,12 @@ describe('fieldRowCopy (C1 + C2 UI Copy & Safety)', () => {
     expect(enLine).toContain('5 healthy')
     expect(enLine).toContain('2 diseased')
     expect(enLine).toContain('1 skipped')
+  })
+
+  it('7. CANVAS_COPY exposes showOthers and hideOthers with bn/en parity', () => {
+    expect(CANVAS_COPY.showOthers.bn).toContain('অন্য অংশ দেখান')
+    expect(CANVAS_COPY.showOthers.en).toContain('Show other areas')
+    expect(CANVAS_COPY.hideOthers.bn).toContain('অন্য অংশ লুকান')
+    expect(CANVAS_COPY.hideOthers.en).toContain('Hide other areas')
   })
 })

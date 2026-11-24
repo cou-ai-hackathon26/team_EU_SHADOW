@@ -303,5 +303,96 @@ describe('onsite edge-cases (C1 Field Row + C2 Abstention Engine)', () => {
       expect(res.mode).toBe('grid_fallback')
       expect(res.boxes.length).toBeGreaterThanOrEqual(4)
     })
+
+    it('3. synthetic sky + horizon + rice image: zero boxes centred above horizon, no box >18% of frame, no pair where >=60% of smaller box is inside larger', () => {
+      const width = 400
+      const height = 300
+      const totalArea = width * height
+      const data = new Uint8ClampedArray(totalArea * 4)
+
+      // Horizon row where >= 35% green starts
+      const horizonY = 100 // top ~33% is overcast sky
+
+      // Overcast sky (low-saturation grey rgb(180, 190, 200))
+      for (let y = 0; y < horizonY; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4
+          data[idx] = 180
+          data[idx + 1] = 190
+          data[idx + 2] = 200
+          data[idx + 3] = 255
+        }
+      }
+
+      // Rice field below horizon (dark background vegetation)
+      for (let y = horizonY; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4
+          data[idx] = 25
+          data[idx + 1] = 55
+          data[idx + 2] = 25
+          data[idx + 3] = 255
+        }
+      }
+
+      // Helper to draw green rice leaf blades
+      function drawLeaf(rx: number, ry: number, rw: number, rh: number) {
+        for (let y = ry; y < Math.min(height, ry + rh); y++) {
+          for (let x = rx; x < Math.min(width, rx + rw); x++) {
+            const idx = (y * width + x) * 4
+            data[idx] = 40
+            data[idx + 1] = 165
+            data[idx + 2] = 45
+            data[idx + 3] = 255
+          }
+        }
+      }
+
+      // Distinct foreground leaves below horizon
+      drawLeaf(40, 120, 45, 140)
+      drawLeaf(140, 125, 45, 140)
+      drawLeaf(240, 130, 45, 135)
+      drawLeaf(320, 125, 40, 140)
+
+      const res = leafRegionsModule.proposeLeafRegions({ data, width, height })
+
+      // 1. Zero boxes centred above the horizon
+      for (const box of res.boxes) {
+        const centerY = box.y + box.h / 2
+        expect(
+          centerY,
+          `Box centred at y=${centerY} is above horizon at y=${horizonY}`,
+        ).toBeGreaterThanOrEqual(horizonY)
+      }
+
+      // 2. No box > 18% of the frame
+      const maxAllowedArea = 0.18 * totalArea
+      for (const box of res.boxes) {
+        const boxArea = box.w * box.h
+        expect(
+          boxArea,
+          `Box area ${boxArea} exceeds 18% frame cap (${maxAllowedArea})`,
+        ).toBeLessThanOrEqual(maxAllowedArea)
+      }
+
+      // 3. No pair where >= 60% of the smaller box is inside the larger (containment filter)
+      for (let i = 0; i < res.boxes.length; i++) {
+        for (let j = i + 1; j < res.boxes.length; j++) {
+          const b1 = res.boxes[i]
+          const b2 = res.boxes[j]
+          const interW = Math.max(0, Math.min(b1.x + b1.w, b2.x + b2.w) - Math.max(b1.x, b2.x))
+          const interH = Math.max(0, Math.min(b1.y + b1.h, b2.y + b2.h) - Math.max(b1.y, b2.y))
+          const interArea = interW * interH
+          const smallerArea = Math.min(b1.w * b1.h, b2.w * b2.h)
+          if (smallerArea > 0) {
+            const containment = interArea / smallerArea
+            expect(
+              containment,
+              `Boxes ${i} and ${j} have containment ratio ${containment} >= 0.60`,
+            ).toBeLessThan(0.60)
+          }
+        }
+      }
+    })
   })
 })
