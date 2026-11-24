@@ -76,15 +76,15 @@ A synthetic sky-blue patch (`not_rice_sky.jpg`, 224×224 JPEG, plain blue pixels
 
 ## Latest test output
 
-Run on 24 November 2026 in `web/` after merging `origin/main` (commits `#53`, `#54`, `#56`, `#57`, `#58`):
+Run on 24 November 2026 in `web/` on branch `feat/onsite-foreground-copy-tests`:
 
 ### Unit tests (`npm test`)
 
 ```
  Test Files  69 passed (69)
-      Tests  495 passed (495)
-   Start at  11:18:40
-   Duration  52.58s (environment 56%, setup 18%, import 13%, tests 11%, transform 1%, worker 1%)
+      Tests  514 passed (514)
+   Start at  12:47:15
+   Duration  67.83s (environment 49%, setup 19%, import 19%, tests 11%, transform 1%, worker 1%)
 ```
 
 ### End-to-end tests (`npm run test:e2e`)

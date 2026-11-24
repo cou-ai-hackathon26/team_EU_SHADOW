@@ -7,8 +7,8 @@ type Pair = { bn: string; en: string }
 export const FIELD_ROW_COPY = {
   title: { bn: 'মাঠের সারি স্ক্যান', en: 'Field-row screening' },
   hint: {
-    bn: 'ধানক্ষেতের একটি সারির পুরো ছবি তুলুন — ছবির প্রতিটি পাতা আলাদাভাবে পরীক্ষা করা হবে।',
-    en: 'Take one photo of a whole field row. Every leaf in it is screened separately.',
+    bn: 'ধানক্ষেতের সামনের সারির পাতার স্পষ্ট ছবি তুলুন — সামনের পাতাগুলো আলাদাভাবে পরীক্ষা করা হবে এবং আকাশ ও পেছনের অংশ বাদ দেওয়া হবে।',
+    en: 'Photograph leaves in the front row — foreground leaves are screened separately; sky and background are skipped.',
   },
   summaryTitle: { bn: 'মাঠের সারাংশ', en: 'Field summary' },
   detecting: { bn: 'ছবিতে পাতা খোঁজা হচ্ছে…', en: 'Searching for leaves in photo…' },
@@ -34,7 +34,20 @@ export const FIELD_ROW_COPY = {
     bn: 'এটি মাঠপর্যায়ের প্রাথমিক পর্যবেক্ষণ, কোনো চিকিৎসাপত্র নয়। জরুরি তথ্যের জন্য ১৬১২৩ নম্বরে যোগাযোগ করুন।',
     en: 'This is a preliminary field observation, not a prescription. For guidance call 16123.',
   },
+  'canvas.showOthers': {
+    bn: 'অন্য অংশ দেখান ({n})',
+    en: 'Show other areas ({n})',
+  },
+  'canvas.hideOthers': {
+    bn: 'অন্য অংশ লুকান',
+    en: 'Hide other areas',
+  },
 } satisfies Record<string, Pair>
+
+export const CANVAS_COPY = {
+  showOthers: FIELD_ROW_COPY['canvas.showOthers'],
+  hideOthers: FIELD_ROW_COPY['canvas.hideOthers'],
+}
 
 export const STATUS_COPY: Record<LeafStatus, Pair> = {
   healthy: { bn: 'সুস্থ', en: 'Healthy' },
