@@ -195,7 +195,7 @@ export function AboutScreen() {
 
 export function FieldRowRoute() {
   const { lang } = useT()
-  return createElement(FieldRowScreen, { screen: undefined, lang })
+  return createElement(FieldRowScreen, { screen: undefined, lang, showDisclaimer: false })
 }
 
 export const routes: RouteDef[] = [

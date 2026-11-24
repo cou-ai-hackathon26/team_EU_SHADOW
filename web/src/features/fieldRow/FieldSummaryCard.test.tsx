@@ -77,4 +77,10 @@ describe('FieldSummaryCard component', () => {
     expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
     expect(screen.getByRole('note', { name: /সতর্কবার্তা/i })).toBeInTheDocument()
   })
+
+  it('omits disclaimer when showDisclaimer is false', () => {
+    render(<FieldSummaryCard summary={normalSummary} lang="bn" showDisclaimer={false} />)
+    expect(screen.queryByRole('note', { name: /সতর্কবার্তা/i })).not.toBeInTheDocument()
+    expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
+  })
 })

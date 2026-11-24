@@ -12,9 +12,14 @@ import { AlertOctagon, RotateCcw, Sprout } from 'lucide-react'
 export interface FieldRowScreenProps {
   screen?: ScreenFieldRow
   lang?: 'bn' | 'en'
+  showDisclaimer?: boolean
 }
 
-export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
+export function FieldRowScreen({
+  screen,
+  lang = 'bn',
+  showDisclaimer = true,
+}: FieldRowScreenProps) {
   const isBn = lang === 'bn'
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -116,7 +121,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             selectedFile={selectedFile}
           />
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
 
@@ -131,7 +136,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             onCancel={handleCancel}
           />
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
 
@@ -147,6 +152,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             summary={result.summary}
             lang={lang}
             onRetry={handleClear}
+            showDisclaimer={showDisclaimer}
           />
         </div>
       )}
@@ -178,7 +184,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             </div>
           </div>
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
     </div>

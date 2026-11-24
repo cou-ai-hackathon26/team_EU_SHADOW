@@ -11,12 +11,14 @@ export interface FieldSummaryCardProps {
   summary: FieldSummary
   lang?: 'bn' | 'en'
   onRetry?: () => void
+  showDisclaimer?: boolean
 }
 
 export function FieldSummaryCard({
   summary,
   lang = 'bn',
   onRetry,
+  showDisclaimer = true,
 }: FieldSummaryCardProps) {
   const isBn = lang === 'bn'
 
@@ -57,7 +59,7 @@ export function FieldSummaryCard({
 
         {/* Mandatory 16123 helpline and disclaimer in every state */}
         <HelpCall lang={lang} />
-        <Disclaimer lang={lang} />
+        {showDisclaimer && <Disclaimer lang={lang} />}
       </div>
     )
   }
@@ -226,7 +228,7 @@ export function FieldSummaryCard({
 
       {/* Mandatory HelpCall & Disclaimer */}
       <HelpCall lang={lang} />
-      <Disclaimer lang={lang} />
+      {showDisclaimer && <Disclaimer lang={lang} />}
     </div>
   )
 }
