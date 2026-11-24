@@ -13,6 +13,7 @@
 ## Submission Details (Rule 12)
 - **Repository:** https://github.com/masumcit44/AgroLeaf_AI-
 - **Live Deployment:** https://agroleaf-ai-olive.vercel.app (and `npm run demo` for local fallback)
+- **Automated Tests:** 69 test files, 495 passed (vitest)
 
 - **Demo video (≤ 3 min):** _to be added (S2, Tanjil)_
 - **Test login:** none needed (no login)
