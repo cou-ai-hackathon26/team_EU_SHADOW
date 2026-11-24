@@ -7,14 +7,20 @@ import { FieldRowCanvas } from './FieldRowCanvas'
 import { FieldSummaryCard } from './FieldSummaryCard'
 import { HelpCall } from '../../components/HelpCall'
 import { Disclaimer } from '../../components/Disclaimer'
-import { AlertOctagon, RotateCcw, Sprout } from 'lucide-react'
+import { AlertOctagon, ArrowLeft, RotateCcw, Sprout } from 'lucide-react'
+import { scanSession } from '../../app/scanSession'
 
 export interface FieldRowScreenProps {
   screen?: ScreenFieldRow
   lang?: 'bn' | 'en'
+  showDisclaimer?: boolean
 }
 
-export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
+export function FieldRowScreen({
+  screen,
+  lang = 'bn',
+  showDisclaimer = true,
+}: FieldRowScreenProps) {
   const isBn = lang === 'bn'
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -92,6 +98,37 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
 
   return (
     <div className="flex flex-col gap-5 w-full max-w-4xl mx-auto py-2">
+      {/* Top Switch-Back Navigation Pills */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="#/scan/rice"
+            onClick={(e) => {
+              e.preventDefault()
+              scanSession.openCrop('rice')
+              if (typeof window !== 'undefined') window.location.hash = '#/scan/rice'
+            }}
+            data-testid="back-to-single-leaf"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition-all active:scale-95 cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan'}</span>
+          </a>
+          <a
+            href="#/"
+            onClick={(e) => {
+              e.preventDefault()
+              scanSession.reset()
+              if (typeof window !== 'undefined') window.location.hash = '#/'
+            }}
+            data-testid="back-to-crops"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3.5 py-2 text-xs sm:text-sm font-semibold text-emerald-950 shadow-xs hover:shadow-sm transition-all active:scale-95 cursor-pointer"
+          >
+            <span>{isBn ? 'ফসল নির্বাচন' : 'Crop Selection'}</span>
+          </a>
+        </div>
+      </div>
+
       {/* Header section with Bangla hint */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-[#0B5D3B]">
@@ -116,7 +153,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             selectedFile={selectedFile}
           />
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
 
@@ -131,7 +168,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             onCancel={handleCancel}
           />
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
 
@@ -147,6 +184,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             summary={result.summary}
             lang={lang}
             onRetry={handleClear}
+            showDisclaimer={showDisclaimer}
           />
         </div>
       )}
@@ -178,7 +216,7 @@ export function FieldRowScreen({ screen, lang = 'bn' }: FieldRowScreenProps) {
             </div>
           </div>
           <HelpCall lang={lang} />
-          <Disclaimer lang={lang} />
+          {showDisclaimer && <Disclaimer lang={lang} />}
         </div>
       )}
     </div>

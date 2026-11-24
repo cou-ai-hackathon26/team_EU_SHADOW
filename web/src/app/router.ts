@@ -1,7 +1,7 @@
 import { createElement, type ComponentType } from 'react'
 import { scanSession, useScanSession } from './scanSession'
 import { HomeLanding } from '../features/home/HomeLanding'
-import { Info, ShieldCheck, Sprout } from 'lucide-react'
+import { Info, ShieldCheck, Sprout, Leaf, ArrowRight } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
@@ -20,6 +20,59 @@ export interface RouteDef {
   title: string
   component: ComponentType
   aliases?: string[]
+}
+
+export function RiceModeSwitcher({ activeMode = 'single' }: { activeMode?: 'single' | 'field-row' }) {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
+
+  return createElement(
+    'div',
+    {
+      role: 'tablist',
+      'aria-label': isBn ? 'স্ক্যান মোড নির্বাচন' : 'Select Scan Mode',
+      className:
+        'flex items-center gap-2 rounded-2xl border border-emerald-700/20 bg-white/95 p-1.5 shadow-sm backdrop-blur-sm w-full',
+    },
+    createElement(
+      'a',
+      {
+        href: '#/scan/rice',
+        onClick: () => scanSession.openCrop('rice'),
+        role: 'tab',
+        'aria-selected': activeMode === 'single',
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm transition-all cursor-pointer ${
+          activeMode === 'single'
+            ? 'bg-emerald-800 text-white font-bold shadow-sm'
+            : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 font-semibold shadow-xs hover:shadow-sm'
+        }`,
+      },
+      createElement(Leaf, { className: 'h-4 w-4' }),
+      createElement('span', null, isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan'),
+      activeMode !== 'single'
+        ? createElement(ArrowRight, { className: 'h-3.5 w-3.5 text-emerald-800 ml-0.5' })
+        : null
+    ),
+    createElement(
+      'a',
+      {
+        href: '#/field-row',
+        'data-testid': 'start-field-row',
+        role: 'tab',
+        'aria-selected': activeMode === 'field-row',
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm transition-all cursor-pointer ${
+          activeMode === 'field-row'
+            ? 'bg-emerald-800 text-white font-bold shadow-sm'
+            : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 font-semibold shadow-xs hover:shadow-sm'
+        }`,
+      },
+      createElement(Sprout, { className: 'h-4 w-4' }),
+      createElement('span', null, FIELD_ROW_COPY.title[lang]),
+      activeMode !== 'field-row'
+        ? createElement(ArrowRight, { className: 'h-3.5 w-3.5 text-emerald-800 ml-0.5' })
+        : null
+    )
+  )
 }
 
 export function HomeScreen() {
@@ -79,6 +132,7 @@ export function HomeScreen() {
           },
           t('backToCrops')
         ),
+    !isScanActive ? createElement(RiceModeSwitcher, { activeMode: 'single' }) : null,
     !isScanActive
       ? createElement(
           'section',
@@ -196,7 +250,10 @@ export function AboutScreen() {
 
 export function FieldRowRoute() {
   const { lang } = useT()
-  return createElement(FieldRowScreen, { screen: screenFieldRow, lang })
+  const { prediction, error } = useScanSession()
+  // Layout hides its disclaimer while a single-leaf result exists, so show ours then.
+  const showDisclaimer = Boolean(prediction || error)
+  return createElement(FieldRowScreen, { screen: screenFieldRow, lang, showDisclaimer })
 }
 
 export const routes: RouteDef[] = [
