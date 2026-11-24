@@ -7,6 +7,7 @@ import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
 import WeatherScreen from '../features/weather/WeatherScreen'
 import { FieldRowScreen } from '../features/fieldRow/FieldRowScreen'
+import { screenFieldRow } from '../ai/fieldRow'
 import { FIELD_ROW_COPY } from '../features/fieldRow/fieldRowCopy'
 import { useT } from '../i18n/useT'
 import { useScanState } from './scanStateContext'
@@ -243,7 +244,7 @@ export function AboutScreen() {
 
 export function FieldRowRoute() {
   const { lang } = useT()
-  return createElement(FieldRowScreen, { screen: undefined, lang, showDisclaimer: false })
+  return createElement(FieldRowScreen, { screen: screenFieldRow, lang, showDisclaimer: false })
 }
 
 export const routes: RouteDef[] = [
