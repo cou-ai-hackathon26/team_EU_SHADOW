@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest'
-import type { AbstentionReason, LeafBox, LeafColorStats, LeafScreening, FieldSummary } from './fieldRow.types'
+import type { LeafColorStats, LeafScreening, FieldSummary } from './fieldRow.types'
 import type { ClassProb } from './types'
 
 let abstainModule: any
