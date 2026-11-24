@@ -16,6 +16,13 @@ export const ABSTAIN_THRESHOLDS = {
   unrelatedEntropyMin: 0.80,
   unrelatedMarginMax: 0.10,
   unrelatedNotRiceSoft: 0.50,
+  // Onsite hardening: tungro turns most of the blade yellow-orange, a hue that
+  // falls in the "brown" band (15-55 deg). A leaf the model confidently calls
+  // tungro (top-1 >= meta.thresholds.high) that still has living green
+  // (>= minGreenForLeaf) is screened, not abstained as dead. Dry straw with
+  // almost no green is still dead_leaf. Lesion leaves (blast, brown spot, etc.)
+  // at 25-35% brown never reach deadBrownMin, so the other thresholds are unchanged.
+  tungroKeepsGreenMin: 0.12,
 } as const
 
 /**
@@ -75,7 +82,15 @@ export function decideAbstention(args: {
   }
 
   // 2. Dead leaf: high brown ratio and low green ratio
+  const topDisease = probs
+    .filter((p) => p.classId !== 'not_rice')
+    .reduce<ClassProb | null>((best, p) => (best === null || p.prob > best.prob ? p : best), null)
+  const yellowedTungro =
+    topDisease?.classId === 'tungro' &&
+    topDisease.prob >= meta.thresholds.high &&
+    color.greenRatio >= ABSTAIN_THRESHOLDS.tungroKeepsGreenMin
   if (
+    !yellowedTungro &&
     color.brownRatio >= ABSTAIN_THRESHOLDS.deadBrownMin &&
     color.greenRatio <= ABSTAIN_THRESHOLDS.deadGreenMax
   ) {

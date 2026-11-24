@@ -40,6 +40,50 @@ function cropBox(
   return { data: cropData, width: box.w, height: box.h }
 }
 
+/** Long-side cap for the working pixel buffer. The model sees 224 px crops, so
+ * 1600 px keeps plenty of detail while a 12 MP phone photo drops from ~48 MB of
+ * RGBA to ~7.7 MB, and every per-leaf crop shrinks with it. */
+export const MAX_WORK_SIDE = 1600
+
+/** Nearest-neighbour downscale of an RGBA buffer to at most MAX_WORK_SIDE on the long side.
+ * Returns the input untouched when it is already small enough. */
+export function toWorkingBuffer(
+  src: { data: ArrayLike<number>; width: number; height: number },
+  maxSide = MAX_WORK_SIDE,
+): { data: ArrayLike<number>; width: number; height: number; scale: number } {
+  const longSide = Math.max(src.width, src.height)
+  if (longSide <= maxSide) return { ...src, scale: 1 }
+  const scale = maxSide / longSide
+  const w = Math.max(1, Math.round(src.width * scale))
+  const h = Math.max(1, Math.round(src.height * scale))
+  const out = new Uint8ClampedArray(w * h * 4)
+  for (let y = 0; y < h; y++) {
+    const sy = Math.min(src.height - 1, Math.floor(y / scale))
+    for (let x = 0; x < w; x++) {
+      const sx = Math.min(src.width - 1, Math.floor(x / scale))
+      const si = (sy * src.width + sx) * 4
+      const di = (y * w + x) * 4
+      out[di] = src.data[si]
+      out[di + 1] = src.data[si + 1]
+      out[di + 2] = src.data[si + 2]
+      out[di + 3] = src.data[si + 3]
+    }
+  }
+  return { data: out, width: w, height: h, scale }
+}
+
+/** Maps a box from working-buffer coordinates back to the original photo, clipped. */
+function toOriginalBox(box: LeafBox, scale: number, width: number, height: number): LeafBox {
+  if (scale === 1) return box
+  const x = Math.max(0, Math.min(width - 1, Math.floor(box.x / scale)))
+  const y = Math.max(0, Math.min(height - 1, Math.floor(box.y / scale)))
+  const w = Math.max(1, Math.min(width - x, Math.round(box.w / scale)))
+  const h = Math.max(1, Math.min(height - y, Math.round(box.h / scale)))
+  return { x, y, w, h }
+}
+
+const yieldToUi = () => new Promise<void>((r) => setTimeout(r, 0))
+
 /**
  * Summarizes the screened leaves across a whole field row.
  * Pure function; calculates counts, proportions, highest risk disease, and abstention reasons.
@@ -148,8 +192,12 @@ export const screenFieldRow: ScreenFieldRow = async (
   const startTime = performance.now()
   const meta = await loadModel()
 
-  // 1. Extract image pixel buffer
-  const { data, width, height } = extractPixelData(image)
+  // 1. Extract image pixel buffer, then work on a downscaled copy of large photos
+  const full = extractPixelData(image)
+  const width = full.width
+  const height = full.height
+  const work = toWorkingBuffer(full)
+  const { data } = work
 
   if (opts?.signal?.aborted) {
     throw new DOMException('The operation was aborted', 'AbortError')
@@ -158,7 +206,7 @@ export const screenFieldRow: ScreenFieldRow = async (
   // 2. Propose leaf regions
   opts?.onProgress?.({ stage: 'detecting', done: 0, total: 0 })
   const { boxes, mode } = proposeLeafRegions(
-    { data, width, height },
+    { data, width: work.width, height: work.height },
     { maxRegions: opts?.maxRegions },
   )
 
@@ -183,10 +231,17 @@ export const screenFieldRow: ScreenFieldRow = async (
 
   for (let i = 0; i < n; i++) {
     const box = boxes[i]
-    const crop = cropBox(data, width, box)
+    const crop = cropBox(data, work.width, box)
     const tensor = preprocess(crop, meta)
     batchedTensorData.set(tensor, i * sampleSize)
-    cropsColorStats.push(computeColorStats(data, width, height, box))
+    cropsColorStats.push(computeColorStats(data, work.width, work.height, box))
+    // Keep the page responsive while crops are prepared
+    if (i % 4 === 3) {
+      await yieldToUi()
+      if (opts?.signal?.aborted) {
+        throw new DOMException('The operation was aborted', 'AbortError')
+      }
+    }
   }
 
   if (opts?.signal?.aborted) {
@@ -204,7 +259,7 @@ export const screenFieldRow: ScreenFieldRow = async (
       throw new DOMException('The operation was aborted', 'AbortError')
     }
 
-    const box = boxes[i]
+    const box = toOriginalBox(boxes[i], work.scale, width, height)
     const color = cropsColorStats[i]
     const logits = allLogits[i]
     const probs = softmax(logits, meta.temperature)
@@ -269,7 +324,7 @@ export const screenFieldRow: ScreenFieldRow = async (
     opts?.onProgress?.({ stage: 'classifying', done: i + 1, total: n })
 
     // Yield control to UI thread
-    await new Promise((r) => setTimeout(r, 0))
+    await yieldToUi()
   }
 
   // 6. Summarize results
