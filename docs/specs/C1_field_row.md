@@ -60,6 +60,6 @@ CoU AI Hackathon 2026 অন-সাইট চ্যালেঞ্জ ১: ম�
 
 ## ৫. টেস্ট কভারেজ (Test Suite)
 
-- `web/src/features/fieldRow/fieldRowCopy.test.ts`: বাংলা/ইংরেজি অনুবাদ, নিষিদ্ধ বালাইনাশক নাম বর্জন ও বয়ান যাচাই।
+- `web/src/features/fieldRow/fieldRowCopy.test.ts`: বাংলা/ইংরেজি অনুবাদ, নিরাপদ পরামর্শ নিশ্চিতকরণ ও বয়ান যাচাই।
 - `web/src/features/fieldRow/fieldSummary.format.test.ts`: সারাংশ বাক্য তৈরি, বাংলা সংখ্যা রূপান্তর ও অ্যাবস্টেনশনে রোগের নাম না আসার নিশ্চয়তা।
 - `web/src/ai/onsite.edgecases.test.ts`: অঞ্চল প্রস্তাবনা, গ্রিড ফলব্যাক, বক্স বাউন্ডারি ও সারাংশের এজ-কেস টেস্ট।
