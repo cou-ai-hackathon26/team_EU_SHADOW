@@ -3,7 +3,6 @@ import { ArrowRight, Camera, CheckCircle2, Languages, Leaf, Sun, Volume2 } from 
 import { useT } from '../../i18n/useT'
 import { CROPS, HERO_PHOTO } from './crops'
 import { useInPhoneFrame } from '../../app/viewportFrame'
-import { FIELD_ROW_COPY } from '../fieldRow/fieldRowCopy'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -13,7 +12,7 @@ interface HomeLandingProps {
 
 /** Home / landing: hero + crop selector. Only rice is active; other crops are clearly marked "upcoming". */
 export function HomeLanding({ onStartRice }: HomeLandingProps) {
-  const { t, lang } = useT()
+  const { t } = useT()
   const inFrame = useInPhoneFrame()
   const [toast, setToast] = useState<string | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -92,18 +91,6 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
             >
               {t('landingCta')} <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </button>
-            <a
-              href="#/field-row"
-              data-testid={inFrame ? undefined : 'start-field-row'}
-              className="mt-1 inline-flex min-h-[44px] flex-col items-center justify-center rounded-2xl border border-emerald-400/40 bg-emerald-950/50 px-4 py-2 text-center text-white backdrop-blur-sm transition hover:bg-emerald-900/60 active:scale-95"
-            >
-              <span className="text-sm font-bold text-emerald-200">
-                {FIELD_ROW_COPY.title[lang]}
-              </span>
-              <span className="text-xs text-emerald-100/80">
-                {FIELD_ROW_COPY.hint[lang]}
-              </span>
-            </a>
           </div>
         </div>
       </section>
@@ -122,14 +109,6 @@ export function HomeLanding({ onStartRice }: HomeLandingProps) {
               <Languages className="mr-1 inline h-3.5 w-3.5 text-emerald-300" aria-hidden="true" />
               {t('landingBadgeClasses')} • {t('landingBadgeVoice')}
             </p>
-            <a
-              href="#/field-row"
-              data-testid={inFrame ? 'start-field-row' : undefined}
-              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-200"
-            >
-              <span>{FIELD_ROW_COPY.title[lang]}</span>
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
           </div>
           <img
             src={`${BASE}${CROPS[0].photo}`}

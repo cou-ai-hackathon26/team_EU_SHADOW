@@ -199,8 +199,15 @@ describe('Home landing and crop selector', () => {
     for (const s of screen.getAllByTestId('photo-guide-step')) expect(s.className).not.toMatch(faded)
   })
 
-  it('renders field-row screening CTA navigating to #/field-row', () => {
+  it('does NOT show field-row screening block on the main Home Hero before selecting Rice', () => {
     renderHome()
+    expect(screen.queryByTestId('start-field-row')).not.toBeInTheDocument()
+  })
+
+  it('reveals data-testid="start-field-row" inside the Rice Scanner workspace after selecting Rice, navigating to #/field-row', async () => {
+    const user = userEvent.setup()
+    renderHome()
+    await user.click(cropButton('rice'))
     const cta = screen.getByTestId('start-field-row')
     expect(cta).toBeInTheDocument()
     expect(cta).toHaveTextContent(/মাঠের সারি স্ক্যান/)
