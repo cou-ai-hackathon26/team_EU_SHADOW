@@ -10,7 +10,7 @@ Lead re-checks this before every merge to main and before submission. Last full 
 | 9 | Real AI only | Predictions come only from `agroleaf.onnx`; field-row screening (C1) and abstention (C2) run real batched ORT-Web inference; mocks only in tests | ☑ |
 | 9 | Data public/licensed and credited | 6 datasets (CC BY 4.0 / CC0 / COCO's permissive subset), all in README §6 and `docs/CREDITS.md` | ☑ |
 | 10 | One public repo, regular commits from each member's account, no force-push/squash/back-dating | Merge commits only; Masum, Tanjil and Mehedi each commit from their own account; history never rewritten | ☑ |
-| 10 | Hourly commits during the final (24 Nov) | Masum, Tanjil, and Mehedi commit and push to their respective feature branches every 45-60 minutes throughout the onsite final | ☑ |
+| 10 | Hourly commits during the final (24 Nov) | Every member commits at least once an hour, 9 AM to 1 PM | ☐ |
 | 10 | No keys committed; `.env.example` | No secrets needed; `.env.example` says so; `.gitignore` covers `.env`, `kaggle.json`, `.vercel/`; full-history grep found no keys | ☑ |
 | 10 | README items | Team & members, problem/solution, features & AI, stack/models/datasets, AI tools, credits, setup, live link | ☑ |
 | 10 | README demo video link | S2 (Tanjil) | ☐ |
