@@ -250,7 +250,10 @@ export function AboutScreen() {
 
 export function FieldRowRoute() {
   const { lang } = useT()
-  return createElement(FieldRowScreen, { screen: screenFieldRow, lang, showDisclaimer: false })
+  const { prediction, error } = useScanSession()
+  // Layout hides its disclaimer while a single-leaf result exists, so show ours then.
+  const showDisclaimer = Boolean(prediction || error)
+  return createElement(FieldRowScreen, { screen: screenFieldRow, lang, showDisclaimer })
 }
 
 export const routes: RouteDef[] = [
