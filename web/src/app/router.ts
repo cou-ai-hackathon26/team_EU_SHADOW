@@ -1,7 +1,7 @@
 import { createElement, type ComponentType } from 'react'
 import { scanSession, useScanSession } from './scanSession'
 import { HomeLanding } from '../features/home/HomeLanding'
-import { Info, ShieldCheck, Sprout } from 'lucide-react'
+import { Info, ShieldCheck, Sprout, Leaf } from 'lucide-react'
 import ScanFlow from '../features/result/ScanFlow'
 import AccuracyScreen from '../features/about/AccuracyScreen'
 import HistoryScreen from '../features/history/HistoryScreen'
@@ -19,6 +19,53 @@ export interface RouteDef {
   title: string
   component: ComponentType
   aliases?: string[]
+}
+
+export function RiceModeSwitcher({ activeMode = 'single' }: { activeMode?: 'single' | 'field-row' }) {
+  const { lang } = useT()
+  const isBn = lang === 'bn'
+
+  return createElement(
+    'div',
+    {
+      role: 'tablist',
+      'aria-label': isBn ? 'স্ক্যান মোড নির্বাচন' : 'Select Scan Mode',
+      className:
+        'flex items-center gap-1.5 rounded-2xl border border-emerald-700/20 bg-white/95 p-1.5 shadow-sm backdrop-blur-sm w-full',
+    },
+    createElement(
+      'a',
+      {
+        href: '#/scan/rice',
+        onClick: () => scanSession.openCrop('rice'),
+        role: 'tab',
+        'aria-selected': activeMode === 'single',
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+          activeMode === 'single'
+            ? 'bg-[#0B5D3B] text-white shadow-sm ring-1 ring-emerald-700'
+            : 'text-[#4A5F52] hover:bg-emerald-50 hover:text-[#0B5D3B]'
+        }`,
+      },
+      createElement(Leaf, { className: 'h-4 w-4' }),
+      createElement('span', null, isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan')
+    ),
+    createElement(
+      'a',
+      {
+        href: '#/field-row',
+        'data-testid': 'start-field-row',
+        role: 'tab',
+        'aria-selected': activeMode === 'field-row',
+        className: `flex flex-1 items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+          activeMode === 'field-row'
+            ? 'bg-[#0B5D3B] text-white shadow-sm ring-1 ring-emerald-700'
+            : 'text-[#4A5F52] hover:bg-emerald-50 hover:text-[#0B5D3B]'
+        }`,
+      },
+      createElement(Sprout, { className: 'h-4 w-4' }),
+      createElement('span', null, FIELD_ROW_COPY.title[lang])
+    )
+  )
 }
 
 export function HomeScreen() {
@@ -78,6 +125,7 @@ export function HomeScreen() {
           },
           t('backToCrops')
         ),
+    !isScanActive ? createElement(RiceModeSwitcher, { activeMode: 'single' }) : null,
     !isScanActive
       ? createElement(
           'section',

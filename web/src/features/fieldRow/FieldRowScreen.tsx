@@ -7,7 +7,8 @@ import { FieldRowCanvas } from './FieldRowCanvas'
 import { FieldSummaryCard } from './FieldSummaryCard'
 import { HelpCall } from '../../components/HelpCall'
 import { Disclaimer } from '../../components/Disclaimer'
-import { AlertOctagon, RotateCcw, Sprout } from 'lucide-react'
+import { AlertOctagon, ArrowLeft, RotateCcw, Sprout } from 'lucide-react'
+import { scanSession } from '../../app/scanSession'
 
 export interface FieldRowScreenProps {
   screen?: ScreenFieldRow
@@ -97,6 +98,37 @@ export function FieldRowScreen({
 
   return (
     <div className="flex flex-col gap-5 w-full max-w-4xl mx-auto py-2">
+      {/* Top Switch-Back Navigation Pills */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="#/scan/rice"
+            onClick={(e) => {
+              e.preventDefault()
+              scanSession.openCrop('rice')
+              if (typeof window !== 'undefined') window.location.hash = '#/scan/rice'
+            }}
+            data-testid="back-to-single-leaf"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#0B5D3B] px-4 py-1.5 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#0F5132] active:scale-95"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{isBn ? 'একক পাতা স্ক্যান' : 'Single Leaf Scan'}</span>
+          </a>
+          <a
+            href="#/"
+            onClick={(e) => {
+              e.preventDefault()
+              scanSession.reset()
+              if (typeof window !== 'undefined') window.location.hash = '#/'
+            }}
+            data-testid="back-to-crops"
+            className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/25 bg-white/90 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#0B5D3B] shadow-sm transition hover:bg-emerald-50 active:scale-95"
+          >
+            <span>{isBn ? 'ফসল নির্বাচন' : 'Crop Selection'}</span>
+          </a>
+        </div>
+      </div>
+
       {/* Header section with Bangla hint */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-[#0B5D3B]">

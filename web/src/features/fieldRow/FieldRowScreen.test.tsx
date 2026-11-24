@@ -93,6 +93,19 @@ describe('FieldRowScreen', () => {
     expect(screen.getAllByText(/১৬১২৩/).length).toBeGreaterThanOrEqual(1)
   })
 
+  it('renders switch-back pills to return to single leaf scanner and crop selection', () => {
+    render(<FieldRowScreen lang="bn" />)
+    const backToSingle = screen.getByTestId('back-to-single-leaf')
+    expect(backToSingle).toBeInTheDocument()
+    expect(backToSingle).toHaveTextContent(/একক পাতা স্ক্যান/)
+    expect(backToSingle).toHaveAttribute('href', '#/scan/rice')
+
+    const backToCrops = screen.getByTestId('back-to-crops')
+    expect(backToCrops).toBeInTheDocument()
+    expect(backToCrops).toHaveTextContent(/ফসল নির্বাচন/)
+    expect(backToCrops).toHaveAttribute('href', '#/')
+  })
+
   it('runs analysis and displays progress then result', async () => {
     const mockScreen: ScreenFieldRow = vi.fn().mockImplementation((_, opts) => {
       opts?.onProgress?.({ stage: 'detecting', done: 0, total: 0 })
