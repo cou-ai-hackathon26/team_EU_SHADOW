@@ -82,9 +82,9 @@ Run on 24 November 2026 in `web/` on branch `feat/onsite-foreground-copy-tests`:
 
 ```
  Test Files  69 passed (69)
-      Tests  508 passed (508)
-   Start at  12:33:05
-   Duration  44.59s (environment 58%, setup 16%, import 13%, tests 12%, transform 1%, worker 1%)
+      Tests  514 passed (514)
+   Start at  12:47:15
+   Duration  67.83s (environment 49%, setup 19%, import 19%, tests 11%, transform 1%, worker 1%)
 ```
 
 ### End-to-end tests (`npm run test:e2e`)
