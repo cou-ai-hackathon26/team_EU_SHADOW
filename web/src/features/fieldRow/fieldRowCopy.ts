@@ -94,6 +94,13 @@ export function progressText(done: number, total: number, lang: Lang): string {
  * e.g., "৮টি পাতার মধ্যে ৫টি সুস্থ, ২টি রোগাক্রান্ত, ১টি বাদ"
  */
 export function summaryLine(summary: FieldSummary, lang: Lang): string {
+  if (summary.fieldAbstain) {
+    const reasonText = ABSTAIN_COPY[summary.fieldAbstain]
+    return lang === 'bn'
+      ? `${reasonText.title.bn} — কোনো ধানপাতার রোগ নির্ণয় করা হয়নি`
+      : `${reasonText.title.en} — no rice disease diagnosed`
+  }
+
   if (lang === 'bn') {
     const parts: string[] = []
     if (summary.healthy > 0) {
