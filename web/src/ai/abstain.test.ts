@@ -25,7 +25,7 @@ function makeProbs(overrides: Partial<Record<string, number>>): ClassProb[] {
   const merged = { ...base, ...overrides }
   return Object.entries(merged).map(([classId, prob]) => ({
     classId: classId as any,
-    prob,
+    prob: prob ?? 0,
   }))
 }
 
@@ -51,6 +51,15 @@ const noLeafStats: LeafColorStats = {
 }
 
 describe('abstain - entropyAndMargin', () => {
+  it('exports valid documented threshold values', () => {
+    expect(ABSTAIN_THRESHOLDS.deadBrownMin).toBe(0.45)
+    expect(ABSTAIN_THRESHOLDS.deadGreenMax).toBe(0.20)
+    expect(ABSTAIN_THRESHOLDS.minGreenForLeaf).toBe(0.12)
+    expect(ABSTAIN_THRESHOLDS.unrelatedEntropyMin).toBe(0.80)
+    expect(ABSTAIN_THRESHOLDS.unrelatedMarginMax).toBe(0.10)
+    expect(ABSTAIN_THRESHOLDS.unrelatedNotRiceSoft).toBe(0.50)
+  })
+
   it('computes zero entropy for uniform 1.0 peak and 1.0 margin', () => {
     const probs = makeProbs({ blast: 1.0, healthy: 0, brown_spot: 0, leaf_smut: 0, tungro: 0, sheath_blight: 0 })
     const { entropy, margin } = entropyAndMargin(probs)

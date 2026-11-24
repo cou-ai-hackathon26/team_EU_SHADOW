@@ -1,6 +1,69 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
+import { resetEngineState } from './engine'
 import { summarizeField, screenFieldRow } from './fieldRow'
 import type { LeafScreening } from './fieldRow.types'
+import type { ModelMeta } from './types'
+
+const dummyMeta: ModelMeta = {
+  version: 'v1-test',
+  architecture: 'MobileNetV3-Small (random init)',
+  trainedFromScratch: true,
+  classes: [
+    'healthy',
+    'blast',
+    'brown_spot',
+    'leaf_smut',
+    'tungro',
+    'sheath_blight',
+    'not_rice',
+  ],
+  inputSize: 224,
+  mean: [0.485, 0.456, 0.406],
+  std: [0.229, 0.224, 0.225],
+  temperature: 1.0,
+  thresholds: {
+    high: 0.85,
+    medium: 0.55,
+    healthyHigh: 0.9,
+    notRice: 0.5,
+  },
+  camOutput: false,
+}
+
+vi.mock('onnxruntime-web/wasm', () => {
+  const sessionMock = {
+    inputNames: ['input'],
+    outputNames: ['logits'],
+    run: vi.fn().mockImplementation(async (feeds: any) => {
+      const tensor = feeds.input
+      const batchSize = tensor?.dims?.[0] ?? 1
+      const logits = new Float32Array(batchSize * 7)
+      for (let b = 0; b < batchSize; b++) {
+        // High logit for healthy (class 0)
+        logits[b * 7] = 5.0
+      }
+      return {
+        logits: { data: logits, dims: [batchSize, 7] },
+      }
+    }),
+  }
+  return {
+    InferenceSession: {
+      create: vi.fn().mockResolvedValue(sessionMock),
+    },
+    Tensor: class Tensor {
+      type: string
+      data: any
+      dims: number[]
+      constructor(type: string, data: any, dims: number[]) {
+        this.type = type
+        this.data = data
+        this.dims = dims
+      }
+    },
+    env: { wasm: {} },
+  }
+})
 
 function makeLeaf(overrides: Partial<LeafScreening>): LeafScreening {
   return {
@@ -100,5 +163,83 @@ describe('fieldRow - summarizeField', () => {
     const summary = summarizeField(leaves)
     expect(summary.screened).toBe(0)
     expect(summary.fieldAbstain).toBe('unrelated_crop')
+  })
+})
+
+describe('fieldRow - screenFieldRow', () => {
+  beforeEach(() => {
+    resetEngineState()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (url: string) => {
+        if (String(url).includes('model_meta.json')) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => dummyMeta,
+          }
+        }
+        return {
+          ok: true,
+          status: 200,
+          arrayBuffer: async () => new ArrayBuffer(10),
+        }
+      }),
+    )
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('calls onProgress 1..N and returns N leaves with proposed boxes', async () => {
+    const width = 300
+    const height = 200
+    const data = new Uint8ClampedArray(width * height * 4)
+    // Full canvas green -> grid_fallback creates 6 tiles
+    for (let i = 0; i < width * height; i++) {
+      data[i * 4] = 34
+      data[i * 4 + 1] = 139
+      data[i * 4 + 2] = 34
+      data[i * 4 + 3] = 255
+    }
+
+    const progressReports: any[] = []
+    const res = await screenFieldRow(
+      { data, width, height },
+      {
+        onProgress: (p) => progressReports.push(p),
+      },
+    )
+
+    expect(res.mode).toBe('grid_fallback')
+    expect(res.leaves.length).toBe(6)
+    expect(res.summary.totalRegions).toBe(6)
+    expect(res.latencyMs).toBeGreaterThanOrEqual(0)
+
+    // Verify progress reporting
+    expect(progressReports[0]).toEqual({ stage: 'detecting', done: 0, total: 0 })
+    const classifyingReports = progressReports.filter((p) => p.stage === 'classifying')
+    expect(classifyingReports.length).toBe(6)
+    expect(classifyingReports[0].done).toBe(1)
+    expect(classifyingReports[5].done).toBe(6)
+    expect(progressReports[progressReports.length - 1]).toEqual({
+      stage: 'summarizing',
+      done: 6,
+      total: 6,
+    })
+  })
+
+  it('respects AbortSignal and aborts immediately', async () => {
+    const controller = new AbortController()
+    controller.abort()
+
+    const width = 100
+    const height = 100
+    const data = new Uint8ClampedArray(width * height * 4)
+
+    await expect(
+      screenFieldRow({ data, width, height }, { signal: controller.signal }),
+    ).rejects.toThrow()
   })
 })
