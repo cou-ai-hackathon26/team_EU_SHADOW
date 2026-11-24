@@ -156,4 +156,35 @@ describe('abstain - decideAbstention', () => {
     const reason = decideAbstention({ probs, color: deadBrownStats, meta: dummyMeta })
     expect(reason).toBe('not_rice')
   })
+
+  it('rule 3d (field context calibration): soft notRice 0.55 on green leaf returns null in field context, but unrelated_crop in single', () => {
+    const leafColor: LeafColorStats = {
+      greenRatio: 0.50,
+      brownRatio: 0.10,
+      greyRatio: 0.10,
+      meanSaturation: 0.60,
+    }
+    const probs = makeProbs({
+      not_rice: 0.55,
+      blast: 0.15,
+      healthy: 0.10,
+      brown_spot: 0.08,
+      leaf_smut: 0.05,
+      tungro: 0.04,
+      sheath_blight: 0.03,
+    })
+    const { entropy } = entropyAndMargin(probs)
+    expect(entropy).toBeGreaterThan(0.80)
+
+    // Single context (default) abstains via unrelatedNotRiceSoft (0.50)
+    expect(decideAbstention({ probs, color: leafColor, meta: dummyMeta })).toBe('unrelated_crop')
+    expect(decideAbstention({ probs, color: leafColor, meta: dummyMeta, context: 'single' })).toBe('unrelated_crop')
+
+    // Field context requires notRice >= 0.70 or entropy >= 0.90 && margin <= 0.05, so returns null
+    expect(decideAbstention({ probs, color: leafColor, meta: dummyMeta, context: 'field' })).toBeNull()
+
+    // When notRice is 0.75 >= fieldUnrelatedNotRice (0.70), it abstains as unrelated_crop
+    const highNotRice = makeProbs({ not_rice: 0.75, blast: 0.10 })
+    expect(decideAbstention({ probs: highNotRice, color: leafColor, meta: dummyMeta, context: 'field' })).toBe('unrelated_crop')
+  })
 })
